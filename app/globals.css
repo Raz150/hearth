@@ -1,25 +1,48 @@
 @import "tailwindcss";
-
-:root {
-  color-scheme: light dark;
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "@heroui/styles";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --font-sans: var(--font-jakarta);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Soft modern theme. Unlayered so it beats HeroUI's; dark comes last because :root matches in both modes.
+   Background hexes must match the theme-color values in layout.tsx and theme-toggle.tsx. */
+:root,
+[data-theme="light"] {
+  --radius: 0.625rem;
+  --field-radius: 1rem;
+  --background: #f6f6fb;
+  --accent: oklch(0.55 0.17 280);
+  --accent-foreground: oklch(0.99 0 0);
+  --separator: oklch(0.94 0.006 285);
+  --glow: oklch(0.55 0.17 280 / 0.1);
+  --surface-shadow: 0 0 0 1px rgb(60 50 120 / 0.05), 0 12px 32px -14px rgb(60 50 120 / 0.14);
+  --field-shadow: 0 0 0 1px rgb(60 50 120 / 0.06), 0 6px 18px -10px rgb(60 50 120 / 0.14);
+}
+
+[data-theme="dark"] {
+  --background: #121218;
+  --surface: oklch(0.225 0.014 285);
+  --field-background: oklch(0.225 0.014 285);
+  --accent: oklch(0.72 0.13 280);
+  --accent-foreground: oklch(0.18 0.02 280);
+  --separator: oklch(0.28 0.012 285);
+  --glow: oklch(0.72 0.13 280 / 0.1);
+  --surface-shadow: 0 0 0 1px rgb(255 255 255 / 0.05);
+  --field-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background-image: radial-gradient(120% 320px at 50% 0, var(--glow), transparent);
+  background-repeat: no-repeat;
+}
+
+@layer components {
+  .plate {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
 }

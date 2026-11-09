@@ -5,7 +5,7 @@ Private shared-lists PWA for one household. Next.js, Supabase and Vercel, all on
 ## Setup
 
 1. Create a Supabase project.
-2. In the SQL Editor, run `supabase/migrations/20261109000000_init.sql`.
+2. In the SQL Editor, run each file in `supabase/migrations/` in filename order.
 3. Under Authentication > Users, create both accounts.
 4. In the SQL Editor, run `supabase/seed.example.sql` with your real emails and names. Don't commit them.
 5. Under Authentication > Sign In / Providers, turn off new sign-ups and set Email OTP Length to 6.

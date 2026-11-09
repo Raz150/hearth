@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button, Input } from "@heroui/react";
 import { createClient } from "@/lib/supabase/client";
 
-const inputClass =
-  "h-14 w-full rounded-xl border border-zinc-300 bg-transparent px-4 text-lg dark:border-zinc-700";
-const buttonClass =
-  "h-14 w-full rounded-xl bg-foreground text-lg font-semibold text-background disabled:opacity-50";
+const inputClass = "h-14 px-4 text-lg";
+const buttonClass = "h-14 text-lg";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -57,14 +56,17 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 p-6">
-      <h1 className="text-3xl font-semibold">Hearth</h1>
+    <main className="flex min-h-dvh flex-col">
+      <div className="plate justify-center">
+      <div className="mx-auto flex w-full max-w-sm flex-col gap-6 p-6">
+      <h1 className="text-4xl font-semibold tracking-tight">Hearth</h1>
 
       {codeSent ? (
         <form onSubmit={verifyCode} className="flex flex-col gap-4">
           <label className="flex flex-col gap-2">
             <span>Enter the 6-digit code sent to {email.trim()}</span>
-            <input
+            <Input
+              fullWidth
               className={`${inputClass} tracking-widest`}
               value={code}
               onChange={(event) => setCode(event.target.value)}
@@ -74,12 +76,12 @@ export default function LoginPage() {
               autoFocus
             />
           </label>
-          <button className={buttonClass} disabled={busy}>
+          <Button type="submit" fullWidth className={buttonClass} isDisabled={busy}>
             {busy ? "Checking…" : "Sign in"}
-          </button>
+          </Button>
           <button
             type="button"
-            className="h-12 w-full"
+            className="h-12 w-full text-muted"
             onClick={() => {
               setCodeSent(false);
               setError("");
@@ -92,7 +94,8 @@ export default function LoginPage() {
         <form onSubmit={sendCode} className="flex flex-col gap-4">
           <label className="flex flex-col gap-2">
             <span>Email</span>
-            <input
+            <Input
+              fullWidth
               className={inputClass}
               type="email"
               value={email}
@@ -103,17 +106,19 @@ export default function LoginPage() {
               autoFocus
             />
           </label>
-          <button className={buttonClass} disabled={busy}>
+          <Button type="submit" fullWidth className={buttonClass} isDisabled={busy}>
             {busy ? "Sending…" : "Send code"}
-          </button>
+          </Button>
         </form>
       )}
 
       {error && (
-        <p role="alert" className="text-red-600 dark:text-red-400">
+        <p role="alert" className="text-danger">
           {error}
         </p>
       )}
+      </div>
+      </div>
     </main>
   );
 }

@@ -3,17 +3,6 @@ I'm building a private Progressive Web App (PWA) for exactly two users: me and m
 ## What the app does
 A shared household app for a married couple. All data is shared between both users (one household). Timezone: Asia/Kuala_Lumpur.
 
-This is v1 and contains ONE feature only. More features will be added later, one at a time, in separate sessions. Do not build or scaffold anything for future features (no placeholder tabs, tables, or routes). The only foundation to set up is: auth, a `households` table linking our two users, and RLS based on household membership.
-
-Feature: Shared lists
-- Create, rename, and delete lists (e.g. Groceries, To-do).
-- Items: text, optional note/quantity, checked state, who added it, created time.
-- Add, edit, check/uncheck, and delete items. Either of us can edit anything.
-- Realtime sync: changes from one phone appear on the other instantly (Supabase Realtime).
-- "Clear checked items" in one tap.
-- Works well one-handed on iPhone; adding an item should take one tap + typing + enter.
-
-Out of scope for now: push notifications, offline editing, sharing outside the household, attachments.
 
 ## Stack (fixed — don't suggest alternatives)
 - Next.js (latest, App Router, TypeScript), Tailwind CSS
@@ -32,7 +21,7 @@ Out of scope for now: push notifications, offline editing, sharing outside the h
 
 ## iOS PWA requirements
 - Works full-screen when installed (display: standalone, apple-touch-icon, theme colour, safe-area insets).
-- Mobile-first UI, large touch targets, light/dark mode following the iPhone setting.
+- Mobile-first UI, large touch targets, light and dark themes.
 - Must work well on iPhone Safari and as an installed Home Screen app.
 
 ## Operations
@@ -43,6 +32,6 @@ Out of scope for now: push notifications, offline editing, sharing outside the h
 ## How to work
 1. First, propose the data model (tables, columns, RLS policies) and wait for my approval before writing code.
 2. Then build in this order: project setup → auth (OTP login, protected routes) → shared lists end-to-end → PWA manifest + service worker (install to Home Screen) → GitHub Actions (DB keep-alive + backup).
-3. Keep it simple: no extra libraries unless they clearly save effort, no state-management library unless needed, no features I didn't ask for.
+3. Be creative with design and UX: take bold visual ideas, use UI and animation libraries when they make the app better, and propose or add touches that make it feel good to use. No state-management library unless needed.
 4. After each step, tell me exactly what to configure manually in the Supabase and Vercel dashboards, then stop so I can test before moving on.
 5. Include a short README with setup and deploy steps.
