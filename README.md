@@ -66,9 +66,13 @@ mkdir b && tar -xzf b.tar.gz -C b
 
 1. **Same project, data broken:** in the SQL editor run `supabase/reset.sql`, then `psql "$SUPABASE_DB_URL" -f b/app.sql`. Skip `auth.sql`: the logins still exist.
 2. **Brand-new project:** first `psql "$SUPABASE_DB_URL" -f b/auth.sql` (recreates our logins with the same ids and passwords), then `psql "$SUPABASE_DB_URL" -f b/app.sql`. Redo the dashboard settings above and update the env vars in Vercel and GitHub.
-3. Either way, re-enable realtime by running the last statement of the migration (`alter publication supabase_realtime add table ...`).
+3. Either way, re-enable realtime by running every `alter publication supabase_realtime add table ...` statement from the migrations.
 
 An error like `schema "public" already exists` during restore is harmless.
+
+## Doa library
+
+The doa on the Doa tab live in `lib/doa.json`, built by `node scripts/doa.mjs` (edit `GROUPS` in it to add or drop doa, re-run, commit the JSON). Arabic, Rumi, English and audio come from the Hisnul Muslim API; Bahasa Melayu and the hadith source come from JPN Johor's Hisnul Muslim page. The script refuses to build if the two sources' Arabic don't match, so a Malay text can't end up under the wrong doa. Quran doa come from alquran.cloud.
 
 ## Testing RLS locally (optional, needs Docker)
 

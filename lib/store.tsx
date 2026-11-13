@@ -3,11 +3,11 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
 import { addDays, addMonths, klToday } from "./date";
-import { loadChores, loadLog, loadMembers, loadNote, loadReflections, loadTodos, type Chore, type LogEntry, type Member, type Note, type Reflection, type Step, type Todo } from "./queries";
+import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadTodos, type Chore, type DoaRequest, type LogEntry, type Member, type Note, type Step, type Todo } from "./queries";
 import { createClient } from "./supabase/client";
 
 export { INKS, inkText } from "./inks";
-export type { Chore, LogEntry, Member, Note, Reflection, Step, Todo } from "./queries";
+export type { Chore, DoaRequest, LogEntry, Member, Note, Step, Todo } from "./queries";
 /** The editable details of a to-do besides its title. */
 export type TodoMeta = Pick<Todo, "assignee" | "due" | "priority" | "tags">;
 /** The editable parts of a chore. */
@@ -17,7 +17,7 @@ export type Bill = { id: string; name: string; amountSen: number; dueDay: number
 /** One bill paid for one month (YYYY-MM). */
 export type Payment = { billId: string; month: string; by: string; on: string };
 
-export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; reflections: Reflection[] };
+export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaRequest[] };
 
 // shortcut: bills are still in-memory sample data; they become real in the next step.
 function makeMock(members: Member[], me: string) {
@@ -77,15 +77,21 @@ type Store = Shared &
     thanksText: (c: Chore) => string;
     togglePaid: (billId: string, month: string) => void;
     setNote: (text: string) => void;
-    /** Write, rewrite or (with empty text) clear my line on today's ayah/hadith. */
-    setReflection: (text: string) => void;
+    askDoa: (text: string) => void;
+    /** I prayed for my spouse's request today, or (if already today) take it back. */
+    prayFor: (id: string) => void;
+    /** Mark my own request answered (Alhamdulillah), or un-mark it. */
+    answerDoa: (id: string) => void;
+    removeDoa: (id: string) => void;
     /** Saves my own name/ink. Returns an error message or null. */
     updateMe: (patch: Partial<Omit<Member, "id">>) => Promise<string | null>;
   };
 
 const Ctx = createContext<Store | null>(null);
-const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, reflections: loadReflections } as const;
-const TABLES: Record<string, keyof typeof LOADERS> = { members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", reflections: "reflections" };
+const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, doa: loadDoa } as const;
+const TABLES: Record<string, keyof typeof LOADERS> = {
+  members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", doa_requests: "doa", doa_prayers: "doa",
+};
 
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
   const [sb] = useState(createClient);
@@ -149,6 +155,9 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
     prev_last_by: t.prev?.lastBy ?? null,
     prev_last_on: t.prev?.lastOn ?? null,
   });
+  const setDoa = (fn: (d: DoaRequest[]) => DoaRequest[]) => setData((p) => ({ ...p, doa: fn(p.doa) }));
+  const putDoa = (id: string, v: Partial<DoaRequest>) => setDoa((p) => p.map((d) => (d.id === id ? { ...d, ...v } : d)));
+  const prayedText = (d: DoaRequest) => `prayed for ${data.members.find((m) => m.id === d.by)?.name ?? "you"} 🤲`;
   const choreLine = (c: Chore) => `did ${c.title}`;
   const thanksText = (c: Chore) => `thanked ${data.members.find((m) => m.id === c.lastBy)?.name ?? "you"} for ${c.title}`;
   const flashError = () => setUndo({ id: Date.now(), label: "Couldn't save. Check your connection.", error: true });
@@ -321,32 +330,6 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       });
     },
 
-    setReflection: (raw) => {
-      const text = raw.trim().slice(0, 200);
-      const prev = data.reflections.find((r) => r.by === me);
-      if (text === (prev?.text ?? "")) return;
-      const day = klToday();
-      const put = (r?: Reflection) => setData((p) => ({ ...p, reflections: [...p.reflections.filter((x) => x.by !== me), ...(r ? [r] : [])] }));
-      const next = text ? { text, by: me } : undefined;
-      put(next);
-
-      if (!next) {
-        const line = data.log.find((l) => l.kind === "reflection" && l.by === me && klToday(new Date(l.at)) === day);
-        write(() => put(prev), sb.from("reflections").delete().eq("day", day).eq("written_by", me), ...(line ? [unlog(line.id)] : []));
-        return;
-      }
-      // Log only the first write of the day, not every edit.
-      const log = prev ? undefined : logLine("reflection", "reflected on today's reminder");
-      write(
-        () => {
-          put(prev);
-          if (log) setLog((l) => l.filter((x) => x.id !== log.entry.id));
-        },
-        sb.from("reflections").upsert({ day, body: text, written_at: new Date().toISOString() }, { onConflict: "household_id,day,written_by" }),
-        ...(log ? [log.query] : []),
-      );
-    },
-
     addChore: (meta) => {
       const row = choreMeta(meta);
       if (!row.title) return;
@@ -424,6 +407,91 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
         id: Date.now(),
         label: `Thanks sent to ${data.members.find((m) => m.id === c.lastBy)?.name ?? "them"}`,
         undo: () => write(() => {}, unlog(log.entry.id)),
+      });
+    },
+
+    askDoa: (raw) => {
+      const text = raw.trim().slice(0, 200);
+      if (!text) return;
+      const d: DoaRequest = { id: crypto.randomUUID(), by: me, text, at: new Date().toISOString(), prayers: [] };
+      setDoa((p) => [d, ...p]);
+      const log = logLine("doa", "asked for doa 🤲");
+      write(
+        () => {
+          setDoa((p) => p.filter((x) => x.id !== d.id));
+          setLog((l) => l.filter((x) => x.id !== log.entry.id));
+        },
+        // The log line only after the request is saved, so a failed request leaves no orphan line.
+        sb.from("doa_requests").insert({ id: d.id, body: text }).then((r) => (r.error ? r : log.query)),
+      );
+    },
+
+    prayFor: (id) => {
+      const d = data.doa.find((x) => x.id === id);
+      if (!d || d.by === me) return;
+      const day = klToday();
+      const put = (prayers: DoaRequest["prayers"]) => putDoa(id, { prayers });
+      if (d.prayers.some((p) => p.by === me && p.day === day)) {
+        // Take back today's prayer and its log line.
+        const mine = data.log.find((l) => l.kind === "doa" && l.by === me && l.text === prayedText(d) && klToday(new Date(l.at)) === day);
+        put(d.prayers.filter((p) => !(p.by === me && p.day === day)));
+        write(() => put(d.prayers), sb.from("doa_prayers").delete().match({ request_id: id, prayed_by: me, day }), ...(mine ? [unlog(mine.id)] : []));
+        return;
+      }
+      put([...d.prayers, { by: me, day }]);
+      const log = logLine("doa", prayedText(d));
+      write(
+        () => {
+          put(d.prayers);
+          setLog((l) => l.filter((x) => x.id !== log.entry.id));
+        },
+        sb.from("doa_prayers").insert({ request_id: id }).then((r) => (r.error ? r : log.query)),
+      );
+    },
+
+    answerDoa: (id) => {
+      const d = data.doa.find((x) => x.id === id);
+      if (!d || d.by !== me) return;
+      const answeredAt = d.answeredAt ? undefined : new Date().toISOString();
+      const save = (at?: string) => sb.from("doa_requests").update({ answered_at: at ?? null }).eq("id", id);
+      putDoa(id, { answeredAt });
+      const log = answeredAt && logLine("doa", "had a doa answered. Alhamdulillah 🌿");
+      write(
+        () => {
+          putDoa(id, { answeredAt: d.answeredAt });
+          if (log) setLog((l) => l.filter((x) => x.id !== log.entry.id));
+        },
+        save(answeredAt),
+        ...(log ? [log.query] : []),
+      );
+      setUndo({
+        id: Date.now(),
+        label: answeredAt ? "Alhamdulillah 🌿" : "Moved back to open",
+        undo: () => {
+          putDoa(id, { answeredAt: d.answeredAt });
+          write(() => putDoa(id, { answeredAt }), save(d.answeredAt), ...(log ? [unlog(log.entry.id)] : []));
+        },
+      });
+    },
+
+    removeDoa: (id) => {
+      const d = data.doa.find((x) => x.id === id);
+      if (!d || d.by !== me) return;
+      const index = data.doa.indexOf(d);
+      const putBack = () => setDoa((p) => [...p.slice(0, index), d, ...p.slice(index)]);
+      setDoa((p) => p.filter((x) => x.id !== id));
+      write(putBack, sb.from("doa_requests").delete().eq("id", id));
+      setUndo({
+        id: Date.now(),
+        label: "Removed",
+        undo: () => {
+          putBack();
+          // Prayers were deleted with it and can't be re-added for past days, so they don't come back.
+          write(
+            () => setDoa((p) => p.filter((x) => x.id !== id)),
+            sb.from("doa_requests").insert({ id, body: d.text, created_at: d.at, answered_at: d.answeredAt ?? null }),
+          );
+        },
       });
     },
 

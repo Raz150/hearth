@@ -6,9 +6,9 @@ export type Step = { id: string; title: string; done: boolean };
 /** priority: 0 normal, anything above 0 = important (the app only sets 1). */
 export type Todo = { id: string; title: string; due?: string; assignee?: string; doneBy?: string; priority: number; tags: string[]; steps: Step[] };
 export type Note = { text: string; by: string; at: string };
-/** One person's line on today's ayah/hadith. */
-export type Reflection = { text: string; by: string };
-export type LogEntry = { id: string; kind: "todo" | "chore" | "bill" | "note" | "thanks" | "reflection"; text: string; by: string; at: string };
+/** "Doakan saya": prayers holds who prayed for it on which KL day. */
+export type DoaRequest = { id: string; by: string; text: string; at: string; answeredAt?: string; prayers: { by: string; day: string }[] };
+export type LogEntry = { id: string; kind: "todo" | "chore" | "bill" | "note" | "thanks" | "doa"; text: string; by: string; at: string };
 type ChoreState = { nextDue: string; lastBy?: string; lastOn?: string };
 /** owner: who looks after it (undefined = either of us). prev: state before the last tick, for un-ticking. */
 export type Chore = ChoreState & { id: string; title: string; everyDays: number; owner?: string; prev?: ChoreState };
@@ -73,12 +73,6 @@ export async function loadNote(sb: SupabaseClient): Promise<Note | null> {
   return data && { text: data.body, by: data.written_by, at: data.written_at };
 }
 
-export async function loadReflections(sb: SupabaseClient): Promise<Reflection[]> {
-  const { data, error } = await sb.from("reflections").select("body, written_by").eq("day", klToday());
-  if (error) fail("reflections", error);
-  return data.map((r) => ({ text: r.body, by: r.written_by }));
-}
-
 /** This week's log (Monday onwards, KL time): enough for "today" and the weekly chore tally. */
 export async function loadLog(sb: SupabaseClient): Promise<LogEntry[]> {
   const { data, error } = await sb
@@ -89,4 +83,23 @@ export async function loadLog(sb: SupabaseClient): Promise<LogEntry[]> {
     .limit(300);
   if (error) fail("activity", error);
   return data.map((r) => ({ id: r.id, kind: r.kind, text: r.body, by: r.done_by, at: r.done_at }));
+}
+
+/** Open doa requests, plus ones answered in the last 30 days (older answered ones stay in the database). */
+export async function loadDoa(sb: SupabaseClient): Promise<DoaRequest[]> {
+  const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  const { data, error } = await sb
+    .from("doa_requests")
+    .select("id, asked_by, body, created_at, answered_at, doa_prayers(prayed_by, day)")
+    .or(`answered_at.is.null,answered_at.gt."${since}"`)
+    .order("created_at", { ascending: false });
+  if (error) fail("doa_requests", error);
+  return data.map((r) => ({
+    id: r.id,
+    by: r.asked_by,
+    text: r.body,
+    at: r.created_at,
+    answeredAt: r.answered_at ?? undefined,
+    prayers: r.doa_prayers.map((p: { prayed_by: string; day: string }) => ({ by: p.prayed_by, day: p.day })),
+  }));
 }

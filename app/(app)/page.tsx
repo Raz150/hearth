@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { HandHeart } from "lucide-react";
 import { StickyNote } from "@/components/note";
-import { Reminder } from "@/components/reminder";
 import { Typewriter } from "@/components/typewriter";
 import { InkCheck, Page, PageHeader, Petals, Section, Struck, Who } from "@/components/ui";
 import { daysBetween, dueDateInMonth, formatDay, klHour, klToday, relativeDue } from "@/lib/date";
+import { doaForHour } from "@/lib/doa";
 import { klTime, ringgit, useStore } from "@/lib/store";
 
 function greeting(h: number) {
@@ -30,6 +31,7 @@ export default function Today() {
   const left = todos.filter((t) => !t.doneBy).length + chores.filter((c) => c.lastOn !== today).length + bills.length;
   const log = s.log.filter((l) => klToday(new Date(l.at)) === today);
   const didToday = log.length > 0;
+  const now = doaForHour(klHour());
 
   // Petals once per day, the moment everything for today is done.
   const [burst, setBurst] = useState(0);
@@ -50,8 +52,6 @@ export default function Today() {
       />
       <p className="-mt-5 mb-7 font-serif italic text-ink-soft">{formatDay(today, { day: "numeric", month: "long", year: "numeric" })}</p>
 
-      <Reminder day={today} />
-
       <Typewriter
         day={today}
         className="mb-8 min-h-[3.5rem] font-hand text-xl leading-snug"
@@ -66,6 +66,16 @@ export default function Today() {
       />
 
       <StickyNote />
+
+      {now && (
+        <Link href={`/doa#${now.group}`} className="mb-8 flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-line bg-card px-5 py-3">
+          <span>
+            <span className="block font-hand text-sm text-accent">{now.label}</span>
+            <span className="font-serif text-lg">Time for a few minutes of zikir</span>
+          </span>
+          <HandHeart className="shrink-0 text-accent" size={22} />
+        </Link>
+      )}
 
       <Section title="To do">
         {todos.length === 0 ? (

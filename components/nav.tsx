@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import { BookOpen, ListChecks, Sparkles, Receipt } from "lucide-react";
+import { BookOpen, HandHeart, ListChecks, Sparkles, Receipt } from "lucide-react";
 
 const TABS = [
   { href: "/", label: "Today", icon: BookOpen },
   { href: "/todo", label: "To-do", icon: ListChecks },
   { href: "/chores", label: "Chores", icon: Sparkles },
   { href: "/bills", label: "Bills", icon: Receipt },
+  { href: "/doa", label: "Doa", icon: HandHeart },
 ];
 
 export function Nav() {
