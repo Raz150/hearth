@@ -75,24 +75,48 @@ export function Who({ member, prefix }: { member?: Member; prefix?: string }) {
 }
 
 /** Round check that fills with the doer's ink and draws a tick. */
+// Hand-drawn shapes: a slightly wobbly circle whose pen stroke overlaps where it started,
+// and a tick that sweeps out past the circle, like ticking a paper list.
+const PEN_CIRCLE = "M16.4 4.6C23 4.3 27.7 9.3 27.5 16.2 27.3 22.8 22.2 27.6 15.7 27.4 9.2 27.2 4.4 22.5 4.6 15.9 4.8 9.7 9.4 5.1 15.2 4.9 16.8 4.85 18.1 5.2 19 5.6";
+const PEN_TICK = "M9.2 16.6C10.9 18 12.2 19.7 13.6 22.4 16.8 15.2 21.6 8.9 29.5 3.2";
+
+/** Pen-drawn check: the circle tints with the doer's ink and a bold tick is drawn through it. Tap again to undo. */
 export function InkCheck({ done, ink, onToggle, label }: { done: boolean; ink?: string; onToggle: () => void; label: string }) {
+  const colour = ink ?? "var(--ink)";
   return (
     <button
       type="button"
       onClick={onToggle}
       aria-pressed={done}
       aria-label={label}
-      className="grid size-11 shrink-0 place-items-center rounded-full active:scale-90 transition-transform"
+      className="grid size-11 shrink-0 place-items-center rounded-full transition-transform active:scale-90"
     >
-      <motion.span
-        className="grid size-7 place-items-center rounded-full border-2"
-        animate={{ borderColor: done ? ink : "var(--ink-soft)", backgroundColor: done ? ink : "rgba(0,0,0,0)" }}
-        transition={{ duration: 0.2 }}
+      <motion.svg
+        viewBox="0 0 32 32"
+        className="size-8 overflow-visible"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={false}
+        animate={done ? { scale: [1, 1.12, 1] } : { scale: 1 }}
+        transition={{ duration: 0.35, delay: done ? 0.22 : 0 }}
       >
-        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-          <motion.path d="M5 12.5l4.5 4.5L19 7.5" initial={false} animate={{ pathLength: done ? 1 : 0 }} transition={{ duration: 0.3, delay: done ? 0.08 : 0 }} />
-        </svg>
-      </motion.span>
+        <motion.path
+          d={PEN_CIRCLE}
+          strokeWidth={1.8}
+          initial={false}
+          animate={{ stroke: done ? colour : "var(--ink-soft)", fill: done ? colour : "rgba(0,0,0,0)", fillOpacity: done ? 0.16 : 0 }}
+          transition={{ duration: 0.25 }}
+        />
+        <motion.path
+          d={PEN_TICK}
+          stroke={colour}
+          strokeWidth={3.2}
+          initial={false}
+          animate={{ pathLength: done ? 1 : 0, opacity: done ? 1 : 0 }}
+          transition={{ pathLength: { duration: 0.32, ease: [0.65, 0, 0.35, 1] }, opacity: { duration: done ? 0.01 : 0.15 } }}
+        />
+      </motion.svg>
     </button>
   );
 }

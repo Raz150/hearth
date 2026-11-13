@@ -49,17 +49,24 @@ export default function SettingsPage() {
                 <div role="radiogroup" aria-label="Your ink" className="mt-3 flex flex-wrap gap-1">
                   {INKS.map((ink) => {
                     const on = ink.hex === m.ink;
+                    // Inks are one per person, so the other's colour can't be picked.
+                    const owner = s.members.find((o) => o.id !== s.me && o.ink === ink.hex);
                     return (
                       <button
                         key={ink.hex}
                         role="radio"
                         aria-checked={on}
-                        aria-label={ink.name}
-                        onClick={() => !on && save({ ink: ink.hex })}
+                        aria-disabled={!!owner}
+                        aria-label={owner ? `${ink.name}, ${owner.name}'s ink` : ink.name}
+                        onClick={() => !on && !owner && save({ ink: ink.hex })}
                         className="grid size-11 place-items-center"
                       >
-                        <span className="relative grid size-8 place-items-center rounded-full" style={{ backgroundColor: ink.hex }}>
+                        <span
+                          className={`relative grid size-8 place-items-center rounded-full ${owner ? "opacity-35" : ""}`}
+                          style={{ backgroundColor: ink.hex }}
+                        >
                           {on && <motion.span layoutId="ink-ring" className="absolute -inset-1.5 rounded-full border-2" style={{ borderColor: ink.hex }} />}
+                          {owner && <span className="font-hand text-xs text-white">{owner.name.slice(0, 1)}</span>}
                         </span>
                       </button>
                     );

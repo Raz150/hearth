@@ -60,7 +60,7 @@ export default function ChoresPage() {
                 <InkCheck
                   done={doneToday}
                   ink={s.member(doneToday ? c.lastBy : s.me)?.ink}
-                  onToggle={() => !doneToday && s.doChore(c.id)}
+                  onToggle={() => s.toggleChore(c.id)}
                   label={`Mark ${c.title} done`}
                 />
                 <div className="min-w-0 flex-1">

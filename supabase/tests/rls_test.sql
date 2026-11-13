@@ -44,6 +44,7 @@ select pg_temp.expect((select display_name from public.members where user_id = '
 select pg_temp.expect_fail($$update public.members set household_id = '00000000-0000-0000-0000-00000000000b' where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'a1 cannot move household');
 select pg_temp.expect_fail($$insert into public.members (user_id, household_id, display_name) values ('00000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-00000000000a', 'x')$$, 'a1 cannot add members');
 select pg_temp.expect_fail($$update public.members set ink = 'red' where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'ink must be a hex colour');
+select pg_temp.expect_fail($$update public.members set ink = '#e0849f' where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'cannot take spouse''s ink');
 select pg_temp.expect_fail($$insert into public.activity (kind, body, done_by) values ('todo', 'x', '00000000-0000-0000-0000-0000000000a2')$$, 'cannot log as spouse');
 select pg_temp.expect_fail($$update public.activity set body = 'edited'$$, 'activity cannot be edited');
 select pg_temp.expect_fail($$insert into public.todos (title) values ('   ')$$, 'blank title rejected');

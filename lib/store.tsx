@@ -9,7 +9,7 @@ import { createClient } from "./supabase/client";
 export { INKS, inkText } from "./inks";
 export type { LogEntry, Member, Note, Todo } from "./queries";
 
-export type Chore = { id: string; title: string; everyDays: number; nextDue: string; lastBy?: string; lastOn?: string };
+export type Chore = { id: string; title: string; everyDays: number; nextDue: string; lastBy?: string; lastOn?: string; prev?: Pick<Chore, "nextDue" | "lastBy" | "lastOn"> };
 export type Bill = { id: string; name: string; amountSen: number; dueDay: number };
 /** One bill paid for one month (YYYY-MM). */
 export type Payment = { billId: string; month: string; by: string; on: string };
@@ -65,7 +65,8 @@ type Store = Shared &
     renameTodo: (id: string, title: string) => void;
     toggleTodo: (id: string) => void;
     removeTodo: (id: string) => void;
-    doChore: (id: string) => void;
+    /** Mark done, or (if done today) put it back how it was. */
+    toggleChore: (id: string) => void;
     togglePaid: (billId: string, month: string) => void;
     setNote: (text: string) => void;
     /** Saves my own name/ink. Returns an error message or null. */
@@ -274,15 +275,16 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
     },
 
     // ── still sample data ──
-    doChore: (id) => {
+    toggleChore: (id) => {
       const c = mock.chores.find((x) => x.id === id);
       if (!c) return;
-      const before = mock;
-      setMock((p) => ({
-        ...p,
-        chores: p.chores.map((x) => (x.id === id ? { ...x, lastBy: me, lastOn: klToday(), nextDue: addDays(klToday(), x.everyDays) } : x)),
-      }));
-      setUndo({ id: Date.now(), label: `${c.title} · done`, undo: () => setMock(before) });
+      const setChore = (next: Chore) => setMock((p) => ({ ...p, chores: p.chores.map((x) => (x.id === id ? next : x)) }));
+      if (c.lastOn === klToday() && c.prev) {
+        setChore({ ...c, ...c.prev, prev: undefined });
+        return;
+      }
+      setChore({ ...c, lastBy: me, lastOn: klToday(), nextDue: addDays(klToday(), c.everyDays), prev: { nextDue: c.nextDue, lastBy: c.lastBy, lastOn: c.lastOn } });
+      setUndo({ id: Date.now(), label: `${c.title} · done`, undo: () => setChore(c) });
     },
     togglePaid: (billId, m) => {
       const b = mock.bills.find((x) => x.id === billId);

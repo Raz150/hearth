@@ -22,6 +22,7 @@ export async function saveMe(patch: { name?: string; ink?: string }): Promise<st
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) return "Not signed in.";
   const { error } = await supabase.from("members").update(update).eq("user_id", data.claims.sub);
+  if (error?.code === "23505") return "That ink is already taken. Pick another."; // unique (household_id, ink)
   return error ? "Couldn't save. Try again." : null;
 }
 

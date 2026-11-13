@@ -100,7 +100,7 @@ export default function Today() {
               const done = c.lastOn === today;
               return (
                 <li key={c.id} className="flex items-center gap-1">
-                  <InkCheck done={done} ink={s.member(done ? c.lastBy : s.me)?.ink} onToggle={() => !done && s.doChore(c.id)} label={`Mark ${c.title} done`} />
+                  <InkCheck done={done} ink={s.member(done ? c.lastBy : s.me)?.ink} onToggle={() => s.toggleChore(c.id)} label={`Mark ${c.title} done`} />
                   <span className="flex-1 py-2">
                     <Struck done={done} ink={s.member(c.lastBy)?.ink}>{c.title}</Struck>
                     {!done && <span className="block text-sm text-ink-soft">due {relativeDue(c.nextDue, today)}</span>}
