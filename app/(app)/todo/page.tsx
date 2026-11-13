@@ -1,33 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useDragControls } from "motion/react";
+import { useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { CalendarDays, ListChecks, Plus, Trash2, X } from "lucide-react";
-import { InkCheck, Page, PageHeader, Section, Struck, Who } from "@/components/ui";
+import { Sheet } from "@/components/sheet";
+import { Chip, chipClass, chipStyle, HIT, InkCheck, LATE, Page, PageHeader, Section, Struck, Who } from "@/components/ui";
 import { addDays, formatDay, klToday, parseQuickAdd, relativeDue, TAG, thisWeekend } from "@/lib/date";
-import { inkText, useStore, type Todo, type TodoMeta } from "@/lib/store";
+import { useStore, type Todo, type TodoMeta } from "@/lib/store";
 
 const WHEN: [string, (today: string) => string][] = [
   ["Today", (t) => t],
   ["Tomorrow", (t) => addDays(t, 1)],
   ["Weekend", thisWeekend],
 ];
-const LATE = "#c0675f";
-
-/** Slim on screen (28px) but with an invisible 44px-tall tap area, so they stay easy to hit. */
-const HIT = "after:absolute after:inset-x-0 after:-inset-y-2 after:content-['']";
-const chipClass = (on: boolean) =>
-  `relative inline-flex h-7 items-center gap-1 rounded-full border px-2.5 font-hand text-sm leading-none transition-colors ${HIT} ${on ? "border-transparent text-paper" : "border-line text-ink-soft"}`;
-const chipStyle = (on: boolean, ink?: string) => (on ? { backgroundColor: ink ? inkText(ink) : "var(--accent)" } : ink ? { color: inkText(ink) } : undefined);
-
-function Chip({ on, onClick, ink, children }: { on: boolean; onClick: () => void; ink?: string; children: React.ReactNode }) {
-  return (
-    <button type="button" onClick={onClick} aria-pressed={on} className={chipClass(on)} style={chipStyle(on, ink)}>
-      {children}
-    </button>
-  );
-}
 
 /** People and dates. Tap a lit chip to clear it. */
 function WhoWhen({ value, set }: { value: Pick<TodoMeta, "assignee" | "due">; set: (patch: Partial<TodoMeta>) => void }) {
@@ -65,24 +50,12 @@ function WhoWhen({ value, set }: { value: Pick<TodoMeta, "assignee" | "due">; se
 }
 
 /** Bottom sheet with everything about one to-do. Changes save as they're made. */
-function Sheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: string[]; onClose: () => void }) {
+function TodoSheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: string[]; onClose: () => void }) {
   const s = useStore();
-  const drag = useDragControls();
   const meta: TodoMeta & { title: string } = { title: t.title, assignee: t.assignee, due: t.due, priority: t.priority, tags: t.tags };
   const edit = (patch: Partial<TodoMeta & { title: string }>) => s.editTodo(t.id, { ...meta, ...patch });
   const tags = [...new Set([...knownTags, ...t.tags])];
   const important = t.priority > 0;
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden"; // keep the list behind from scrolling
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = overflow;
-    };
-  }, [onClose]);
 
   function addTag(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== "Enter") return;
@@ -92,30 +65,8 @@ function Sheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: string[
     e.currentTarget.value = "";
   }
 
-  // Portal: the page wrapper is transformed, which would pin "fixed" to it instead of the screen.
-  return createPortal(
-    <>
-      <motion.div aria-hidden initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="fixed inset-0 z-40 bg-[#1a201b]/35" />
-      <motion.div
-        role="dialog"
-        aria-modal
-        aria-label={t.title}
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", stiffness: 380, damping: 36 }}
-        drag="y"
-        dragListener={false}
-        dragControls={drag}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={{ top: 0, bottom: 0.7 }}
-        onDragEnd={(_, i) => (i.offset.y > 90 || i.velocity.y > 500) && onClose()}
-        className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[88dvh] max-w-md overflow-y-auto rounded-t-[1.75rem] border-t border-line bg-card px-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] shadow-[0_-12px_40px_-16px_rgba(30,40,25,0.45)]"
-      >
-        <div onPointerDown={(e) => drag.start(e)} className="-mx-5 flex cursor-grab touch-none justify-center pt-2.5 pb-3">
-          <span className="h-1.5 w-10 rounded-full bg-line" />
-        </div>
-
+  return (
+    <Sheet label={t.title} onClose={onClose}>
         <input
           key={t.id}
           defaultValue={t.title}
@@ -198,9 +149,7 @@ function Sheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: string[
             Done
           </button>
         </div>
-      </motion.div>
-    </>,
-    document.body,
+    </Sheet>
   );
 }
 
@@ -396,7 +345,7 @@ export default function TodoPage() {
         </Section>
       )}
 
-      <AnimatePresence>{sheetTodo && <Sheet key={sheetTodo.id} todo={sheetTodo} knownTags={knownTags} onClose={() => setSheetId(null)} />}</AnimatePresence>
+      <AnimatePresence>{sheetTodo && <TodoSheet key={sheetTodo.id} todo={sheetTodo} knownTags={knownTags} onClose={() => setSheetId(null)} />}</AnimatePresence>
     </Page>
   );
 }

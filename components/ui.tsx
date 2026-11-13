@@ -4,6 +4,23 @@ import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
 import { inkText, type Member } from "@/lib/store";
 
+/** Overdue / delete red. */
+export const LATE = "#c0675f";
+
+/** Slim on screen (28px) but with an invisible 44px-tall tap area, so they stay easy to hit. */
+export const HIT = "after:absolute after:inset-x-0 after:-inset-y-2 after:content-['']";
+export const chipClass = (on: boolean) =>
+  `relative inline-flex h-7 items-center gap-1 rounded-full border px-2.5 font-hand text-sm leading-none transition-colors ${HIT} ${on ? "border-transparent text-paper" : "border-line text-ink-soft"}`;
+export const chipStyle = (on: boolean, ink?: string) => (on ? { backgroundColor: ink ? inkText(ink) : "var(--accent)" } : ink ? { color: inkText(ink) } : undefined);
+
+export function Chip({ on, onClick, ink, children }: { on: boolean; onClick: () => void; ink?: string; children: ReactNode }) {
+  return (
+    <button type="button" onClick={onClick} aria-pressed={on} className={chipClass(on)} style={chipStyle(on, ink)}>
+      {children}
+    </button>
+  );
+}
+
 /** Rubber stamp that thumps down, e.g. "PAID 7 NOV". */
 export function Stamp({ show, ink, children }: { show: boolean; ink: string; children: ReactNode }) {
   return (

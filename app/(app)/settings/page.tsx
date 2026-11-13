@@ -101,7 +101,7 @@ export default function SettingsPage() {
       <form action={signOut} className="mb-6">
         <button className="min-h-12 w-full rounded-full border border-line bg-card font-semibold text-ink-soft active:scale-[0.98] transition-transform">Sign out</button>
       </form>
-      <p className="text-center font-hand text-xs text-ink-soft">to-dos, chores and bills are still sample data</p>
+      <p className="text-center font-hand text-xs text-ink-soft">bills are still sample data</p>
     </Page>
   );
 }

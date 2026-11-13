@@ -6,7 +6,10 @@ export type Step = { id: string; title: string; done: boolean };
 /** priority: 0 normal, anything above 0 = important (the app only sets 1). */
 export type Todo = { id: string; title: string; due?: string; assignee?: string; doneBy?: string; priority: number; tags: string[]; steps: Step[] };
 export type Note = { text: string; by: string; at: string };
-export type LogEntry = { id: string; kind: "todo" | "chore" | "bill" | "note"; text: string; by: string; at: string };
+export type LogEntry = { id: string; kind: "todo" | "chore" | "bill" | "note" | "thanks"; text: string; by: string; at: string };
+type ChoreState = { nextDue: string; lastBy?: string; lastOn?: string };
+/** owner: who looks after it (undefined = either of us). prev: state before the last tick, for un-ticking. */
+export type Chore = ChoreState & { id: string; title: string; everyDays: number; owner?: string; prev?: ChoreState };
 
 /** Supabase errors are plain objects; wrap them so error pages and logs show which table failed and why. */
 function fail(table: string, error: PostgrestError): never {
@@ -41,6 +44,24 @@ export async function loadTodos(sb: SupabaseClient): Promise<Todo[]> {
     priority: r.priority,
     tags: r.tags,
     steps: r.todo_steps as Step[],
+  }));
+}
+
+export async function loadChores(sb: SupabaseClient): Promise<Chore[]> {
+  const { data, error } = await sb
+    .from("chores")
+    .select("id, title, every_days, next_due, owner, last_by, last_on, prev_next_due, prev_last_by, prev_last_on")
+    .order("created_at");
+  if (error) fail("chores", error);
+  return data.map((r) => ({
+    id: r.id,
+    title: r.title,
+    everyDays: r.every_days,
+    nextDue: r.next_due,
+    owner: r.owner ?? undefined,
+    lastBy: r.last_by ?? undefined,
+    lastOn: r.last_on ?? undefined,
+    prev: r.prev_next_due ? { nextDue: r.prev_next_due, lastBy: r.prev_last_by ?? undefined, lastOn: r.prev_last_on ?? undefined } : undefined,
   }));
 }
 

@@ -3,33 +3,28 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
 import { addDays, addMonths, klToday } from "./date";
-import { loadLog, loadMembers, loadNote, loadTodos, type LogEntry, type Member, type Note, type Step, type Todo } from "./queries";
+import { loadChores, loadLog, loadMembers, loadNote, loadTodos, type Chore, type LogEntry, type Member, type Note, type Step, type Todo } from "./queries";
 import { createClient } from "./supabase/client";
 
 export { INKS, inkText } from "./inks";
-export type { LogEntry, Member, Note, Step, Todo } from "./queries";
+export type { Chore, LogEntry, Member, Note, Step, Todo } from "./queries";
 /** The editable details of a to-do besides its title. */
 export type TodoMeta = Pick<Todo, "assignee" | "due" | "priority" | "tags">;
+/** The editable parts of a chore. */
+export type ChoreMeta = Pick<Chore, "title" | "everyDays" | "owner" | "nextDue">;
 
-export type Chore = { id: string; title: string; everyDays: number; nextDue: string; lastBy?: string; lastOn?: string; prev?: Pick<Chore, "nextDue" | "lastBy" | "lastOn"> };
 export type Bill = { id: string; name: string; amountSen: number; dueDay: number };
 /** One bill paid for one month (YYYY-MM). */
 export type Payment = { billId: string; month: string; by: string; on: string };
 
-export type Shared = { members: Member[]; todos: Todo[]; note: Note | null; log: LogEntry[] };
+export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[] };
 
-// shortcut: chores and bills are still in-memory sample data; they become real in the next two steps.
+// shortcut: bills are still in-memory sample data; they become real in the next step.
 function makeMock(members: Member[], me: string) {
   const other = members.find((m) => m.id !== me)?.id ?? me;
   const today = klToday();
   const month = today.slice(0, 7);
   return {
-    chores: [
-      { id: "c1", title: "Laundry", everyDays: 3, nextDue: today, lastBy: other, lastOn: addDays(today, -3) },
-      { id: "c2", title: "Vacuum the living room", everyDays: 7, nextDue: addDays(today, -1), lastBy: me, lastOn: addDays(today, -8) },
-      { id: "c3", title: "Change bedsheets", everyDays: 14, nextDue: addDays(today, 5), lastBy: other, lastOn: addDays(today, -9) },
-      { id: "c4", title: "Take out recycling", everyDays: 7, nextDue: addDays(today, 2), lastBy: me, lastOn: addDays(today, -5) },
-    ] as Chore[],
     bills: [
       { id: "b1", name: "TNB electricity", amountSen: 18740, dueDay: 15 },
       { id: "b2", name: "Unifi", amountSen: 12900, dueDay: 7 },
@@ -71,8 +66,15 @@ type Store = Shared &
     removeStep: (todoId: string, stepId: string) => void;
     toggleTodo: (id: string) => void;
     removeTodo: (id: string) => void;
+    addChore: (meta: ChoreMeta) => void;
+    editChore: (id: string, meta: ChoreMeta) => void;
+    removeChore: (id: string) => void;
     /** Mark done, or (if done today) put it back how it was. */
     toggleChore: (id: string) => void;
+    /** Thank whoever last did this chore (adds a line to the shared log). */
+    thank: (choreId: string) => void;
+    /** The log line `thank` writes; also how the page tells it's already been sent. */
+    thanksText: (c: Chore) => string;
     togglePaid: (billId: string, month: string) => void;
     setNote: (text: string) => void;
     /** Saves my own name/ink. Returns an error message or null. */
@@ -80,8 +82,8 @@ type Store = Shared &
   };
 
 const Ctx = createContext<Store | null>(null);
-const LOADERS = { members: loadMembers, todos: loadTodos, note: loadNote, log: loadLog } as const;
-const TABLES: Record<string, keyof typeof LOADERS> = { members: "members", todos: "todos", todo_steps: "todos", notes: "note", activity: "log" };
+const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog } as const;
+const TABLES: Record<string, keyof typeof LOADERS> = { members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log" };
 
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
   const [sb] = useState(createClient);
@@ -132,6 +134,21 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
   const setSteps = (todoId: string, fn: (s: Step[]) => Step[]) => setTodos((p) => p.map((t) => (t.id === todoId ? { ...t, steps: fn(t.steps) } : t)));
   const row = (m: TodoMeta) => ({ assignee: m.assignee ?? null, due_date: m.due ?? null, priority: m.priority, tags: m.tags });
   const setLog = (fn: (l: LogEntry[]) => LogEntry[]) => setData((p) => ({ ...p, log: fn(p.log) }));
+  const setChores = (fn: (c: Chore[]) => Chore[]) => setData((p) => ({ ...p, chores: fn(p.chores) }));
+  const putChore = (id: string, v: Partial<Chore>) => setChores((p) => p.map((c) => (c.id === id ? { ...c, ...v } : c)));
+  const choreMeta = (m: ChoreMeta) => ({ title: m.title.trim().slice(0, 100), every_days: Math.min(365, Math.max(1, Math.round(m.everyDays) || 1)), owner: m.owner ?? null, next_due: m.nextDue });
+  /** Tick state of a chore, as the app holds it and as the row stores it. */
+  const tickOf = (c: Pick<Chore, "nextDue" | "lastBy" | "lastOn" | "prev">) => ({ nextDue: c.nextDue, lastBy: c.lastBy, lastOn: c.lastOn, prev: c.prev });
+  const tickRow = (t: ReturnType<typeof tickOf>) => ({
+    next_due: t.nextDue,
+    last_by: t.lastBy ?? null,
+    last_on: t.lastOn ?? null,
+    prev_next_due: t.prev?.nextDue ?? null,
+    prev_last_by: t.prev?.lastBy ?? null,
+    prev_last_on: t.prev?.lastOn ?? null,
+  });
+  const choreLine = (c: Chore) => `did ${c.title}`;
+  const thanksText = (c: Chore) => `thanked ${data.members.find((m) => m.id === c.lastBy)?.name ?? "you"} for ${c.title}`;
   const flashError = () => setUndo({ id: Date.now(), label: "Couldn't save. Check your connection.", error: true });
 
   /** Run DB writes; if any fails, put the screen back and say so. */
@@ -302,18 +319,87 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       });
     },
 
-    // ── still sample data ──
-    toggleChore: (id) => {
-      const c = mock.chores.find((x) => x.id === id);
+    addChore: (meta) => {
+      const row = choreMeta(meta);
+      if (!row.title) return;
+      const c: Chore = { id: crypto.randomUUID(), title: row.title, everyDays: row.every_days, owner: meta.owner, nextDue: meta.nextDue };
+      setChores((p) => [...p, c]);
+      write(() => setChores((p) => p.filter((x) => x.id !== c.id)), sb.from("chores").insert({ id: c.id, ...row }));
+    },
+
+    editChore: (id, meta) => {
+      const old = data.chores.find((c) => c.id === id);
+      const row = choreMeta(meta);
+      if (!old || !row.title) return;
+      putChore(id, { title: row.title, everyDays: row.every_days, owner: meta.owner, nextDue: meta.nextDue });
+      write(() => putChore(id, old), sb.from("chores").update(row).eq("id", id));
+    },
+
+    removeChore: (id) => {
+      const c = data.chores.find((x) => x.id === id);
       if (!c) return;
-      const setChore = (next: Chore) => setMock((p) => ({ ...p, chores: p.chores.map((x) => (x.id === id ? next : x)) }));
-      if (c.lastOn === klToday() && c.prev) {
-        setChore({ ...c, ...c.prev, prev: undefined });
+      setChores((p) => p.filter((x) => x.id !== id));
+      write(() => setChores((p) => [...p, c]), sb.from("chores").delete().eq("id", id));
+      setUndo({
+        id: Date.now(),
+        label: "Removed",
+        undo: () => {
+          setChores((p) => [...p, c]);
+          write(() => setChores((p) => p.filter((x) => x.id !== id)), sb.from("chores").insert({ id, ...choreMeta(c), ...tickRow(tickOf(c)) }));
+        },
+      });
+    },
+
+    toggleChore: (id) => {
+      const c = data.chores.find((x) => x.id === id);
+      if (!c) return;
+      const today = klToday();
+      const before = tickOf(c);
+      const save = (t: typeof before) => sb.from("chores").update(tickRow(t)).eq("id", id);
+
+      if (c.lastOn === today) {
+        // Un-tick (from either phone): back to how it was before today's tick, and drop my log line for it.
+        const back = { nextDue: c.prev?.nextDue ?? today, lastBy: c.prev?.lastBy, lastOn: c.prev?.lastOn, prev: undefined };
+        const mine = c.lastBy === me ? data.log.find((l) => l.kind === "chore" && l.by === me && l.text === choreLine(c)) : undefined;
+        putChore(id, back);
+        write(() => putChore(id, before), save(back), ...(mine ? [unlog(mine.id)] : []));
         return;
       }
-      setChore({ ...c, lastBy: me, lastOn: klToday(), nextDue: addDays(klToday(), c.everyDays), prev: { nextDue: c.nextDue, lastBy: c.lastBy, lastOn: c.lastOn } });
-      setUndo({ id: Date.now(), label: `${c.title} · done`, undo: () => setChore(c) });
+      const done = { nextDue: addDays(today, c.everyDays), lastBy: me, lastOn: today, prev: { nextDue: c.nextDue, lastBy: c.lastBy, lastOn: c.lastOn } };
+      putChore(id, done);
+      const log = logLine("chore", choreLine(c));
+      write(
+        () => {
+          putChore(id, before);
+          setLog((l) => l.filter((x) => x.id !== log.entry.id));
+        },
+        save(done),
+        log.query,
+      );
+      setUndo({
+        id: Date.now(),
+        label: `${c.title} · done`,
+        undo: () => {
+          putChore(id, before);
+          write(() => putChore(id, done), save(before), unlog(log.entry.id));
+        },
+      });
     },
+
+    thanksText,
+    thank: (choreId) => {
+      const c = data.chores.find((x) => x.id === choreId);
+      if (!c?.lastBy || c.lastBy === me) return;
+      const log = logLine("thanks", thanksText(c));
+      write(() => setLog((l) => l.filter((x) => x.id !== log.entry.id)), log.query);
+      setUndo({
+        id: Date.now(),
+        label: `Thanks sent to ${data.members.find((m) => m.id === c.lastBy)?.name ?? "them"}`,
+        undo: () => write(() => {}, unlog(log.entry.id)),
+      });
+    },
+
+    // ── still sample data ──
     togglePaid: (billId, m) => {
       const b = mock.bills.find((x) => x.id === billId);
       if (!b) return;
