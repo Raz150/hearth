@@ -65,6 +65,12 @@ select pg_temp.expect_fail($$insert into public.chores (title, every_days, next_
 select pg_temp.expect_fail($$insert into public.chores (title, every_days, next_due) values ('x', 0, '2026-11-14')$$, 'every_days 0 rejected');
 insert into public.activity (kind, body) values ('thanks', 'thanked Wife for Laundry');
 select pg_temp.expect_fail($$insert into public.activity (kind, body) values ('hug', 'x')$$, 'unknown log kind rejected');
+insert into public.reflections (body) values ('Stay calm when angry');
+insert into public.reflections (body) values ('Stay calm, always') on conflict (household_id, day, written_by) do update set body = excluded.body;
+select pg_temp.expect((select body from public.reflections) = 'Stay calm, always', 'a1 can write and rewrite today''s reflection');
+select pg_temp.expect_fail($$insert into public.reflections (body, written_by) values ('x', '00000000-0000-0000-0000-0000000000a2')$$, 'cannot reflect as spouse');
+select pg_temp.expect_fail($$insert into public.reflections (body, day) values ('x', '2020-01-01')$$, 'cannot write a past day');
+select pg_temp.expect_fail($$insert into public.reflections (body) values ('  ')$$, 'blank reflection rejected');
 reset role;
 
 -- ── as a2 (spouse): sees everything a1 made ──
@@ -79,6 +85,9 @@ update public.todo_steps set done = true;
 select pg_temp.expect((select done from public.todo_steps), 'a2 can tick a1''s step');
 delete from public.activity;
 select pg_temp.expect((select count(*) from public.activity) = 2, 'a2 cannot delete a1''s log line');
+update public.reflections set body = 'pwned';
+delete from public.reflections;
+select pg_temp.expect((select body from public.reflections) = 'Stay calm, always', 'a2 sees but cannot change a1''s reflection');
 reset role;
 
 -- ── as b1 (outsider) ──
@@ -88,7 +97,7 @@ select pg_temp.expect((select count(*) from public.todos) + (select count(*) fro
 update public.todo_steps set title = 'pwned';
 select pg_temp.expect_fail($$insert into public.todo_steps (todo_id, title) values ('00000000-0000-0000-0000-0000000000e1', 'spam')$$, 'b1 cannot add a step to A''s todo');
 select pg_temp.expect((select count(*) from public.members) = 1, 'b1 sees only self');
-select pg_temp.expect((select count(*) from public.notes) + (select count(*) from public.activity) + (select count(*) from public.bills) + (select count(*) from public.bill_payments) + (select count(*) from public.chores) = 0, 'b1 sees nothing else of A');
+select pg_temp.expect((select count(*) from public.notes) + (select count(*) from public.activity) + (select count(*) from public.bills) + (select count(*) from public.bill_payments) + (select count(*) from public.chores) + (select count(*) from public.reflections) = 0, 'b1 sees nothing else of A');
 update public.todos set title = 'pwned';
 update public.chores set title = 'pwned';
 delete from public.bills;
@@ -112,7 +121,7 @@ select pg_temp.expect_fail($$select * from public.members$$, 'anon cannot read m
 select pg_temp.expect_fail($$select private.my_household_id()$$, 'anon cannot call helper');
 reset role;
 
-select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 8, 'realtime publishes 8 tables');
+select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 9, 'realtime publishes 9 tables');
 select pg_temp.expect((select bool_and(rowsecurity) from pg_tables where schemaname = 'public'), 'RLS on every public table');
 delete from public.todos where title = 'Groceries';
 select pg_temp.expect((select count(*) from public.todo_steps) = 0, 'deleting a todo deletes its steps');

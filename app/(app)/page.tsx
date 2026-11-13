@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { StickyNote } from "@/components/note";
+import { Reminder } from "@/components/reminder";
 import { Typewriter } from "@/components/typewriter";
 import { InkCheck, Page, PageHeader, Petals, Section, Struck, Who } from "@/components/ui";
 import { daysBetween, dueDateInMonth, formatDay, klHour, klToday, relativeDue } from "@/lib/date";
@@ -48,6 +49,8 @@ export default function Today() {
         title={formatDay(today, { weekday: "long" })}
       />
       <p className="-mt-5 mb-7 font-serif italic text-ink-soft">{formatDay(today, { day: "numeric", month: "long", year: "numeric" })}</p>
+
+      <Reminder day={today} />
 
       <Typewriter
         day={today}

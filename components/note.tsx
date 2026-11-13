@@ -44,7 +44,7 @@ export function StickyNote() {
               <button type="button" onClick={() => setDraft(null)} className="min-h-11 px-3 text-sm text-ink-soft">
                 Cancel
               </button>
-              <button type="submit" className="min-h-11 rounded-full bg-ink px-4 text-sm font-semibold text-paper">
+              <button type="submit" className="min-h-11 px-3 text-sm font-semibold text-accent">
                 Pin it
               </button>
             </div>

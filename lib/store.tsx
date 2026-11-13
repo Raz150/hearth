@@ -3,11 +3,11 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
 import { addDays, addMonths, klToday } from "./date";
-import { loadChores, loadLog, loadMembers, loadNote, loadTodos, type Chore, type LogEntry, type Member, type Note, type Step, type Todo } from "./queries";
+import { loadChores, loadLog, loadMembers, loadNote, loadReflections, loadTodos, type Chore, type LogEntry, type Member, type Note, type Reflection, type Step, type Todo } from "./queries";
 import { createClient } from "./supabase/client";
 
 export { INKS, inkText } from "./inks";
-export type { Chore, LogEntry, Member, Note, Step, Todo } from "./queries";
+export type { Chore, LogEntry, Member, Note, Reflection, Step, Todo } from "./queries";
 /** The editable details of a to-do besides its title. */
 export type TodoMeta = Pick<Todo, "assignee" | "due" | "priority" | "tags">;
 /** The editable parts of a chore. */
@@ -17,7 +17,7 @@ export type Bill = { id: string; name: string; amountSen: number; dueDay: number
 /** One bill paid for one month (YYYY-MM). */
 export type Payment = { billId: string; month: string; by: string; on: string };
 
-export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[] };
+export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; reflections: Reflection[] };
 
 // shortcut: bills are still in-memory sample data; they become real in the next step.
 function makeMock(members: Member[], me: string) {
@@ -77,13 +77,15 @@ type Store = Shared &
     thanksText: (c: Chore) => string;
     togglePaid: (billId: string, month: string) => void;
     setNote: (text: string) => void;
+    /** Write, rewrite or (with empty text) clear my line on today's ayah/hadith. */
+    setReflection: (text: string) => void;
     /** Saves my own name/ink. Returns an error message or null. */
     updateMe: (patch: Partial<Omit<Member, "id">>) => Promise<string | null>;
   };
 
 const Ctx = createContext<Store | null>(null);
-const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog } as const;
-const TABLES: Record<string, keyof typeof LOADERS> = { members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log" };
+const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, reflections: loadReflections } as const;
+const TABLES: Record<string, keyof typeof LOADERS> = { members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", reflections: "reflections" };
 
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
   const [sb] = useState(createClient);
@@ -317,6 +319,32 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
           write(() => show(next), save(prev), ...(log ? [unlog(log.entry.id)] : []));
         },
       });
+    },
+
+    setReflection: (raw) => {
+      const text = raw.trim().slice(0, 200);
+      const prev = data.reflections.find((r) => r.by === me);
+      if (text === (prev?.text ?? "")) return;
+      const day = klToday();
+      const put = (r?: Reflection) => setData((p) => ({ ...p, reflections: [...p.reflections.filter((x) => x.by !== me), ...(r ? [r] : [])] }));
+      const next = text ? { text, by: me } : undefined;
+      put(next);
+
+      if (!next) {
+        const line = data.log.find((l) => l.kind === "reflection" && l.by === me && klToday(new Date(l.at)) === day);
+        write(() => put(prev), sb.from("reflections").delete().eq("day", day).eq("written_by", me), ...(line ? [unlog(line.id)] : []));
+        return;
+      }
+      // Log only the first write of the day, not every edit.
+      const log = prev ? undefined : logLine("reflection", "reflected on today's reminder");
+      write(
+        () => {
+          put(prev);
+          if (log) setLog((l) => l.filter((x) => x.id !== log.entry.id));
+        },
+        sb.from("reflections").upsert({ day, body: text, written_at: new Date().toISOString() }, { onConflict: "household_id,day,written_by" }),
+        ...(log ? [log.query] : []),
+      );
     },
 
     addChore: (meta) => {

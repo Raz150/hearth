@@ -6,7 +6,9 @@ export type Step = { id: string; title: string; done: boolean };
 /** priority: 0 normal, anything above 0 = important (the app only sets 1). */
 export type Todo = { id: string; title: string; due?: string; assignee?: string; doneBy?: string; priority: number; tags: string[]; steps: Step[] };
 export type Note = { text: string; by: string; at: string };
-export type LogEntry = { id: string; kind: "todo" | "chore" | "bill" | "note" | "thanks"; text: string; by: string; at: string };
+/** One person's line on today's ayah/hadith. */
+export type Reflection = { text: string; by: string };
+export type LogEntry = { id: string; kind: "todo" | "chore" | "bill" | "note" | "thanks" | "reflection"; text: string; by: string; at: string };
 type ChoreState = { nextDue: string; lastBy?: string; lastOn?: string };
 /** owner: who looks after it (undefined = either of us). prev: state before the last tick, for un-ticking. */
 export type Chore = ChoreState & { id: string; title: string; everyDays: number; owner?: string; prev?: ChoreState };
@@ -69,6 +71,12 @@ export async function loadNote(sb: SupabaseClient): Promise<Note | null> {
   const { data, error } = await sb.from("notes").select("body, written_by, written_at").maybeSingle();
   if (error) fail("notes", error);
   return data && { text: data.body, by: data.written_by, at: data.written_at };
+}
+
+export async function loadReflections(sb: SupabaseClient): Promise<Reflection[]> {
+  const { data, error } = await sb.from("reflections").select("body, written_by").eq("day", klToday());
+  if (error) fail("reflections", error);
+  return data.map((r) => ({ text: r.body, by: r.written_by }));
 }
 
 /** This week's log (Monday onwards, KL time): enough for "today" and the weekly chore tally. */
