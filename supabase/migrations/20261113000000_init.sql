@@ -147,3 +147,6 @@ revoke update, delete on public.activity from authenticated;
 -- Realtime checks each subscriber against the select policies above before sending a change.
 alter publication supabase_realtime add table
   public.members, public.todos, public.chores, public.bills, public.bill_payments, public.notes, public.activity;
+
+-- Tell the Supabase API (PostgREST) to pick up the changes now.
+notify pgrst, 'reload schema';

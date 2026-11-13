@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, Page, PageHeader, Stamp, Who } from "@/components/ui";
 import { addMonths, dueDateInMonth, formatDay, klToday, relativeDue } from "@/lib/date";
-import { ringgit, useStore } from "@/lib/mock";
+import { ringgit, useStore } from "@/lib/store";
 
 export default function BillsPage() {
   const s = useStore();

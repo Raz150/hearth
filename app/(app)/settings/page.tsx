@@ -7,7 +7,7 @@ import { ChevronLeft, Moon, Sun, SunMoon } from "lucide-react";
 import { Card, Page, PageHeader, Section } from "@/components/ui";
 import { InstallHint } from "@/components/install-hint";
 import { useTheme, type ThemeChoice } from "@/components/theme";
-import { INKS, inkText, useStore } from "@/lib/mock";
+import { INKS, inkText, useStore } from "@/lib/store";
 import { signOut } from "./actions";
 
 const THEMES: { value: ThemeChoice; label: string; icon: typeof Sun }[] = [

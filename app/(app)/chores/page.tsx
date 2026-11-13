@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 import { Card, InkCheck, Page, PageHeader, Stamp, Struck, Who } from "@/components/ui";
 import { daysBetween, formatDay, klToday, relativeDue, weekStart } from "@/lib/date";
-import { inkText, useStore } from "@/lib/mock";
+import { inkText, useStore } from "@/lib/store";
 
 const ago = (ymd: string, today: string) => {
   const n = daysBetween(ymd, today);

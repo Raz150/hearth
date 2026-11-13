@@ -7,7 +7,7 @@ import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
 import { InkCheck, Page, PageHeader, Petals, Section, Struck, Who } from "@/components/ui";
 import { daysBetween, dueDateInMonth, formatDay, klHour, klToday, relativeDue } from "@/lib/date";
-import { klTime, ringgit, useStore } from "@/lib/mock";
+import { klTime, ringgit, useStore } from "@/lib/store";
 
 function greeting(h: number) {
   if (h < 5) return "still up?";

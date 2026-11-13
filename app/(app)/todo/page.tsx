@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { InkCheck, Page, PageHeader, Section, Struck, Who } from "@/components/ui";
 import { addDays, formatDay, klToday, relativeDue, thisWeekend } from "@/lib/date";
-import { inkText, useStore, type Todo } from "@/lib/mock";
+import { inkText, useStore, type Todo } from "@/lib/store";
 
 const WHEN: [string, (today: string) => string][] = [
   ["Today", (t) => t],

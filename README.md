@@ -16,7 +16,7 @@ Our little household journal: to-dos, chores and bills for two. Next.js on Verce
 3. **Authentication → URL Configuration**: Site URL = `https://<app>.vercel.app`.
 4. **SQL Editor**, in order:
    - `supabase/reset.sql` (only when wiping an old database; deletes all app tables)
-   - `supabase/migrations/20261113000000_init.sql` (tables, RLS, realtime)
+   - every file in `supabase/migrations/`, oldest first (tables, RLS, realtime)
    - `supabase/seed.example.sql` with our two emails filled in (links both users to one household)
 
 ## Deploy (Vercel)

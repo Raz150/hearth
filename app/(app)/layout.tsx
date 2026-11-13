@@ -1,7 +1,8 @@
 import { Nav } from "@/components/nav";
 import { UndoToast } from "@/components/undo-toast";
 import { Page } from "@/components/ui";
-import { MockProvider } from "@/lib/mock";
+import { loadLog, loadMembers, loadNote, loadTodos } from "@/lib/queries";
+import { HouseholdProvider } from "@/lib/store";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./settings/actions";
 
@@ -9,11 +10,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const me = data?.claims.sub;
-  // RLS returns only members of my household.
-  const { data: rows } = await supabase.from("members").select("user_id, display_name, ink").order("created_at");
-  const members = (rows ?? []).map((r) => ({ id: r.user_id as string, name: r.display_name as string, ink: r.ink as string }));
+  // RLS returns only rows of my household.
+  const [members, todos, note, log] = await Promise.all([loadMembers(supabase), loadTodos(supabase), loadNote(supabase), loadLog(supabase)]);
+  const household = members.find((m) => m.id === me)?.household;
 
-  if (!me || !members.some((m) => m.id === me)) {
+  if (!me || !household) {
     return (
       <Page>
         <h1 className="font-serif text-3xl">Almost there</h1>
@@ -26,10 +27,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <MockProvider members={members} me={me}>
+    <HouseholdProvider initial={{ members, todos, note, log }} me={me} household={household}>
       {children}
       <UndoToast />
       <Nav />
-    </MockProvider>
+    </HouseholdProvider>
   );
 }

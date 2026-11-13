@@ -45,7 +45,7 @@ select pg_temp.expect_fail($$update public.members set household_id = '00000000-
 select pg_temp.expect_fail($$insert into public.members (user_id, household_id, display_name) values ('00000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-00000000000a', 'x')$$, 'a1 cannot add members');
 select pg_temp.expect_fail($$update public.members set ink = 'red' where user_id = '00000000-0000-0000-0000-0000000000a1'$$, 'ink must be a hex colour');
 select pg_temp.expect_fail($$insert into public.activity (kind, body, done_by) values ('todo', 'x', '00000000-0000-0000-0000-0000000000a2')$$, 'cannot log as spouse');
-select pg_temp.expect_fail($$delete from public.activity$$, 'activity is append-only');
+select pg_temp.expect_fail($$update public.activity set body = 'edited'$$, 'activity cannot be edited');
 select pg_temp.expect_fail($$insert into public.todos (title) values ('   ')$$, 'blank title rejected');
 select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day) values ('x', -1, 15)$$, 'negative amount rejected');
 select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day) values ('x', 1, 32)$$, 'due_day 32 rejected');
@@ -60,6 +60,8 @@ set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a2';
 select pg_temp.expect((select count(*) from public.todos) = 1 and (select count(*) from public.bill_payments) = 1 and (select count(*) from public.activity) = 1, 'a2 sees shared rows');
 update public.todos set done_by = auth.uid(), done_at = now();
 select pg_temp.expect((select done_by from public.todos limit 1) = '00000000-0000-0000-0000-0000000000a2', 'a2 can tick a1''s todo');
+delete from public.activity;
+select pg_temp.expect((select count(*) from public.activity) = 1, 'a2 cannot delete a1''s log line');
 reset role;
 
 -- ── as b1 (outsider) ──
@@ -75,6 +77,13 @@ select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day
 reset role;
 select pg_temp.expect((select title from public.todos limit 1) = 'Buy eggs', 'b1 update had no effect');
 select pg_temp.expect((select count(*) from public.bills where household_id = '00000000-0000-0000-0000-00000000000a') = 1, 'b1 delete had no effect');
+
+-- ── a1 removes own log line (undo) ──
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a1';
+delete from public.activity;
+select pg_temp.expect((select count(*) from public.activity) = 0, 'a1 can delete own log line');
+reset role;
 
 -- ── logged out ──
 set role anon;

@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
-import { inkText, type Member } from "@/lib/mock";
+import { inkText, type Member } from "@/lib/store";
 
 /** Rubber stamp that thumps down, e.g. "PAID 7 NOV". */
 export function Stamp({ show, ink, children }: { show: boolean; ink: string; children: ReactNode }) {

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { useStore } from "@/lib/mock";
+import { useStore } from "@/lib/store";
 
 export function UndoToast() {
   const { undo, revert, dismissUndo } = useStore();
@@ -23,12 +23,15 @@ export function UndoToast() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 16, opacity: 0 }}
             transition={{ type: "spring", stiffness: 420, damping: 32 }}
-            className="pointer-events-auto flex max-w-md items-center gap-2 rounded-full bg-ink py-1 pl-5 pr-1 text-paper shadow-lg"
+            role={undo.error ? "alert" : undefined}
+            className={`pointer-events-auto flex min-h-13 max-w-md items-center gap-2 rounded-full py-1 pl-5 text-paper shadow-lg ${undo.error ? "bg-[#a8544c] pr-5" : "bg-ink pr-1"}`}
           >
             <span className="truncate font-hand text-sm">{undo.label}</span>
-            <button onClick={revert} className="min-h-11 shrink-0 rounded-full px-4 text-sm font-semibold text-highlight">
-              Undo
-            </button>
+            {undo.undo && (
+              <button onClick={revert} className="min-h-11 shrink-0 rounded-full px-4 text-sm font-semibold text-highlight">
+                Undo
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

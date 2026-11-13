@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* Pistachio paper (light) and Forest night (dark).
-   Paper hexes must match themeColor in app/layout.tsx and THEME_COLOR in components/theme.tsx. */
+   Paper hexes must match THEME_COLOR in lib/theme-color.ts. */
 :root {
   --paper: #eef0df;
   --paper-deep: #e4e8d1;

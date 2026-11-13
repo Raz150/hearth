@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Tape } from "./ui";
-import { inkText, klTime, useStore } from "@/lib/mock";
+import { inkText, klTime, useStore } from "@/lib/store";
 
 /** A typed sticky note either of us can leave for the other. */
 export function StickyNote() {
