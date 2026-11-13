@@ -1,4 +1,5 @@
 import { Nav } from "@/components/nav";
+import { TopBar } from "@/components/top-bar";
 import { UndoToast } from "@/components/undo-toast";
 import { Page } from "@/components/ui";
 import { loadLog, loadMembers, loadNote, loadTodos } from "@/lib/queries";
@@ -28,6 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <HouseholdProvider initial={{ members, todos, note, log }} me={me} household={household}>
+      <TopBar />
       {children}
       <UndoToast />
       <Nav />

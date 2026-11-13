@@ -2,7 +2,9 @@ import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { klToday, weekStart } from "./date";
 
 export type Member = { id: string; name: string; ink: string };
-export type Todo = { id: string; title: string; due?: string; assignee?: string; doneBy?: string };
+export type Step = { id: string; title: string; done: boolean };
+/** priority: 0 normal, anything above 0 = important (the app only sets 1). */
+export type Todo = { id: string; title: string; due?: string; assignee?: string; doneBy?: string; priority: number; tags: string[]; steps: Step[] };
 export type Note = { text: string; by: string; at: string };
 export type LogEntry = { id: string; kind: "todo" | "chore" | "bill" | "note"; text: string; by: string; at: string };
 
@@ -25,11 +27,21 @@ export async function loadTodos(sb: SupabaseClient): Promise<Todo[]> {
   const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
   const { data, error } = await sb
     .from("todos")
-    .select("id, title, due_date, assignee, done_by")
+    .select("id, title, due_date, assignee, done_by, priority, tags, todo_steps(id, title, done)")
     .or(`done_at.is.null,done_at.gt."${since}"`)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("created_at", { referencedTable: "todo_steps" });
   if (error) fail("todos", error);
-  return data.map((r) => ({ id: r.id, title: r.title, due: r.due_date ?? undefined, assignee: r.assignee ?? undefined, doneBy: r.done_by ?? undefined }));
+  return data.map((r) => ({
+    id: r.id,
+    title: r.title,
+    due: r.due_date ?? undefined,
+    assignee: r.assignee ?? undefined,
+    doneBy: r.done_by ?? undefined,
+    priority: r.priority,
+    tags: r.tags,
+    steps: r.todo_steps as Step[],
+  }));
 }
 
 export async function loadNote(sb: SupabaseClient): Promise<Note | null> {

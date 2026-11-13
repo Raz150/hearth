@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Settings2 } from "lucide-react";
 import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
 import { InkCheck, Page, PageHeader, Petals, Section, Struck, Who } from "@/components/ui";
@@ -47,11 +46,6 @@ export default function Today() {
       <PageHeader
         kicker={greeting(klHour())}
         title={formatDay(today, { weekday: "long" })}
-        aside={
-          <Link href="/settings" aria-label="Settings" className="grid size-11 place-items-center rounded-full border border-line bg-card text-ink-soft active:scale-95 transition-transform">
-            <Settings2 className="size-5" />
-          </Link>
-        }
       />
       <p className="-mt-5 mb-7 font-serif italic text-ink-soft">{formatDay(today, { day: "numeric", month: "long", year: "numeric" })}</p>
 

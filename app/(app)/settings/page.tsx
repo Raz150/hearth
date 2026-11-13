@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { ChevronLeft, Moon, Sun, SunMoon } from "lucide-react";
+import { Moon, Sun, SunMoon } from "lucide-react";
 import { Card, Page, PageHeader, Section } from "@/components/ui";
 import { InstallHint } from "@/components/install-hint";
 import { useTheme, type ThemeChoice } from "@/components/theme";
@@ -24,9 +23,6 @@ export default function SettingsPage() {
 
   return (
     <Page>
-      <Link href="/" className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1 pr-3 text-ink-soft">
-        <ChevronLeft className="size-5" /> Today
-      </Link>
       <PageHeader kicker="just us two" title="Settings" />
 
       <InstallHint />

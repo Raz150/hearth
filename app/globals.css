@@ -13,6 +13,9 @@
   --accent-soft: #c9d8b4;
   --highlight: #f3dd9b;
   --grain-opacity: 0.35;
+  --marker: #ffd75e; /* "important" highlighter: brighter than the paper so it reads at a glance */
+  --marker-top: 24%;
+  --marker-ink: var(--ink);
   color-scheme: light;
 }
 
@@ -28,6 +31,9 @@
     --accent-soft: #3a4834;
     --highlight: #e3b76b;
     --grain-opacity: 0.12;
+    --marker: #e0b04a;
+    --marker-top: 2%; /* full height at night: the dark text sits on the band */
+    --marker-ink: #1a201b;
     color-scheme: dark;
   }
 }
@@ -43,6 +49,9 @@
   --accent-soft: #3a4834;
   --highlight: #e3b76b;
   --grain-opacity: 0.12;
+  --marker: #e0b04a;
+  --marker-top: 2%;
+  --marker-ink: #1a201b;
   color-scheme: dark;
 }
 
@@ -57,7 +66,7 @@
   --color-accent-soft: var(--accent-soft);
   --color-highlight: var(--highlight);
   --font-serif: var(--font-fraunces);
-  --font-sans: var(--font-figtree);
+  --font-sans: var(--font-patrick-hand);
   --font-hand: var(--font-special-elite);
 }
 
@@ -93,4 +102,22 @@ body::before {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Highlighter swipe behind text. Add .marker-off to hide it; toggling draws it across left to right. */
+.marker {
+  background-image: linear-gradient(transparent var(--marker-top), var(--marker) var(--marker-top), var(--marker) 96%, transparent 96%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  color: var(--marker-ink);
+  margin-left: -0.2em;
+  padding: 0 0.7em 0 0.2em; /* runs past the last letter, like a real marker stroke */
+  border-radius: 0.15em 0.6em 0.4em 0.2em;
+  transition: background-size 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.marker-off {
+  background-size: 0% 100%;
+  color: inherit;
 }

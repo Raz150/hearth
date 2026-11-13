@@ -53,14 +53,23 @@ select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day
 select pg_temp.expect_fail($$insert into public.bill_payments (bill_id, month) values ('00000000-0000-0000-0000-0000000000f1', '2026-11-02')$$, 'month must be 1st');
 select pg_temp.expect_fail($$insert into public.bill_payments (bill_id, month) values ('00000000-0000-0000-0000-0000000000f1', '2026-11-01')$$, 'double payment rejected');
 select pg_temp.expect_fail($$insert into public.todos (title, done_by) values ('x', '00000000-0000-0000-0000-0000000000a1')$$, 'done_by without done_at rejected');
+insert into public.todos (id, title, priority, tags) values ('00000000-0000-0000-0000-0000000000e1', 'Groceries', 2, '{shop,weekly}');
+insert into public.todo_steps (todo_id, title) values ('00000000-0000-0000-0000-0000000000e1', 'Eggs');
+select pg_temp.expect_fail($$insert into public.todos (title, priority) values ('x', 4)$$, 'priority 4 rejected');
+select pg_temp.expect_fail($$insert into public.todos (title, tags) values ('x', '{Shop}')$$, 'uppercase tag rejected');
+select pg_temp.expect_fail($$insert into public.todos (title, tags) values ('x', '{a,a}')$$, 'repeated tag rejected');
+select pg_temp.expect_fail($$insert into public.todos (title, tags) values ('x', '{a,b,c,d,e,f}')$$, 'sixth tag rejected');
+select pg_temp.expect_fail($$insert into public.todo_steps (todo_id, title) values ('00000000-0000-0000-0000-0000000000e1', ' ')$$, 'blank step rejected');
 reset role;
 
 -- ── as a2 (spouse): sees everything a1 made ──
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a2';
-select pg_temp.expect((select count(*) from public.todos) = 1 and (select count(*) from public.bill_payments) = 1 and (select count(*) from public.activity) = 1, 'a2 sees shared rows');
-update public.todos set done_by = auth.uid(), done_at = now();
-select pg_temp.expect((select done_by from public.todos limit 1) = '00000000-0000-0000-0000-0000000000a2', 'a2 can tick a1''s todo');
+select pg_temp.expect((select count(*) from public.todos) = 2 and (select count(*) from public.todo_steps) = 1 and (select count(*) from public.bill_payments) = 1 and (select count(*) from public.activity) = 1, 'a2 sees shared rows');
+update public.todos set done_by = auth.uid(), done_at = now() where title = 'Buy eggs';
+select pg_temp.expect((select done_by from public.todos where title = 'Buy eggs') = '00000000-0000-0000-0000-0000000000a2', 'a2 can tick a1''s todo');
+update public.todo_steps set done = true;
+select pg_temp.expect((select done from public.todo_steps), 'a2 can tick a1''s step');
 delete from public.activity;
 select pg_temp.expect((select count(*) from public.activity) = 1, 'a2 cannot delete a1''s log line');
 reset role;
@@ -68,7 +77,9 @@ reset role;
 -- ── as b1 (outsider) ──
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000b1';
-select pg_temp.expect((select count(*) from public.todos) = 0, 'b1 sees no todos of A');
+select pg_temp.expect((select count(*) from public.todos) + (select count(*) from public.todo_steps) = 0, 'b1 sees no todos or steps of A');
+update public.todo_steps set title = 'pwned';
+select pg_temp.expect_fail($$insert into public.todo_steps (todo_id, title) values ('00000000-0000-0000-0000-0000000000e1', 'spam')$$, 'b1 cannot add a step to A''s todo');
 select pg_temp.expect((select count(*) from public.members) = 1, 'b1 sees only self');
 select pg_temp.expect((select count(*) from public.notes) + (select count(*) from public.activity) + (select count(*) from public.bills) + (select count(*) from public.bill_payments) = 0, 'b1 sees nothing else of A');
 update public.todos set title = 'pwned';
@@ -76,7 +87,7 @@ delete from public.bills;
 select pg_temp.expect_fail($$insert into public.todos (household_id, title) values ('00000000-0000-0000-0000-00000000000a', 'spam')$$, 'b1 cannot insert into A');
 select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day) values ('mine', 1, 1); insert into public.bill_payments (bill_id, month, household_id) values ('00000000-0000-0000-0000-0000000000f1', '2026-12-01', '00000000-0000-0000-0000-00000000000b')$$, 'b1 cannot pay A''s bill from B');
 reset role;
-select pg_temp.expect((select title from public.todos limit 1) = 'Buy eggs', 'b1 update had no effect');
+select pg_temp.expect((select count(*) from public.todos where title = 'pwned') + (select count(*) from public.todo_steps where title = 'pwned') = 0, 'b1 updates had no effect');
 select pg_temp.expect((select count(*) from public.bills where household_id = '00000000-0000-0000-0000-00000000000a') = 1, 'b1 delete had no effect');
 
 -- ── a1 removes own log line (undo) ──
@@ -93,6 +104,8 @@ select pg_temp.expect_fail($$select * from public.members$$, 'anon cannot read m
 select pg_temp.expect_fail($$select private.my_household_id()$$, 'anon cannot call helper');
 reset role;
 
-select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 7, 'realtime publishes 7 tables');
+select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 8, 'realtime publishes 8 tables');
 select pg_temp.expect((select bool_and(rowsecurity) from pg_tables where schemaname = 'public'), 'RLS on every public table');
+delete from public.todos where title = 'Groceries';
+select pg_temp.expect((select count(*) from public.todo_steps) = 0, 'deleting a todo deletes its steps');
 \echo ALL RLS TESTS PASSED

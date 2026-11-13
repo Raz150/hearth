@@ -3,11 +3,13 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
 import { addDays, addMonths, klToday } from "./date";
-import { loadLog, loadMembers, loadNote, loadTodos, type LogEntry, type Member, type Note, type Todo } from "./queries";
+import { loadLog, loadMembers, loadNote, loadTodos, type LogEntry, type Member, type Note, type Step, type Todo } from "./queries";
 import { createClient } from "./supabase/client";
 
 export { INKS, inkText } from "./inks";
-export type { LogEntry, Member, Note, Todo } from "./queries";
+export type { LogEntry, Member, Note, Step, Todo } from "./queries";
+/** The editable details of a to-do besides its title. */
+export type TodoMeta = Pick<Todo, "assignee" | "due" | "priority" | "tags">;
 
 export type Chore = { id: string; title: string; everyDays: number; nextDue: string; lastBy?: string; lastOn?: string; prev?: Pick<Chore, "nextDue" | "lastBy" | "lastOn"> };
 export type Bill = { id: string; name: string; amountSen: number; dueDay: number };
@@ -61,8 +63,12 @@ type Store = Shared &
     undo: Flash | null;
     revert: () => void;
     dismissUndo: () => void;
-    addTodo: (title: string, opts?: { assignee?: string; due?: string }) => void;
-    renameTodo: (id: string, title: string) => void;
+    addTodo: (title: string, meta: TodoMeta) => void;
+    /** Change title and details together. */
+    editTodo: (id: string, next: TodoMeta & { title: string }) => void;
+    addStep: (todoId: string, title: string) => void;
+    toggleStep: (todoId: string, stepId: string) => void;
+    removeStep: (todoId: string, stepId: string) => void;
     toggleTodo: (id: string) => void;
     removeTodo: (id: string) => void;
     /** Mark done, or (if done today) put it back how it was. */
@@ -75,7 +81,7 @@ type Store = Shared &
 
 const Ctx = createContext<Store | null>(null);
 const LOADERS = { members: loadMembers, todos: loadTodos, note: loadNote, log: loadLog } as const;
-const TABLES: Record<string, keyof typeof LOADERS> = { members: "members", todos: "todos", notes: "note", activity: "log" };
+const TABLES: Record<string, keyof typeof LOADERS> = { members: "members", todos: "todos", todo_steps: "todos", notes: "note", activity: "log" };
 
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
   const [sb] = useState(createClient);
@@ -123,6 +129,8 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
   }, [sb]);
 
   const setTodos = (fn: (t: Todo[]) => Todo[]) => setData((p) => ({ ...p, todos: fn(p.todos) }));
+  const setSteps = (todoId: string, fn: (s: Step[]) => Step[]) => setTodos((p) => p.map((t) => (t.id === todoId ? { ...t, steps: fn(t.steps) } : t)));
+  const row = (m: TodoMeta) => ({ assignee: m.assignee ?? null, due_date: m.due ?? null, priority: m.priority, tags: m.tags });
   const setLog = (fn: (l: LogEntry[]) => LogEntry[]) => setData((p) => ({ ...p, log: fn(p.log) }));
   const flashError = () => setUndo({ id: Date.now(), label: "Couldn't save. Check your connection.", error: true });
 
@@ -166,23 +174,46 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       setUndo(null);
     },
 
-    addTodo: (raw, opts) => {
+    addTodo: (raw, meta) => {
       const title = raw.trim().slice(0, 200);
       if (!title) return;
-      const t: Todo = { id: crypto.randomUUID(), title, ...opts };
+      const t: Todo = { id: crypto.randomUUID(), title, ...meta, steps: [] };
       setTodos((p) => [t, ...p]);
-      write(
-        () => setTodos((p) => p.filter((x) => x.id !== t.id)),
-        sb.from("todos").insert({ id: t.id, title, assignee: opts?.assignee ?? null, due_date: opts?.due ?? null }),
-      );
+      write(() => setTodos((p) => p.filter((x) => x.id !== t.id)), sb.from("todos").insert({ id: t.id, title, ...row(meta) }));
     },
 
-    renameTodo: (id, raw) => {
-      const title = raw.trim().slice(0, 200);
+    editTodo: (id, next) => {
+      const title = next.title.trim().slice(0, 200);
       const old = data.todos.find((t) => t.id === id);
-      if (!old || !title || title === old.title) return;
-      setTodos((p) => p.map((t) => (t.id === id ? { ...t, title } : t)));
-      write(() => setTodos((p) => p.map((t) => (t.id === id ? { ...t, title: old.title } : t))), sb.from("todos").update({ title }).eq("id", id));
+      if (!old || !title) return;
+      const put = (v: TodoMeta & { title: string }) => setTodos((p) => p.map((t) => (t.id === id ? { ...t, ...v } : t)));
+      const was = { title: old.title, due: old.due, assignee: old.assignee, priority: old.priority, tags: old.tags };
+      put({ ...next, title });
+      write(() => put(was), sb.from("todos").update({ title, ...row(next) }).eq("id", id));
+    },
+
+    addStep: (todoId, raw) => {
+      const title = raw.trim().slice(0, 120);
+      if (!title) return;
+      const step: Step = { id: crypto.randomUUID(), title, done: false };
+      setSteps(todoId, (s) => [...s, step]);
+      write(() => setSteps(todoId, (s) => s.filter((x) => x.id !== step.id)), sb.from("todo_steps").insert({ id: step.id, todo_id: todoId, title }));
+    },
+
+    toggleStep: (todoId, stepId) => {
+      const step = data.todos.find((t) => t.id === todoId)?.steps.find((x) => x.id === stepId);
+      if (!step) return;
+      const set = (done: boolean) => setSteps(todoId, (s) => s.map((x) => (x.id === stepId ? { ...x, done } : x)));
+      set(!step.done);
+      write(() => set(step.done), sb.from("todo_steps").update({ done: !step.done }).eq("id", stepId));
+    },
+
+    removeStep: (todoId, stepId) => {
+      const steps = data.todos.find((t) => t.id === todoId)?.steps;
+      const step = steps?.find((x) => x.id === stepId);
+      if (!steps || !step) return;
+      setSteps(todoId, (s) => s.filter((x) => x.id !== stepId));
+      write(() => setSteps(todoId, () => steps), sb.from("todo_steps").delete().eq("id", stepId));
     },
 
     toggleTodo: (id) => {
@@ -230,14 +261,11 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
           putBack();
           write(
             () => setTodos((p) => p.filter((x) => x.id !== id)),
-            sb.from("todos").insert({
-              id: t.id,
-              title: t.title,
-              due_date: t.due ?? null,
-              assignee: t.assignee ?? null,
-              done_by: t.doneBy ?? null,
-              done_at: t.doneBy ? new Date().toISOString() : null,
-            }),
+            // Deleting the to-do deleted its steps too; put them back after it (they need it to exist).
+            sb
+              .from("todos")
+              .insert({ id: t.id, title: t.title, ...row(t), done_by: t.doneBy ?? null, done_at: t.doneBy ? new Date().toISOString() : null })
+              .then((r) => (r.error || !t.steps.length ? r : sb.from("todo_steps").insert(t.steps.map((x) => ({ ...x, todo_id: t.id }))))),
           );
         },
       });

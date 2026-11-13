@@ -27,7 +27,7 @@ export function Stamp({ show, ink, children }: { show: boolean; ink: string; chi
 
 export function Page({ children }: { children: ReactNode }) {
   return (
-    <main className="relative z-10 mx-auto max-w-md px-5 pt-[calc(env(safe-area-inset-top)+1.75rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)]">
+    <main className="relative z-10 mx-auto max-w-md px-5 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)]">
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
