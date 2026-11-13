@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* Pistachio paper (light) and Forest night (dark).
+   Paper hexes must match themeColor in app/layout.tsx and THEME_COLOR in components/theme.tsx. */
+:root {
+  --paper: #eef0df;
+  --paper-deep: #e4e8d1;
+  --card: #f8f8ee;
+  --ink: #35392b;
+  --ink-soft: #6c715d;
+  --line: #d4d9bf;
+  --accent: #6f8c5c;
+  --accent-soft: #c9d8b4;
+  --highlight: #f3dd9b;
+  --grain-opacity: 0.35;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1a201b;
+    --paper-deep: #151a16;
+    --card: #232b24;
+    --ink: #e9e6d2;
+    --ink-soft: #a2a78f;
+    --line: #343d35;
+    --accent: #b3c897;
+    --accent-soft: #3a4834;
+    --highlight: #e3b76b;
+    --grain-opacity: 0.12;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #1a201b;
+  --paper-deep: #151a16;
+  --card: #232b24;
+  --ink: #e9e6d2;
+  --ink-soft: #a2a78f;
+  --line: #343d35;
+  --accent: #b3c897;
+  --accent-soft: #3a4834;
+  --highlight: #e3b76b;
+  --grain-opacity: 0.12;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-highlight: var(--highlight);
+  --font-serif: var(--font-fraunces);
+  --font-sans: var(--font-figtree);
+  --font-hand: var(--font-special-elite);
+}
+
+html {
+  background: var(--paper);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  overscroll-behavior-y: none;
+}
+
+/* Paper grain: fixed noise layer so it doesn't scroll with content. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#eef0df" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a201b" media="(prefers-color-scheme: dark)" />
+    <title>Hearth · offline</title>
+    <style>
+      :root { --paper: #eef0df; --card: #f8f8ee; --ink: #35392b; --soft: #6c715d; --line: #d4d9bf; --accent: #6f8c5c; color-scheme: light dark; }
+      @media (prefers-color-scheme: dark) {
+        :root { --paper: #1a201b; --card: #232b24; --ink: #e9e6d2; --soft: #a2a78f; --line: #343d35; --accent: #b3c897; }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100dvh; display: grid; place-items: center;
+        padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+        background: var(--paper); color: var(--ink); font-family: -apple-system, system-ui, sans-serif; text-align: center;
+      }
+      .card { max-width: 340px; padding: 32px 28px; background: var(--card); border: 1px solid var(--line); border-radius: 18px 14px 20px 15px; }
+      .kicker { font-family: "Courier New", monospace; color: var(--accent); font-size: 14px; margin: 0; }
+      h1 { font-family: Georgia, serif; font-weight: 500; font-size: 34px; margin: 6px 0 12px; }
+      p { color: var(--soft); line-height: 1.5; margin: 0 0 24px; }
+      button { min-height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font: 600 16px -apple-system, system-ui, sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <p class="kicker">no signal</p>
+      <h1>The journal is closed</h1>
+      <p>Hearth needs the internet to open. Check your Wi-Fi or data and try again.</p>
+      <button onclick="location.reload()">Try again</button>
+    </div>
+  </body>
+</html>
