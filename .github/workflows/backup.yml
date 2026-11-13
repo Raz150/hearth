@@ -1,0 +1,58 @@
+# Weekly encrypted pg_dump (Supabase Free has no backups).
+# Stored as a GitHub Actions artifact for 90 days. See README "Backups" for restore steps.
+name: Weekly backup
+
+on:
+  schedule:
+    - cron: "0 20 * * 6" # Sunday 04:00 Kuala Lumpur
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+    steps:
+      - name: Check secrets
+        run: |
+          [ -n "$SUPABASE_DB_URL" ] || { echo "::error::Repository secret SUPABASE_DB_URL is not set"; exit 1; }
+          [ ${#BACKUP_PASSPHRASE} -ge 16 ] || { echo "::error::Repository secret BACKUP_PASSPHRASE must be at least 16 characters"; exit 1; }
+
+      - name: Dump
+        run: |
+          set -euo pipefail
+          mkdir dump
+          # pg_dump must be at least the server's version; the postgres:17 image covers Supabase's 15 and 17.
+          dump() { docker run --rm -e SUPABASE_DB_URL postgres:17 sh -c "pg_dump \"\$SUPABASE_DB_URL\" $1"; }
+          # Our tables: schema + data + RLS policies + grants.
+          dump "--schema=public --schema=private --no-owner" > dump/app.sql
+          # The two logins, so restored rows still point at the same user ids.
+          dump "--data-only --table=auth.users --table=auth.identities" > dump/auth.sql
+          # Fail loudly on an empty or truncated dump.
+          grep -q "PostgreSQL database dump complete" dump/app.sql
+          grep -q "PostgreSQL database dump complete" dump/auth.sql
+          ls -l dump
+
+      - name: Encrypt
+        run: |
+          set -euo pipefail
+          name="hearth-$(TZ=Asia/Kuala_Lumpur date +%Y-%m-%d)"
+          tar -czf "$name.tar.gz" -C dump .
+          # Encrypted because the dump has password hashes and our personal data, and artifacts can be downloaded
+          # by anyone with read access to the repo.
+          printf '%s' "$BACKUP_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 -o "$name.tar.gz.gpg" "$name.tar.gz"
+          rm -rf dump "$name.tar.gz"
+          echo "NAME=$name" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME }}
+          path: ${{ env.NAME }}.tar.gz.gpg
+          retention-days: 90
+          if-no-files-found: error

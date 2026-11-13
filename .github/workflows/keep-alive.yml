@@ -1,0 +1,23 @@
+# Supabase Free pauses a project after 7 days without database activity.
+# This runs one tiny query every day so that never happens.
+name: Keep database awake
+
+on:
+  schedule:
+    - cron: "0 19 * * *" # 03:00 Kuala Lumpur
+  workflow_dispatch: # "Run workflow" button for testing
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Query the database
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then echo "::error::Repository secret SUPABASE_DB_URL is not set"; exit 1; fi
+          # psql comes preinstalled on GitHub's Ubuntu runners.
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -tAc "select 'awake', count(*) from public.households"

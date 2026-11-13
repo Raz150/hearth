@@ -13,7 +13,7 @@ A shared household app for a married couple. All data is shared between both use
 
 ## Security (non-negotiable)
 - Public sign-ups disabled. Only two pre-created accounts.
-- Login via Supabase email OTP (6-digit code), NOT magic links (magic links open in Safari, not the installed iOS PWA).
+- Login via Supabase email + password (accounts created in the dashboard). No magic links or email flows: their links open in Safari, not the installed iOS PWA.
 - Row-level security enabled on EVERY table. Policies restrict access to members of our household. Write the SQL migration for this.
 - Realtime subscriptions must respect RLS (only household members receive changes).
 - Service-role key only in server code / env vars, never in client bundles.
@@ -31,7 +31,7 @@ A shared household app for a married couple. All data is shared between both use
 
 ## How to work
 1. First, propose the data model (tables, columns, RLS policies) and wait for my approval before writing code.
-2. Then build in this order: project setup → auth (OTP login, protected routes) → shared lists end-to-end → PWA manifest + service worker (install to Home Screen) → GitHub Actions (DB keep-alive + backup).
+2. Then build in this order: project setup → auth (password login, protected routes) → shared lists end-to-end → PWA manifest + service worker (install to Home Screen) → GitHub Actions (DB keep-alive + backup).
 3. Be creative with design and UX: take bold visual ideas, use UI and animation libraries when they make the app better, and propose or add touches that make it feel good to use. No state-management library unless needed.
 4. After each step, tell me exactly what to configure manually in the Supabase and Vercel dashboards, then stop so I can test before moving on.
 5. Include a short README with setup and deploy steps.
