@@ -288,7 +288,7 @@ export default function KitPage() {
                 { href: "/todo", label: "Lists", icon: <ClipboardList strokeWidth={2.2} /> },
                 { href: "/doa", label: "Write a note", icon: <Pencil strokeWidth={2.2} /> },
                 { href: "/chores", label: "Calendar", icon: <CalendarDays strokeWidth={2.2} /> },
-                { href: "/bills", label: "Money", icon: <Wallet strokeWidth={2.2} /> },
+                { href: "/settings", label: "Money", icon: <Wallet strokeWidth={2.2} /> },
               ]}
             />
           </div>

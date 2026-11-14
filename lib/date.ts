@@ -34,13 +34,6 @@ export function relativeDue(ymd: string, today = klToday()): string {
   return n > 0 ? `in ${n} days` : `${-n} days late`;
 }
 
-/** Bill due date this month; day 31 becomes the month's last day in short months. */
-export function dueDateInMonth(today: string, dueDay: number): string {
-  const [y, m] = today.split("-").map(Number);
-  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  return `${y}-${String(m).padStart(2, "0")}-${String(Math.min(dueDay, last)).padStart(2, "0")}`;
-}
-
 /** Saturday of this weekend; today if it's already Saturday or Sunday. */
 export function thisWeekend(today: string): string {
   const dow = new Date(`${today}T00:00:00Z`).getUTCDay();
@@ -51,13 +44,6 @@ export function thisWeekend(today: string): string {
 export function weekStart(today: string): string {
   const dow = new Date(`${today}T00:00:00Z`).getUTCDay();
   return addDays(today, -((dow + 6) % 7));
-}
-
-/** Shift a YYYY-MM month key by n months. */
-export function addMonths(ym: string, n: number): string {
-  const [y, m] = ym.split("-").map(Number);
-  const d = new Date(Date.UTC(y, m - 1 + n, 1));
-  return d.toISOString().slice(0, 7);
 }
 
 const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];

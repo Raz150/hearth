@@ -1,6 +1,6 @@
 # Hearth
 
-Our little household journal: to-dos, chores and bills for two. Next.js on Vercel, Supabase for login and data, installable on iPhone.
+Our little household journal: to-dos, chores and doa for two. Next.js on Vercel, Supabase for login and data, installable on iPhone.
 
 ## Local setup
 

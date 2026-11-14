@@ -77,7 +77,6 @@ export default function SettingsPage() {
           Sign out
         </Button>
       </form>
-      <p className="text-center text-xs font-semibold text-muted">Bills are still sample data</p>
     </Page>
   );
 }

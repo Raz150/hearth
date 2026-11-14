@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ListChecks, Receipt, Sparkles } from "lucide-react";
+import { ListChecks, Sparkles } from "lucide-react";
 import { StatTile, cardClass } from "@/components/kit/card";
-import { ExpenseTable, ListCard, ListRow, Timeline } from "@/components/kit/list";
+import { ListCard, ListRow, Timeline } from "@/components/kit/list";
 import { WeekStrip } from "@/components/kit/nav";
 import { type Tone } from "@/components/kit/shared";
 import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
 import { Confetti, Faces, Page, PageHeader, Quiet, Section } from "@/components/ui";
-import { addDays, daysBetween, dueDateInMonth, formatDay, klToday, relativeDue } from "@/lib/date";
-import { klTime, ringgit, useStore, type LogEntry } from "@/lib/store";
+import { addDays, formatDay, klToday, relativeDue } from "@/lib/date";
+import { klTime, useStore, type LogEntry } from "@/lib/store";
 
 /** Colour = meaning: each kind of log line wears its category. */
-const KIND_TONE: Record<LogEntry["kind"], Tone> = { todo: "shopping", chore: "chores", bill: "money", note: "hero", thanks: "hero", doa: "done" };
+const KIND_TONE: Record<LogEntry["kind"], Tone> = { todo: "shopping", chore: "chores", note: "hero", thanks: "hero", doa: "done" };
 
 export default function Today() {
   const s = useStore();
@@ -21,21 +21,18 @@ export default function Today() {
   const todos = s.todos.filter((t) => t.due && t.due <= today);
   // Chores done today stay visible (ticked), like to-dos.
   const chores = s.chores.filter((c) => c.nextDue <= today || c.lastOn === today);
-  const month = today.slice(0, 7);
-  const bills = s.bills.filter((b) => !s.paymentFor(b.id, month) && daysBetween(today, dueDateInMonth(today, b.dueDay)) <= 7);
   const todosLeft = todos.filter((t) => !t.doneBy).length;
   const choresDone = chores.filter((c) => c.lastOn === today).length;
-  const left = todosLeft + chores.length - choresDone + bills.length;
+  const left = todosLeft + chores.length - choresDone;
   const log = s.log.filter((l) => klToday(new Date(l.at)) === today);
   const didToday = log.length > 0;
   const days = [-3, -2, -1, 0, 1, 2, 3].map((n) => addDays(today, n));
 
-  // One dot per day with something due: to-do first, then chore, then bill.
+  // One dot per day with something due: to-do first, then chore.
   const dots: Partial<Record<string, Tone>> = {};
   for (const d of days) {
     if (s.todos.some((t) => !t.doneBy && t.due === d)) dots[d] = "shopping";
     else if (s.chores.some((c) => (d === today ? c.nextDue <= d && c.lastOn !== today : c.nextDue === d))) dots[d] = "chores";
-    else if (s.bills.some((b) => !s.paymentFor(b.id, d.slice(0, 7)) && dueDateInMonth(d, b.dueDay) === d)) dots[d] = "money";
   }
 
   // Confetti once per day, the moment everything for today is done.
@@ -69,10 +66,9 @@ export default function Today() {
 
       <StickyNote />
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <StatTile tone="shopping" icon={<ListChecks strokeWidth={2} />} value={todosLeft} label="to do" href="/todo" />
         <StatTile tone="chores" icon={<Sparkles strokeWidth={2} />} value={`${choresDone}/${chores.length}`} label="chores" href="/chores" />
-        <StatTile tone="money" icon={<Receipt strokeWidth={2} />} value={`RM ${Math.round(bills.reduce((n, b) => n + b.amountSen, 0) / 100).toLocaleString("en-MY")}`} label="this week" href="/bills" />
       </div>
 
       <WeekStrip days={days} today={today} dots={dots} />
@@ -116,16 +112,6 @@ export default function Today() {
           })
         )}
       </ListCard>
-
-      {bills.length > 0 && (
-        <Section title="Bills this week">
-          <ExpenseTable
-            caption="Bills due this week"
-            rows={bills.map((b) => ({ label: `${b.name}, ${relativeDue(dueDateInMonth(today, b.dueDay), today)}`, amount: ringgit(b.amountSen) }))}
-            total={ringgit(bills.reduce((n, b) => n + b.amountSen, 0))}
-          />
-        </Section>
-      )}
 
       <Section title="What we did today">
         {log.length === 0 ? (

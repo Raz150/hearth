@@ -30,8 +30,6 @@ end $$;
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a1';
 insert into public.todos (title) values ('Buy eggs');
-insert into public.bills (id, name, amount_sen, due_day) values ('00000000-0000-0000-0000-0000000000f1', 'TNB', 18740, 15);
-insert into public.bill_payments (bill_id, month) values ('00000000-0000-0000-0000-0000000000f1', '2026-11-01');
 insert into public.notes (body) values ('hello');
 insert into public.activity (kind, body) values ('todo', 'ticked off Buy eggs');
 select pg_temp.expect((select household_id from public.todos limit 1) = '00000000-0000-0000-0000-00000000000a', 'household_id filled in by default');
@@ -48,10 +46,6 @@ select pg_temp.expect_fail($$update public.members set ink = '#e0849f' where use
 select pg_temp.expect_fail($$insert into public.activity (kind, body, done_by) values ('todo', 'x', '00000000-0000-0000-0000-0000000000a2')$$, 'cannot log as spouse');
 select pg_temp.expect_fail($$update public.activity set body = 'edited'$$, 'activity cannot be edited');
 select pg_temp.expect_fail($$insert into public.todos (title) values ('   ')$$, 'blank title rejected');
-select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day) values ('x', -1, 15)$$, 'negative amount rejected');
-select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day) values ('x', 1, 32)$$, 'due_day 32 rejected');
-select pg_temp.expect_fail($$insert into public.bill_payments (bill_id, month) values ('00000000-0000-0000-0000-0000000000f1', '2026-11-02')$$, 'month must be 1st');
-select pg_temp.expect_fail($$insert into public.bill_payments (bill_id, month) values ('00000000-0000-0000-0000-0000000000f1', '2026-11-01')$$, 'double payment rejected');
 select pg_temp.expect_fail($$insert into public.todos (title, done_by) values ('x', '00000000-0000-0000-0000-0000000000a1')$$, 'done_by without done_at rejected');
 insert into public.todos (id, title, priority, tags) values ('00000000-0000-0000-0000-0000000000e1', 'Groceries', 2, '{shop,weekly}');
 insert into public.todo_steps (todo_id, title) values ('00000000-0000-0000-0000-0000000000e1', 'Eggs');
@@ -75,7 +69,7 @@ reset role;
 -- ── as a2 (spouse): sees everything a1 made ──
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a2';
-select pg_temp.expect((select count(*) from public.todos) = 2 and (select count(*) from public.todo_steps) = 1 and (select count(*) from public.bill_payments) = 1 and (select count(*) from public.activity) = 3, 'a2 sees shared rows');
+select pg_temp.expect((select count(*) from public.todos) = 2 and (select count(*) from public.todo_steps) = 1 and (select count(*) from public.activity) = 3, 'a2 sees shared rows');
 update public.chores set last_by = auth.uid(), last_on = '2026-11-14', next_due = '2026-11-17', prev_next_due = next_due;
 select pg_temp.expect((select last_by from public.chores) = '00000000-0000-0000-0000-0000000000a2', 'a2 can tick a1''s chore');
 update public.todos set done_by = auth.uid(), done_at = now() where title = 'Buy eggs';
@@ -99,18 +93,15 @@ select pg_temp.expect((select count(*) from public.todos) + (select count(*) fro
 update public.todo_steps set title = 'pwned';
 select pg_temp.expect_fail($$insert into public.todo_steps (todo_id, title) values ('00000000-0000-0000-0000-0000000000e1', 'spam')$$, 'b1 cannot add a step to A''s todo');
 select pg_temp.expect((select count(*) from public.members) = 1, 'b1 sees only self');
-select pg_temp.expect((select count(*) from public.notes) + (select count(*) from public.activity) + (select count(*) from public.bills) + (select count(*) from public.bill_payments) + (select count(*) from public.chores) = 0, 'b1 sees nothing else of A');
+select pg_temp.expect((select count(*) from public.notes) + (select count(*) from public.activity) + (select count(*) from public.chores) = 0, 'b1 sees nothing else of A');
 select pg_temp.expect((select count(*) from public.doa_progress) = 0, 'b1 sees none of A''s doa progress');
 select pg_temp.expect_fail($insert into public.doa_progress (doa_id, status, household_id) values ('hm101', 'learning', '00000000-0000-0000-0000-00000000000a')$, 'b1 cannot add doa progress into A');
 update public.doa_progress set status = 'memorised';
 update public.todos set title = 'pwned';
 update public.chores set title = 'pwned';
-delete from public.bills;
 select pg_temp.expect_fail($$insert into public.todos (household_id, title) values ('00000000-0000-0000-0000-00000000000a', 'spam')$$, 'b1 cannot insert into A');
-select pg_temp.expect_fail($$insert into public.bills (name, amount_sen, due_day) values ('mine', 1, 1); insert into public.bill_payments (bill_id, month, household_id) values ('00000000-0000-0000-0000-0000000000f1', '2026-12-01', '00000000-0000-0000-0000-00000000000b')$$, 'b1 cannot pay A''s bill from B');
 reset role;
 select pg_temp.expect((select count(*) from public.todos where title = 'pwned') + (select count(*) from public.todo_steps where title = 'pwned') + (select count(*) from public.chores where title = 'pwned') = 0, 'b1 updates had no effect');
-select pg_temp.expect((select count(*) from public.bills where household_id = '00000000-0000-0000-0000-00000000000a') = 1, 'b1 delete had no effect');
 
 -- ── a1 removes own log line (undo), memorises and clears own doa ──
 set role authenticated;
@@ -131,7 +122,7 @@ select pg_temp.expect_fail($$select * from public.members$$, 'anon cannot read m
 select pg_temp.expect_fail($$select private.my_household_id()$$, 'anon cannot call helper');
 reset role;
 
-select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 9, 'realtime publishes 9 tables');
+select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 7, 'realtime publishes 7 tables');
 select pg_temp.expect((select bool_and(rowsecurity) from pg_tables where schemaname = 'public'), 'RLS on every public table');
 delete from public.todos where title = 'Groceries';
 select pg_temp.expect((select count(*) from public.todo_steps) = 0, 'deleting a todo deletes its steps');

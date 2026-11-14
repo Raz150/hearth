@@ -7,7 +7,7 @@ import { ChevronLeft, Settings2 } from "lucide-react";
 import { iconButtonClass } from "@/components/kit/button";
 import { cx } from "@/components/kit/shared";
 
-const TITLES: Record<string, string> = { "/": "Today", "/todo": "To-do", "/chores": "Chores", "/bills": "Bills", "/doa": "Doa", "/settings": "Settings" };
+const TITLES: Record<string, string> = { "/": "Today", "/todo": "To-do", "/chores": "Chores", "/doa": "Doa", "/settings": "Settings" };
 
 /** Clear over the page's big title, then solid with a small title once that title scrolls away. Settings gear on every screen but Settings. */
 export function TopBar() {

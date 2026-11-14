@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
-import { addDays, addMonths, klToday } from "./date";
+import { addDays, klToday } from "./date";
 import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadTodos, type Chore, type DoaProgress, type LogEntry, type Member, type Note, type Step, type Todo } from "./queries";
 import { createClient } from "./supabase/client";
 
@@ -13,50 +13,16 @@ export type TodoMeta = Pick<Todo, "assignee" | "due" | "priority" | "tags">;
 /** The editable parts of a chore. */
 export type ChoreMeta = Pick<Chore, "title" | "everyDays" | "owner" | "nextDue">;
 
-export type Bill = { id: string; name: string; amountSen: number; dueDay: number };
-/** One bill paid for one month (YYYY-MM). */
-export type Payment = { billId: string; month: string; by: string; on: string };
-
 export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaProgress[] };
-
-// shortcut: bills are still in-memory sample data; they become real in the next step.
-function makeMock(members: Member[], me: string) {
-  const other = members.find((m) => m.id !== me)?.id ?? me;
-  const today = klToday();
-  const month = today.slice(0, 7);
-  return {
-    bills: [
-      { id: "b1", name: "TNB electricity", amountSen: 18740, dueDay: 15 },
-      { id: "b2", name: "Unifi", amountSen: 12900, dueDay: 7 },
-      { id: "b3", name: "Air Selangor", amountSen: 3420, dueDay: 20 },
-      { id: "b4", name: "Rent", amountSen: 180000, dueDay: 1 },
-    ] as Bill[],
-    payments: [
-      { billId: "b2", month, by: me, on: addDays(today, -6) },
-      { billId: "b4", month, by: other, on: addDays(today, -12) },
-      ...[1, 2].flatMap((n) =>
-        ["b1", "b2", "b3", "b4"].map((billId, i) => ({
-          billId,
-          month: addMonths(month, -n),
-          by: (i + n) % 2 ? other : me,
-          on: `${addMonths(month, -n)}-${String(5 + i * 4).padStart(2, "0")}`,
-        })),
-      ),
-    ] as Payment[],
-  };
-}
-type Mock = ReturnType<typeof makeMock>;
 
 /** The toast: an undoable action, or an error (no undo). */
 type Flash = { id: number; label: string; undo?: () => void; error?: boolean };
 
-type Store = Shared &
-  Mock & {
+type Store = Shared & {
     me: string;
     member: (id?: string) => Member | undefined;
     /** Which colour a member wears in the design: the first account is "h", the second "w". */
     person: (id?: string) => "h" | "w" | undefined;
-    paymentFor: (billId: string, month: string) => Payment | undefined;
     undo: Flash | null;
     revert: () => void;
     dismissUndo: () => void;
@@ -77,7 +43,6 @@ type Store = Shared &
     thank: (choreId: string) => void;
     /** The log line `thank` writes; also how the page tells it's already been sent. */
     thanksText: (c: Chore) => string;
-    togglePaid: (billId: string, month: string) => void;
     setNote: (text: string) => void;
     /** Send a heart back for the other's note (a line in the shared log). */
     heartNote: () => void;
@@ -98,7 +63,6 @@ const TABLES: Record<string, keyof typeof LOADERS> = {
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
   const [sb] = useState(createClient);
   const [data, setData] = useState(initial);
-  const [mock, setMock] = useState(() => makeMock(initial.members, me));
   const [undo, setUndo] = useState<Flash | null>(null);
   const dismissUndo = useCallback(() => setUndo(null), []); // stable, so the toast timer isn't reset on every render
 
@@ -193,7 +157,6 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
 
   const store: Store = {
     ...data,
-    ...mock,
     me,
     undo,
     dismissUndo,
@@ -202,7 +165,6 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       const i = data.members.findIndex((m) => m.id === id);
       return i < 0 ? undefined : i === 0 ? "h" : "w";
     },
-    paymentFor: (billId, m) => mock.payments.find((p) => p.billId === billId && p.month === m),
     revert: () => {
       undo?.undo?.();
       setUndo(null);
@@ -453,19 +415,6 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
         });
     },
 
-    // ── still sample data ──
-    togglePaid: (billId, m) => {
-      const b = mock.bills.find((x) => x.id === billId);
-      if (!b) return;
-      if (mock.payments.some((p) => p.billId === billId && p.month === m)) {
-        setMock((p) => ({ ...p, payments: p.payments.filter((x) => !(x.billId === billId && x.month === m)) }));
-        return;
-      }
-      const before = mock;
-      setMock((p) => ({ ...p, payments: [...p.payments, { billId, month: m, by: me, on: klToday() }] }));
-      setUndo({ id: Date.now(), label: `Paid: ${b.name}`, undo: () => setMock(before) });
-    },
-
     updateMe: async (patch) => {
       const before = data.members;
       setData((p) => ({ ...p, members: p.members.map((m) => (m.id === me ? { ...m, ...patch } : m)) }));
@@ -482,9 +431,6 @@ export function useStore() {
   if (!s) throw new Error("useStore outside HouseholdProvider");
   return s;
 }
-
-export const ringgit = (sen: number) =>
-  `RM ${(sen / 100).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export const klTime = (iso: string) =>
   new Date(iso).toLocaleTimeString("en-MY", { timeZone: "Asia/Kuala_Lumpur", hour: "numeric", minute: "2-digit" });
