@@ -298,9 +298,9 @@ export default function KitPage() {
         </div>
         <K>top bar (back · title · more) · tab bar with active chip · day picker</K>
         <div className="w-[354px] max-w-full">
-          <WeekStrip days={[-3, -2, -1, 0, 1, 2, 3].map((n) => addDays(today, n))} today={today} dots={{ [today]: "money", [addDays(today, 2)]: "shopping" }} />
+          <WeekStrip days={[-3, -2, -1, 0, 1, 2, 3].map((n) => addDays(today, n))} today={today} value={day} onChange={setDay} marks={{ [today]: { shifts: ["bg-person-w"], dots: ["plans"] }, [addDays(today, 2)]: { dots: ["shopping", "chores"] } }} />
         </div>
-        <K>week strip (home): today in ink, 5px event dots</K>
+        <K>week strip (home): picked day in ink (slides), today ringed, shift bars + one dot per kind</K>
       </Section>
 
       <ConfirmDialog open={dialog} title="Delete list?" onClose={() => setDialog(false)} onConfirm={() => setDialog(false)}>

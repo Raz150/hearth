@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { BriefcaseBusiness, CalendarDays, ChevronLeft, ChevronRight, Clock, Eraser, Flag, Moon, Paintbrush, Plane, Plus, Repeat, Star, Trash2 } from "lucide-react";
 import { Button, IconButton } from "@/components/kit/button";
@@ -253,11 +253,14 @@ function DeadlineSheet({ day, onClose }: { day: string; onClose: () => void }) {
   );
 }
 
-export default function CalendarPage() {
+export default function CalendarPage({ searchParams }: { searchParams: Promise<{ day?: string | string[] }> }) {
   const s = useStore();
   const today = klToday();
-  const [month, setMonth] = useState(today.slice(0, 7));
-  const [day, setDay] = useState(today);
+  // ?day=YYYY-MM-DD (from the Today week strip) opens on that day.
+  const asked = use(searchParams).day;
+  const start = typeof asked === "string" && /^\d{4}-\d{2}-\d{2}$/.test(asked) ? asked : today;
+  const [month, setMonth] = useState(start.slice(0, 7));
+  const [day, setDay] = useState(start);
   // Painting: which shift a tap puts down (index into PRESETS, custom times, or clear). null = just looking.
   const [brush, setBrush] = useState<number | "custom" | "clear" | null>(null);
   const [custom, setCustom] = useState({ starts: "14:30", ends: "23:00" });

@@ -1,9 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft } from "lucide-react";
 import { formatDay } from "@/lib/date";
 import { iconButtonClass } from "./button";
@@ -99,29 +99,81 @@ export function DayPicker({ days, value, today, onChange }: { days: readonly str
   );
 }
 
-/** Seven days with today as an ink pill and 5px event dots. Info level: you read it, you don't tap it. */
-export function WeekStrip({ days, today, dots = {} }: { days: readonly string[]; today: string; dots?: Partial<Record<string, Tone>> }) {
+/** What a day holds: shift bars (a person fill class each), one dot per kind of thing, and words for screen readers. */
+export type DayMarks = { shifts?: string[]; dots?: Tone[]; label?: string };
+
+/**
+ * Seven days you can pick from. The picked day is an ink pill that slides; today keeps a ring.
+ * Swipe sideways (or the hidden prev/next buttons) to page a week with `onWeek`.
+ */
+export function WeekStrip({ days, today, value, onChange, onWeek, marks = {} }: { days: readonly string[]; today: string; value: string; onChange: (d: string) => void; onWeek?: (dir: -1 | 1) => void; marks?: Partial<Record<string, DayMarks>> }) {
+  const week = (dir: -1 | 1) => onWeek?.(dir);
+  // Which way the last page went, so the new week slides in from that side.
+  const [seen, setSeen] = useState({ first: days[0], dir: 1 });
+  const dragged = useRef(false);
+  if (seen.first !== days[0]) setSeen({ first: days[0], dir: days[0] > seen.first ? 1 : -1 });
   return (
-    <ol className="grid grid-cols-7 items-center gap-0.5 rounded-card border-2 border-edge-card bg-surface px-2 pb-2 pt-2.5 text-fg">
-      {days.map((d) => {
-        const dot = dots[d];
-        const extra = <span className="sr-only">{(d === today ? ", today" : "") + (dot ? ", has plans" : "")}</span>;
-        return d === today ? (
-          <li key={d} className="flex h-[62px] flex-col items-center justify-center gap-px rounded-control border-2 border-fg bg-fg text-page">
-            <span className="text-[11px] font-bold">{weekday(d)}</span>
-            <span className="font-display text-xl font-bold leading-none">{dayNum(d)}</span>
-            {dot && <span className={cx("size-[5px] rounded-full", FILL[dot])} />}
-            {extra}
-          </li>
-        ) : (
-          <li key={d} className="flex flex-col items-center gap-0.5">
-            <span className={cx("font-display text-[17px] font-bold", d < today && "text-muted")}>{dayNum(d)}</span>
-            <span className="text-[11px] text-muted">{weekday(d)}</span>
-            {dot && <span className={cx("size-[5px] rounded-full border border-edge-on-fill", FILL[dot])} />}
-            {extra}
-          </li>
-        );
-      })}
-    </ol>
+    <div role="group" aria-label="Week" className="relative overflow-hidden rounded-card border-2 border-edge-card bg-surface text-fg">
+      {onWeek && (
+        <button type="button" onClick={() => week(-1)} className="sr-only focus:not-sr-only focus:absolute focus:left-1 focus:top-1 focus:z-10">
+          Previous week
+        </button>
+      )}
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.ol
+          key={days[0]}
+          initial={{ opacity: 0, x: 60 * seen.dir }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -60 * seen.dir }}
+          transition={{ type: "spring", stiffness: 420, damping: 38 }}
+          drag={onWeek ? "x" : false}
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.25}
+          onPointerDown={() => (dragged.current = false)}
+          onDragStart={() => (dragged.current = true)}
+          onClickCapture={(e) => dragged.current && e.stopPropagation()} // a swipe isn't a tap on the day under the finger
+          onDragEnd={(_, i) => Math.abs(i.offset.x) > 50 && week(i.offset.x > 0 ? -1 : 1)}
+          className="grid touch-pan-y grid-cols-7 gap-0.5 px-1.5 py-1.5"
+        >
+          {days.map((d) => {
+            const on = d === value;
+            const m = marks[d] ?? {};
+            return (
+              <li key={d}>
+                <button
+                  type="button"
+                  aria-pressed={on}
+                  aria-label={[formatDay(d, { weekday: "long", day: "numeric", month: "long" }), d === today && "today", m.label].filter(Boolean).join(", ")}
+                  onClick={() => onChange(d)}
+                  className="relative flex h-[70px] w-full flex-col items-center justify-center gap-0.5 rounded-control transition-transform active:scale-95"
+                >
+                  {on && <motion.span layoutId="week-pick" aria-hidden className="absolute inset-0 rounded-control border-2 border-fg bg-fg" transition={{ type: "spring", stiffness: 520, damping: 36 }} />}
+                  <span aria-hidden className={cx("relative text-[11px] font-semibold", on ? "font-bold text-page" : "text-muted")}>{weekday(d)}</span>
+                  <span
+                    aria-hidden
+                    className={cx(
+                      "relative grid size-7 place-items-center rounded-full font-display text-[17px] font-bold leading-none",
+                      on ? "text-page" : d < today && "text-muted",
+                      d === today && !on && "ring-2 ring-fg",
+                    )}
+                  >
+                    {dayNum(d)}
+                  </span>
+                  <span aria-hidden className="relative flex h-[5px] items-center gap-0.5">
+                    {m.shifts?.map((fill, i) => <span key={i} className={cx("h-[5px] w-2.5 rounded-full border border-edge-on-fill", fill)} />)}
+                    {m.dots?.map((t) => <span key={t} className={cx("size-[5px] rounded-full border border-edge-on-fill", FILL[t])} />)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </motion.ol>
+      </AnimatePresence>
+      {onWeek && (
+        <button type="button" onClick={() => week(1)} className="sr-only focus:not-sr-only focus:absolute focus:right-1 focus:top-1 focus:z-10">
+          Next week
+        </button>
+      )}
+    </div>
   );
 }
