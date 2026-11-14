@@ -124,3 +124,36 @@ export function monthWeeks(ymd: string): string[][] {
 
 /** "9:30 PM – 7:30 AM next day" (ends before it starts = overnight). */
 export const timeSpan = (starts: string, ends: string) => `${formatTime(starts)} – ${formatTime(ends)}${ends < starts ? " next day" : ""}`;
+
+const isLeap = (y: number) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+
+/** Same day `n` years later; 29 Feb becomes 28 Feb in other years. */
+export function addYears(ymd: string, n: number): string {
+  const y = Number(ymd.slice(0, 4)) + n;
+  const md = ymd.slice(5) === "02-29" && !isLeap(y) ? "02-28" : ymd.slice(5);
+  return `${String(y).padStart(4, "0")}-${md}`;
+}
+
+type Dated = { start: string; end: string; yearly?: boolean };
+
+/** Is `d` inside this event? Returns how many years since the first time (0 for one-off events), or null if not. */
+export function yearsOn(p: Dated, d: string): number | null {
+  if (!p.yearly) return p.start <= d && d <= p.end ? 0 : null;
+  const first = Number(p.start.slice(0, 4));
+  for (const y of [Number(d.slice(0, 4)), Number(d.slice(0, 4)) - 1]) {
+    const n = y - first; // the year before covers ranges that run over New Year
+    if (n >= 0 && addYears(p.start, n) <= d && d <= addYears(p.end, n)) return n;
+  }
+  return null;
+}
+
+/** The next time this event starts on or after `from`, and which year it is; null if a one-off already started. */
+export function nextStart(p: Dated, from: string): { start: string; years: number } | null {
+  if (!p.yearly) return p.start >= from ? { start: p.start, years: 0 } : null;
+  let n = Math.max(0, Number(from.slice(0, 4)) - Number(p.start.slice(0, 4)));
+  if (addYears(p.start, n) < from) n++;
+  return { start: addYears(p.start, n), years: n };
+}
+
+/** "28 years since 1998" (birthday: her age that day; anniversary: years married). */
+export const yearsSince = (n: number, start: string) => `${n} ${n === 1 ? "year" : "years"} since ${start.slice(0, 4)}`;

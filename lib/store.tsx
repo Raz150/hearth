@@ -125,7 +125,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
     prev_last_by: t.prev?.lastBy ?? null,
     prev_last_on: t.prev?.lastOn ?? null,
   });
-  const planRow = (p: Plan) => ({ id: p.id, title: p.title, starts_on: p.start, ends_on: p.end, at: p.at ?? null, member: p.member ?? null, note: p.note ?? null });
+  const planRow = (p: Plan) => ({ id: p.id, title: p.title, starts_on: p.start, ends_on: p.end, at: p.at ?? null, member: p.member ?? null, note: p.note ?? null, yearly: p.yearly, important: p.important });
   const setDoa = (fn: (d: DoaProgress[]) => DoaProgress[]) => setData((p) => ({ ...p, doa: fn(p.doa) }));
   const choreLine = (c: Chore) => `did ${c.title}`;
   const thanksText = (c: Chore) => `thanked ${data.members.find((m) => m.id === c.lastBy)?.name ?? "you"} for ${c.title}`;

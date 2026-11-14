@@ -24,3 +24,10 @@ export const HIT_44 =
 
 /** Meta text: times, "added by W". */
 export const META = "text-xs font-semibold text-muted";
+
+/** Open the native picker on any tap: desktop browsers otherwise only open it from their own (hidden) icon. */
+export const openPicker = (input: HTMLInputElement) => {
+  try {
+    input.showPicker();
+  } catch {} // older browsers: the tap still focuses it, and iOS opens its wheel anyway
+};

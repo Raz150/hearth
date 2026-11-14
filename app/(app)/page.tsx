@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BriefcaseBusiness, CalendarDays, ListChecks, Moon, Plane, Sparkles } from "lucide-react";
+import { BriefcaseBusiness, CalendarDays, ListChecks, Moon, Plane, Sparkles, Star } from "lucide-react";
 import { StatTile, cardClass } from "@/components/kit/card";
 import { ListCard, ListRow, Timeline } from "@/components/kit/list";
 import { WeekStrip } from "@/components/kit/nav";
@@ -9,7 +9,7 @@ import { type Tone } from "@/components/kit/shared";
 import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
 import { Confetti, Faces, Page, PageHeader, Quiet, Section } from "@/components/ui";
-import { addDays, formatDay, formatTime, klToday, relativeDue, timeSpan } from "@/lib/date";
+import { addDays, formatDay, formatTime, klToday, nextStart, relativeDue, timeSpan, yearsOn, yearsSince } from "@/lib/date";
 import { klTime, useStore, type LogEntry } from "@/lib/store";
 
 /** Colour = meaning: each kind of log line wears its category. */
@@ -32,14 +32,19 @@ export default function Today() {
   const dots: Partial<Record<string, Tone>> = {};
   for (const d of days) {
     if (s.todos.some((t) => !t.doneBy && t.due === d)) dots[d] = "shopping";
-    else if (s.plans.some((p) => p.start <= d && d <= p.end)) dots[d] = "plans";
+    else if (s.plans.some((p) => yearsOn(p, d) !== null)) dots[d] = "plans";
     else if (s.chores.some((c) => (d === today ? c.nextDue <= d && c.lastOn !== today : c.nextDue === d))) dots[d] = "chores";
   }
 
   // Calendar card: shifts that touch today (incl. last night's), today's plans, and the next plan coming up.
   const shiftFill = (id: string) => (s.person(id) === "h" ? "bg-person-h" : "bg-person-w");
   const yesterday = addDays(today, -1);
-  const next = s.plans.find((p) => p.start > today);
+  // Coming up: the next event, plus every important date in the next 30 days.
+  const upcoming = s.plans
+    .map((p) => ({ p, next: nextStart(p, addDays(today, 1)) }))
+    .filter((x) => x.next !== null)
+    .sort((a, b) => a.next!.start.localeCompare(b.next!.start));
+  const soon = upcoming.filter((x, i) => i === 0 || (x.p.important && x.next!.start <= addDays(today, 30)));
   const calendar = [
     ...s.shifts
       .filter((x) => x.day === today || (x.day === yesterday && x.ends < x.starts))
@@ -51,9 +56,15 @@ export default function Today() {
         meta: x.day === today ? timeSpan(x.starts, x.ends) : `Until ${formatTime(x.ends)}`,
       })),
     ...s.plans
-      .filter((p) => p.start <= today && today <= p.end)
-      .map((p) => ({ id: p.id, fill: "bg-plans", icon: <CalendarDays strokeWidth={2} />, title: p.title, meta: p.at ? formatTime(p.at) : "Today" })),
-    ...(next ? [{ id: next.id, fill: "bg-plans", icon: <Plane strokeWidth={2} />, title: next.title, meta: `${formatDay(next.start, { weekday: "short", day: "numeric", month: "short" })}, ${relativeDue(next.start, today)}` }] : []),
+      .filter((p) => yearsOn(p, today) !== null)
+      .map((p) => ({ id: p.id, fill: "bg-plans", icon: p.important ? <Star strokeWidth={2} /> : <CalendarDays strokeWidth={2} />, title: p.title, meta: [p.at ? formatTime(p.at) : "Today", p.yearly && yearsOn(p, today) ? yearsSince(yearsOn(p, today)!, p.start) : ""].filter(Boolean).join(", ") })),
+    ...soon.map(({ p, next }) => ({
+      id: `${p.id}-next`,
+      fill: "bg-plans",
+      icon: p.important ? <Star strokeWidth={2} /> : <Plane strokeWidth={2} />,
+      title: p.title,
+      meta: [`${formatDay(next!.start, { weekday: "short", day: "numeric", month: "short" })}, ${relativeDue(next!.start, today)}`, p.yearly && next!.years ? yearsSince(next!.years, p.start) : ""].filter(Boolean).join(", "),
+    })),
   ];
 
   // Confetti once per day, the moment everything for today is done.

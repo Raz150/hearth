@@ -7,8 +7,9 @@ export type Step = { id: string; title: string; done: boolean };
 export type Todo = { id: string; title: string; due?: string; dueTime?: string; assignee?: string; doneBy?: string; priority: number; tags: string[]; steps: Step[] };
 /** A work shift on `day` (KL), "HH:MM" times; ends < starts means it ends the next morning. */
 export type Shift = { id: string; member: string; day: string; label: string; starts: string; ends: string };
-/** A plan or trip from `start` to `end` (YYYY-MM-DD, inclusive). `at` = start time, none = all day. `member` none = both. */
-export type Plan = { id: string; title: string; start: string; end: string; at?: string; member?: string; note?: string };
+/** An event or trip from `start` to `end` (YYYY-MM-DD, inclusive). `at` = start time, none = all day. `member` none = both.
+ *  yearly: repeats every year from `start` (birthdays, anniversary). */
+export type Plan = { id: string; title: string; start: string; end: string; at?: string; member?: string; note?: string; yearly: boolean; important: boolean };
 export type Note = { text: string; by: string; at: string };
 /** One of us is learning, or has memorised, one doa (id from lib/doa.json). No row = not started. */
 export type DoaProgress = { by: string; doa: string; status: "learning" | "memorised"; at: string };
@@ -107,7 +108,7 @@ export async function loadShifts(sb: SupabaseClient): Promise<Shift[]> {
 }
 
 export async function loadPlans(sb: SupabaseClient): Promise<Plan[]> {
-  const { data, error } = await sb.from("events").select("id, title, starts_on, ends_on, at, member, note").gte("ends_on", calendarFrom()).order("starts_on").order("at");
+  const { data, error } = await sb.from("events").select("id, title, starts_on, ends_on, at, member, note, yearly, important").or(`ends_on.gte.${calendarFrom()},yearly.is.true`).order("starts_on").order("at");
   if (error) fail("events", error);
   return data.map((r) => ({
     id: r.id,
@@ -117,5 +118,7 @@ export async function loadPlans(sb: SupabaseClient): Promise<Plan[]> {
     at: r.at?.slice(0, 5) ?? undefined,
     member: r.member ?? undefined,
     note: r.note ?? undefined,
+    yearly: r.yearly,
+    important: r.important,
   }));
 }

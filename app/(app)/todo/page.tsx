@@ -7,7 +7,7 @@ import { Button } from "@/components/kit/button";
 import { EmptyState } from "@/components/kit/card";
 import { ListCard } from "@/components/kit/list";
 import { Chip, CountBadge, Tick, chipClass } from "@/components/kit/selection";
-import { HIT_44, cx } from "@/components/kit/shared";
+import { HIT_44, cx, openPicker } from "@/components/kit/shared";
 import { Sheet } from "@/components/sheet";
 import { Face, Page, PageHeader } from "@/components/ui";
 import { addDays, formatDay, formatTime, klToday, parseQuickAdd, relativeDue, TAG, thisWeekend } from "@/lib/date";
@@ -49,6 +49,7 @@ function WhoWhen({ value, set }: { value: Pick<TodoMeta, "assignee" | "due" | "d
           aria-label="Pick a due date"
           value={value.due ?? ""}
           onChange={(e) => set({ due: e.target.value || undefined })}
+            onClick={(e) => openPicker(e.currentTarget)}
           className="absolute inset-0 cursor-pointer opacity-0"
         />
       </label>
@@ -61,6 +62,7 @@ function WhoWhen({ value, set }: { value: Pick<TodoMeta, "assignee" | "due" | "d
             aria-label="Due by (time)"
             value={value.dueTime ?? ""}
             onChange={(e) => set({ dueTime: e.target.value || undefined })}
+            onClick={(e) => openPicker(e.currentTarget)}
             className="absolute inset-0 cursor-pointer opacity-0"
           />
         </label>
