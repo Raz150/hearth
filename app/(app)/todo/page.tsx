@@ -67,12 +67,11 @@ function TodoSheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: str
   const tags = [...new Set([...knownTags, ...t.tags])];
   const important = t.priority > 0;
 
-  function addTag(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
-    const tag = e.currentTarget.value.trim().replace(/^#/, "").toLowerCase();
+  // On Enter and on blur, so a tag typed before tapping Done isn't lost.
+  function addTag(input: HTMLInputElement) {
+    const tag = input.value.trim().replace(/^#/, "").toLowerCase();
     if (TAG.test(tag) && !t.tags.includes(tag) && t.tags.length < 5) edit({ tags: [...t.tags, tag] });
-    e.currentTarget.value = "";
+    input.value = "";
   }
 
   return (
@@ -115,6 +114,10 @@ function TodoSheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: str
                 enterKeyHint="enter"
                 placeholder="Add a step"
                 aria-label="Add a step"
+                onBlur={(e) => {
+                  s.addStep(t.id, e.target.value); // ignores blanks
+                  e.target.value = "";
+                }}
                 className="h-11 flex-1 bg-transparent text-base font-medium placeholder:text-subtle focus:outline-none"
               />
             </form>
@@ -135,7 +138,12 @@ function TodoSheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: str
           ))}
           {t.tags.length < 5 && (
             <input
-              onKeyDown={addTag}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+                e.preventDefault();
+                addTag(e.currentTarget);
+              }}
+              onBlur={(e) => addTag(e.currentTarget)}
               maxLength={21}
               enterKeyHint="done"
               autoCapitalize="none"
@@ -338,7 +346,15 @@ export default function TodoPage() {
       )}
 
       {open.length === 0 && done.length === 0 && (
-        <EmptyState icon={<ListChecks strokeWidth={2} />} title={mine || tagFilter ? "Nothing here. Clear the filter to see everything." : "All done, well done"} />
+        <EmptyState
+          icon={<ListChecks strokeWidth={2} />}
+          title={mine || tagFilter ? "Nothing matches this filter." : "The list is empty. Write the first thing down above."}
+          action={mine || tagFilter ? "Clear filter" : undefined}
+          onAction={() => {
+            setMine(false);
+            setTagFilter(undefined);
+          }}
+        />
       )}
       {groups.map(
         ([label, items]) =>

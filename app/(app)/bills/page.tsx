@@ -80,7 +80,7 @@ export default function BillsPage() {
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate text-sm font-bold">{b.name}</span>
                     <span className="text-xs font-semibold text-muted">
-                      {payer ? `paid by ${payer.name}` : `due ${formatDay(due, { day: "numeric", month: "short" })} · ${relativeDue(due, today)}`}
+                      {payer ? `paid by ${payer.name}` : `due ${formatDay(due, { day: "numeric", month: "short" })}, ${relativeDue(due, today)}`}
                     </span>
                   </span>
                   <AnimatePresence initial={false}>
@@ -98,7 +98,7 @@ export default function BillsPage() {
           </ListCard>
         </motion.div>
       </AnimatePresence>
-      <p className="text-center text-xs font-semibold text-muted">Tick a bill to mark it paid · swipe for other months</p>
+      <p className="text-center text-xs font-semibold text-muted">Tick a bill to mark it paid. Swipe sideways for other months.</p>
     </Page>
   );
 }

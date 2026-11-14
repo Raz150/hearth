@@ -1,24 +1,23 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion } from "motion/react";
+import { MotionConfig, motion } from "motion/react";
 import { Avatar } from "@/components/kit/avatar";
 import { useStore, type Member } from "@/lib/store";
 
-/** Screen wrapper: 52 top (plus the notch), 20 left, 22 right for the hero offset, room for the tab bar below. */
+/** Screen wrapper: 52 top (plus the notch), 20 left, 22 right for the hero offset, room for the tab bar below.
+ *  No entrance animation: tab switches should feel instant, as on iOS. */
 export function Page({ children }: { children: ReactNode }) {
   return (
-    <main className="mx-auto max-w-md pl-5 pr-[22px] pt-[calc(env(safe-area-inset-top)+52px)] pb-[calc(env(safe-area-inset-bottom)+120px)]">
-      <motion.div
-        className="flex flex-col gap-[18px]"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {children}
-      </motion.div>
+    <main className="mx-auto flex max-w-md flex-col gap-[18px] pl-5 pr-[22px] pt-[calc(env(safe-area-inset-top)+52px)] pb-[calc(env(safe-area-inset-bottom)+120px)]">
+      {children}
     </main>
   );
+}
+
+/** Motion follows the phone's Reduce Motion setting (springs, slides and confetti become instant). */
+export function MotionPrefs({ children }: { children: ReactNode }) {
+  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
 }
 
 /** Small meta line above a 30/700 title, e.g. "Saturday, 14 November" / "Our home". */

@@ -34,7 +34,9 @@ export function Typewriter({ parts, day, className }: { parts: Part[]; day: stri
   const starts = parts.map((_, i) => parts.slice(0, i).reduce((a, p) => a + p.text.length, 0));
   const typing = shown !== null && shown < total;
   return (
-    <p className={className} aria-label={parts.map((p) => p.text).join("")} style={{ visibility: shown === null ? "hidden" : undefined }}>
+    <p className={className} style={{ visibility: shown === null ? "hidden" : undefined }}>
+      {/* aria-label is ignored on a <p>, so screen readers get the full text here and skip the typing. */}
+      <span className="sr-only">{parts.map((p) => p.text).join("")}</span>
       {parts.map((p, i) => {
         const text = p.text.slice(0, Math.max(0, n - starts[i]));
         return text ? (

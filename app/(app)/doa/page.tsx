@@ -147,12 +147,17 @@ function DoaRow({ d, lang, rumi, player }: { d: Doa; lang: Lang; rumi: boolean; 
   const [count, setCount] = useState(0); // lives here so closing the row keeps the count
   const playing = player.playing === d.id;
   const done = count >= d.repeat;
+  const [copied, setCopied] = useState(false);
 
   async function share() {
     const text = `${d.ar}\n\n${d.tr}\n\n${d[lang]}\n\n— ${d.src}`;
     try {
       if (navigator.share) await navigator.share({ text });
-      else await navigator.clipboard.writeText(text);
+      else {
+        await navigator.clipboard.writeText(text);
+        setCopied(true); // no share sheet, so show that something happened
+        setTimeout(() => setCopied(false), 1500);
+      }
     } catch {} // user closed the share sheet
   }
 
@@ -201,8 +206,8 @@ function DoaRow({ d, lang, rumi, player }: { d: Doa; lang: Lang; rumi: boolean; 
                 <button onClick={() => player.toggle(d)} aria-label={playing ? "Stop" : "Listen"} className={cx(iconButtonClass, playing && "bg-chores text-on-fill")}>
                   {playing ? <Pause strokeWidth={2.2} /> : <Play strokeWidth={2.2} />}
                 </button>
-                <button onClick={share} aria-label="Share" className={iconButtonClass}>
-                  <Share strokeWidth={2.2} />
+                <button onClick={share} aria-label={copied ? "Copied" : "Share"} className={cx(iconButtonClass, copied && "border-edge-on-fill bg-done text-on-fill")}>
+                  {copied ? <Check strokeWidth={2.6} /> : <Share strokeWidth={2.2} />}
                 </button>
                 {d.repeat > 1 && <Counter n={count} setN={setCount} repeat={d.repeat} />}
               </div>
@@ -328,13 +333,13 @@ function Request({ d }: { d: DoaRequest }) {
       <div className="min-w-0 flex-1">
         <p className={cx("font-note text-[17px] leading-snug", d.answeredAt && "text-subtle")}>{d.text}</p>
         <p className="mt-1 text-xs font-semibold text-muted">
-          <Who member={asker} /> · {ago(klToday(new Date(d.at)), today)}
+          <Who member={asker} />, {ago(klToday(new Date(d.at)), today)}
           {d.prayers.length > 0 && (
             <>
-              {" "}· prayed for {d.prayers.length}× · last {ago(last!, today)}
+              . Prayed for {d.prayers.length === 1 ? "once" : `${d.prayers.length} times`}, last {ago(last!, today)}
             </>
           )}
-          {mine && !d.prayers.length && !d.answeredAt && spouse && <> · waiting for {spouse.name}</>}
+          {mine && !d.prayers.length && !d.answeredAt && spouse && <>. Waiting for {spouse.name}</>}
         </p>
       </div>
 

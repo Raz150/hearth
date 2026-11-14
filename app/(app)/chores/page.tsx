@@ -30,12 +30,21 @@ const ago = (ymd: string, today: string) => {
 /** How often + whose job it is. */
 function Options({ value, set }: { value: Pick<ChoreMeta, "everyDays" | "owner">; set: (patch: Partial<ChoreMeta>) => void }) {
   const s = useStore();
-  const custom = !EVERY.some(([n]) => n === value.everyDays);
+  // Own text state, so typing "14" doesn't snap to Daily at the "1" and wipe the box.
+  const [typed, setTyped] = useState(() => (EVERY.some(([n]) => n === value.everyDays) ? "" : String(value.everyDays)));
+  const custom = typed !== "";
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex flex-wrap gap-2" role="group" aria-label="How often">
         {EVERY.map(([n, label]) => (
-          <Chip key={n} selected={value.everyDays === n} onClick={() => set({ everyDays: n })}>
+          <Chip
+            key={n}
+            selected={!custom && value.everyDays === n}
+            onClick={() => {
+              setTyped("");
+              set({ everyDays: n });
+            }}
+          >
             {label}
           </Chip>
         ))}
@@ -48,8 +57,9 @@ function Options({ value, set }: { value: Pick<ChoreMeta, "everyDays" | "owner">
             max={365}
             placeholder="–"
             aria-label="Every how many days"
-            value={custom ? value.everyDays : ""}
+            value={typed}
             onChange={(e) => {
+              setTyped(e.target.value);
               const n = Number(e.target.value);
               if (n >= 1 && n <= 365) set({ everyDays: Math.round(n) });
             }}

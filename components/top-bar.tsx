@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronLeft, Settings2 } from "lucide-react";
 import { iconButtonClass } from "@/components/kit/button";
@@ -12,6 +12,7 @@ const TITLES: Record<string, string> = { "/": "Today", "/todo": "To-do", "/chore
 /** Clear over the page's big title, then solid with a small title once that title scrolls away. Settings gear on every screen but Settings. */
 export function TopBar() {
   const path = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -31,7 +32,18 @@ export function TopBar() {
       <div className="mx-auto grid h-[52px] max-w-md grid-cols-[1fr_auto_1fr] items-center pl-5 pr-[22px]">
         <div className="pointer-events-auto">
           {path === "/settings" && (
-            <Link href="/" aria-label="Back to Today" className={iconButtonClass}>
+            <Link
+              href="/"
+              aria-label="Back"
+              className={iconButtonClass}
+              // Back to whichever tab opened Settings; fall back to Today when Settings was the first page (fresh PWA launch).
+              onClick={(e) => {
+                if (history.length > 1) {
+                  e.preventDefault();
+                  router.back();
+                }
+              }}
+            >
               <ChevronLeft aria-hidden strokeWidth={2.4} />
             </Link>
           )}
@@ -41,7 +53,7 @@ export function TopBar() {
         </p>
         <div className="pointer-events-auto flex justify-end">
           {path !== "/settings" && (
-            <Link href="/settings" aria-label="Settings" className={cx(iconButtonClass, "size-10")}>
+            <Link href="/settings" aria-label="Settings" className={iconButtonClass}>
               <Settings2 aria-hidden strokeWidth={2.2} />
             </Link>
           )}

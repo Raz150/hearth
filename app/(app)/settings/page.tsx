@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const s = useStore();
   const { choice, setTheme } = useTheme();
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   return (
     <Page>
@@ -40,9 +41,19 @@ export default function SettingsPage() {
                   defaultValue={m.name}
                   maxLength={30}
                   error={error ?? undefined}
-                  onBlur={async (e) => e.target.value.trim() !== m.name && setError(await s.updateMe({ name: e.target.value }))}
+                  onBlur={async (e) => {
+                    if (e.target.value.trim() === m.name) return;
+                    const err = await s.updateMe({ name: e.target.value });
+                    setError(err);
+                    setSaved(!err);
+                  }}
+                  onFocus={() => setSaved(false)}
                   onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
                 />
+                {/* Saves on blur, so say when it has. */}
+                <p aria-live="polite" className="mt-1 min-h-4 text-xs font-semibold text-muted">
+                  {saved && "Saved"}
+                </p>
               </div>
             </Card>
           ) : (

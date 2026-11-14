@@ -2,7 +2,7 @@ import { Nav } from "@/components/nav";
 import { TopBar } from "@/components/top-bar";
 import { UndoToast } from "@/components/undo-toast";
 import { buttonClass } from "@/components/kit/button";
-import { Page, PageHeader } from "@/components/ui";
+import { MotionPrefs, Page, PageHeader } from "@/components/ui";
 import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadTodos } from "@/lib/queries";
 import { HouseholdProvider } from "@/lib/store";
 import { createClient } from "@/lib/supabase/server";
@@ -32,10 +32,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <HouseholdProvider initial={{ members, todos, chores, note, log, doa }} me={me} household={household}>
-      <TopBar />
-      {children}
-      <UndoToast />
-      <Nav />
+      <MotionPrefs>
+        <TopBar />
+        {children}
+        <UndoToast />
+        <Nav />
+      </MotionPrefs>
     </HouseholdProvider>
   );
 }

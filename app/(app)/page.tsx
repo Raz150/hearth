@@ -93,7 +93,7 @@ export default function Today() {
         </Link>
       )}
 
-      <ListCard level="info" title="To do" tint="shopping" more={todos.length > 2 ? { href: "/todo", label: `See all ${todos.length}` } : { href: "/todo", label: "Open" }}>
+      <ListCard level="info" title="To do" tint="shopping" more={todos.length > 2 ? { href: "/todo", label: `See all ${todos.length}` } : { href: "/todo", label: "See all" }}>
         {todos.length === 0 ? (
           <Quiet>Nothing due today.</Quiet>
         ) : (
@@ -103,7 +103,7 @@ export default function Today() {
               <ListRow
                 key={t.id}
                 title={t.title}
-                meta={t.doneBy ? `done by ${who?.name}` : [t.due && t.due < today ? relativeDue(t.due, today) : undefined, who && `for ${who.name}`].filter(Boolean).join(" · ") || undefined}
+                meta={t.doneBy ? `done by ${who?.name}` : [t.due && t.due < today ? relativeDue(t.due, today) : undefined, who && `for ${who.name}`].filter(Boolean).join(", ") || undefined}
                 checkLabel={`Done: ${t.title}`}
                 checked={!!t.doneBy}
                 onChange={() => s.toggleTodo(t.id)}
@@ -113,7 +113,7 @@ export default function Today() {
         )}
       </ListCard>
 
-      <ListCard level="info" title="Chores" tint="chores" more={chores.length > 2 ? { href: "/chores", label: `See all ${chores.length}` } : { href: "/chores", label: "Open" }}>
+      <ListCard level="info" title="Chores" tint="chores" more={chores.length > 2 ? { href: "/chores", label: `See all ${chores.length}` } : { href: "/chores", label: "See all" }}>
         {chores.length === 0 ? (
           <Quiet>The house is happy.</Quiet>
         ) : (
@@ -137,7 +137,7 @@ export default function Today() {
         <Section title="Bills this week">
           <ExpenseTable
             caption="Bills due this week"
-            rows={bills.map((b) => ({ label: `${b.name} · ${relativeDue(dueDateInMonth(today, b.dueDay), today)}`, amount: ringgit(b.amountSen) }))}
+            rows={bills.map((b) => ({ label: `${b.name}, ${relativeDue(dueDateInMonth(today, b.dueDay), today)}`, amount: ringgit(b.amountSen) }))}
             total={ringgit(bills.reduce((n, b) => n + b.amountSen, 0))}
           />
         </Section>

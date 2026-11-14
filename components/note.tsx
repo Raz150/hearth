@@ -41,8 +41,9 @@ export function StickyNote() {
               <Button variant="secondary" size="sm" onClick={() => setDraft(null)}>
                 Cancel
               </Button>
-              <Button type="submit" size="sm">
-                Send
+              {/* An empty send would delete the current note: only allow that for your own, and say so. */}
+              <Button type="submit" size="sm" variant={mine && !draft.trim() ? "danger" : "primary"} disabled={!draft.trim() && !(mine && s.note)}>
+                {mine && !draft.trim() ? "Delete note" : "Send"}
               </Button>
             </div>
           </div>
