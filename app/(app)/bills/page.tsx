@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Card, Page, PageHeader, Stamp, Who } from "@/components/ui";
+import { IconButton } from "@/components/kit/button";
+import { Card } from "@/components/kit/card";
+import { ListCard } from "@/components/kit/list";
+import { ProgressBar } from "@/components/kit/progress";
+import { StatusPill, checkboxClass } from "@/components/kit/selection";
+import { cx } from "@/components/kit/shared";
+import { Page, PageHeader } from "@/components/ui";
 import { addMonths, dueDateInMonth, formatDay, klToday, relativeDue } from "@/lib/date";
 import { ringgit, useStore } from "@/lib/store";
 
@@ -26,16 +32,16 @@ export default function BillsPage() {
   return (
     <Page>
       <PageHeader
-        kicker={month === thisMonth ? "this month" : formatDay(`${month}-01`, { year: "numeric" })}
+        kicker={month === thisMonth ? "This month" : formatDay(`${month}-01`, { year: "numeric" })}
         title={formatDay(`${month}-01`, { month: "long" })}
         aside={
-          <div className="flex gap-1">
-            <button onClick={() => go(-1)} disabled={month <= oldest} aria-label="Previous month" className="grid size-11 place-items-center rounded-full border border-line bg-card text-ink-soft disabled:opacity-30">
-              <ChevronLeft className="size-5" />
-            </button>
-            <button onClick={() => go(1)} disabled={month >= thisMonth} aria-label="Next month" className="grid size-11 place-items-center rounded-full border border-line bg-card text-ink-soft disabled:opacity-30">
-              <ChevronRight className="size-5" />
-            </button>
+          <div className="flex gap-2">
+            <IconButton label="Previous month" onClick={() => go(-1)} disabled={month <= oldest} className="disabled:opacity-40">
+              <ChevronLeft aria-hidden strokeWidth={2.4} />
+            </IconButton>
+            <IconButton label="Next month" onClick={() => go(1)} disabled={month >= thisMonth} className="disabled:opacity-40">
+              <ChevronRight aria-hidden strokeWidth={2.4} />
+            </IconButton>
           </div>
         }
       />
@@ -43,6 +49,7 @@ export default function BillsPage() {
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={month}
+          className="flex flex-col gap-[18px]"
           initial={{ opacity: 0, x: dir * 40 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: dir * -40 }}
@@ -56,54 +63,42 @@ export default function BillsPage() {
             else if (i.offset.x > 70 && month > oldest) go(-1);
           }}
         >
-          <Card tape className="mb-8 p-5 pt-6">
-            <div className="flex items-baseline justify-between">
-              <span className="font-hand text-sm text-ink-soft">{paid === total ? "all paid ✿" : "paid so far"}</span>
-              <span className="font-serif text-2xl tabular-nums">
-                {ringgit(paid)} <span className="text-base text-ink-soft">/ {ringgit(total)}</span>
-              </span>
-            </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-paper-deep">
-              <motion.div className="h-full rounded-full bg-accent" initial={false} animate={{ width: `${total ? (paid / total) * 100 : 0}%` }} transition={{ type: "spring", stiffness: 120, damping: 20 }} />
-            </div>
+          <Card className="flex flex-col gap-3">
+            <p className="font-display text-2xl font-bold tracking-[-0.5px]">
+              {ringgit(paid)} <span className="text-base text-muted">of {ringgit(total)}</span>
+            </p>
+            <ProgressBar label={paid === total ? "All paid" : "Paid so far"} value={total ? (paid / total) * 100 : 0} tone="money" />
           </Card>
 
-          <ul className="space-y-3">
+          <ListCard title="Bills" tint="none">
             {bills.map((b) => {
               const due = dueDateInMonth(`${month}-01`, b.dueDay);
               const pay = s.paymentFor(b.id, month);
               const payer = s.member(pay?.by);
               return (
-                <li key={b.id}>
-                  <button onClick={() => s.togglePaid(b.id, month)} className="block w-full text-left active:scale-[0.98] transition-transform" aria-pressed={!!pay}>
-                    <Card className="flex items-center justify-between gap-3 overflow-hidden p-4">
-                      <div>
-                        <p className="font-serif text-lg">{b.name}</p>
-                        <p className="text-sm text-ink-soft">
-                          {payer ? (
-                            <>
-                              paid by <Who member={payer} />
-                            </>
-                          ) : (
-                            `due ${formatDay(due, { day: "numeric", month: "short" })} · ${relativeDue(due, today)}`
-                          )}
-                        </p>
-                      </div>
-                      <span className={`font-serif text-lg tabular-nums ${payer ? "text-ink-soft" : ""}`}>{ringgit(b.amountSen)}</span>
-                      <span className="pointer-events-none absolute inset-y-0 right-28 flex items-center">
-                        <Stamp show={!!payer} ink={payer?.ink ?? ""}>
-                          paid {pay && formatDay(pay.on, { day: "numeric", month: "short" })}
-                        </Stamp>
-                      </span>
-                    </Card>
-                  </button>
-                </li>
+                <label key={b.id} className="group flex min-h-[54px] cursor-pointer items-center gap-3 px-3.5 py-2">
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-sm font-bold">{b.name}</span>
+                    <span className="text-xs font-semibold text-muted">
+                      {payer ? `paid by ${payer.name}` : `due ${formatDay(due, { day: "numeric", month: "short" })} · ${relativeDue(due, today)}`}
+                    </span>
+                  </span>
+                  <AnimatePresence initial={false}>
+                    {pay && (
+                      <motion.span initial={{ scale: 1.6, opacity: 0, rotate: -12 }} animate={{ scale: 1, opacity: 1, rotate: -4 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ type: "spring", stiffness: 500, damping: 22 }}>
+                        <StatusPill tone="done">Paid {formatDay(pay.on, { day: "numeric", month: "short" })}</StatusPill>
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                  <span className={cx("shrink-0 text-sm font-bold tabular-nums", pay && "text-subtle")}>{ringgit(b.amountSen)}</span>
+                  <input type="checkbox" aria-label={`Paid: ${b.name}`} checked={!!pay} onChange={() => s.togglePaid(b.id, month)} className={checkboxClass()} />
+                </label>
               );
             })}
-          </ul>
+          </ListCard>
         </motion.div>
       </AnimatePresence>
-      <p className="mt-4 text-center font-hand text-sm text-ink-soft">tap a bill to mark it paid · swipe for other months</p>
+      <p className="text-center text-xs font-semibold text-muted">Tick a bill to mark it paid · swipe for other months</p>
     </Page>
   );
 }

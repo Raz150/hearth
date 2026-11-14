@@ -2,24 +2,20 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { HandHeart } from "lucide-react";
+import { ChevronRight, HandHeart, ListChecks, Receipt, Sparkles } from "lucide-react";
+import { StatTile, cardClass } from "@/components/kit/card";
+import { ExpenseTable, ListCard, ListRow, Timeline } from "@/components/kit/list";
+import { WeekStrip } from "@/components/kit/nav";
+import { PRESS, cx, type Tone } from "@/components/kit/shared";
 import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
-import { InkCheck, Page, PageHeader, Petals, Section, Struck, Who } from "@/components/ui";
-import { daysBetween, dueDateInMonth, formatDay, klHour, klToday, relativeDue } from "@/lib/date";
+import { Confetti, Faces, Page, PageHeader, Quiet, Section } from "@/components/ui";
+import { addDays, daysBetween, dueDateInMonth, formatDay, klHour, klToday, relativeDue } from "@/lib/date";
 import { doaForHour } from "@/lib/doa";
-import { klTime, ringgit, useStore } from "@/lib/store";
+import { klTime, ringgit, useStore, type LogEntry } from "@/lib/store";
 
-function greeting(h: number) {
-  if (h < 5) return "still up?";
-  if (h < 12) return "good morning";
-  if (h < 18) return "good afternoon";
-  return "good evening";
-}
-
-function Quiet({ children }: { children: React.ReactNode }) {
-  return <p className="px-1 py-2 font-hand text-ink-soft">{children}</p>;
-}
+/** Colour = meaning: each kind of log line wears its category. */
+const KIND_TONE: Record<LogEntry["kind"], Tone> = { todo: "shopping", chore: "chores", bill: "money", note: "hero", thanks: "hero", doa: "done" };
 
 export default function Today() {
   const s = useStore();
@@ -27,13 +23,25 @@ export default function Today() {
   const todos = s.todos.filter((t) => t.due && t.due <= today);
   // Chores done today stay visible (ticked), like to-dos.
   const chores = s.chores.filter((c) => c.nextDue <= today || c.lastOn === today);
-  const bills = s.bills.filter((b) => !s.paymentFor(b.id, today.slice(0, 7)) && daysBetween(today, dueDateInMonth(today, b.dueDay)) <= 7);
-  const left = todos.filter((t) => !t.doneBy).length + chores.filter((c) => c.lastOn !== today).length + bills.length;
+  const month = today.slice(0, 7);
+  const bills = s.bills.filter((b) => !s.paymentFor(b.id, month) && daysBetween(today, dueDateInMonth(today, b.dueDay)) <= 7);
+  const todosLeft = todos.filter((t) => !t.doneBy).length;
+  const choresDone = chores.filter((c) => c.lastOn === today).length;
+  const left = todosLeft + chores.length - choresDone + bills.length;
   const log = s.log.filter((l) => klToday(new Date(l.at)) === today);
   const didToday = log.length > 0;
   const now = doaForHour(klHour());
+  const days = [-3, -2, -1, 0, 1, 2, 3].map((n) => addDays(today, n));
 
-  // Petals once per day, the moment everything for today is done.
+  // One dot per day with something due: to-do first, then chore, then bill.
+  const dots: Partial<Record<string, Tone>> = {};
+  for (const d of days) {
+    if (s.todos.some((t) => !t.doneBy && t.due === d)) dots[d] = "shopping";
+    else if (s.chores.some((c) => (d === today ? c.nextDue <= d && c.lastOn !== today : c.nextDue === d))) dots[d] = "chores";
+    else if (s.bills.some((b) => !s.paymentFor(b.id, d.slice(0, 7)) && dueDateInMonth(d, b.dueDay) === d)) dots[d] = "money";
+  }
+
+  // Confetti once per day, the moment everything for today is done.
   const [burst, setBurst] = useState(0);
   useEffect(() => {
     if (left !== 0 || !didToday) return;
@@ -47,117 +55,105 @@ export default function Today() {
   return (
     <Page>
       <PageHeader
-        kicker={greeting(klHour())}
-        title={formatDay(today, { weekday: "long" })}
+        kicker={formatDay(today, { weekday: "long", day: "numeric", month: "long" })}
+        title="Our home"
+        aside={<Faces />}
       />
-      <p className="-mt-5 mb-7 font-serif italic text-ink-soft">{formatDay(today, { day: "numeric", month: "long", year: "numeric" })}</p>
 
       <Typewriter
         day={today}
-        className="mb-8 min-h-[3.5rem] font-hand text-xl leading-snug"
+        className="-mt-2 min-h-6 text-[15px] font-semibold"
         parts={
           left === 0
             ? [{ text: didToday ? "All done for today. Rest." : "Nothing waiting on us today. Enjoy the quiet." }]
-            : [
-                { text: `${left} little ${left === 1 ? "thing" : "things"}`, className: "bg-[linear-gradient(transparent_55%,var(--highlight)_55%,var(--highlight)_90%,transparent_90%)] px-1" },
-                { text: " for today." },
-              ]
+            : [{ text: `${left} ${left === 1 ? "thing" : "things"} for today.` }]
         }
       />
 
       <StickyNote />
 
+      <div className="grid grid-cols-3 gap-3">
+        <StatTile tone="shopping" icon={<ListChecks strokeWidth={2} />} value={todosLeft} label="to do" href="/todo" />
+        <StatTile tone="chores" icon={<Sparkles strokeWidth={2} />} value={`${choresDone}/${chores.length}`} label="chores" href="/chores" />
+        <StatTile tone="money" icon={<Receipt strokeWidth={2} />} value={`RM ${Math.round(bills.reduce((n, b) => n + b.amountSen, 0) / 100).toLocaleString("en-MY")}`} label="this week" href="/bills" />
+      </div>
+
+      <WeekStrip days={days} today={today} dots={dots} />
+
       {now && (
-        <Link href={`/doa#${now.group}`} className="mb-8 flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-line bg-card px-5 py-3">
-          <span>
-            <span className="block font-hand text-sm text-accent">{now.label}</span>
-            <span className="font-serif text-lg">Time for a few minutes of zikir</span>
+        <Link href={`/doa#${now.group}`} className={cx(cardClass("interactive"), PRESS, "flex items-center gap-2.5 px-3.5 py-2.5")}>
+          <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-icon border-[1.5px] border-dashed border-edge-card">
+            <HandHeart className="size-[18px]" strokeWidth={2} />
           </span>
-          <HandHeart className="shrink-0 text-accent" size={22} />
+          <span className="flex flex-1 flex-col">
+            <span className="text-sm font-bold">Time for a few minutes of zikir</span>
+            <span className="text-xs font-semibold text-muted">{now.label}</span>
+          </span>
+          <ChevronRight aria-hidden className="size-[18px]" strokeWidth={2.2} />
         </Link>
       )}
 
-      <Section title="To do">
+      <ListCard level="info" title="To do" tint="shopping" more={todos.length > 2 ? { href: "/todo", label: `See all ${todos.length}` } : { href: "/todo", label: "Open" }}>
         {todos.length === 0 ? (
-          <Quiet>nothing due ✿</Quiet>
+          <Quiet>Nothing due today.</Quiet>
         ) : (
-          <ul>
-            {todos.map((t) => {
-              const by = s.member(t.doneBy);
-              return (
-                <li key={t.id} className="flex items-center gap-1">
-                  <InkCheck done={!!t.doneBy} ink={by?.ink ?? s.member(s.me)?.ink} onToggle={() => s.toggleTodo(t.id)} label={t.title} />
-                  <span className="flex-1 py-2">
-                    <Struck done={!!t.doneBy} ink={by?.ink}>{t.title}</Struck>
-                  </span>
-                  <Who member={s.member(t.doneBy ?? t.assignee)} />
-                </li>
-              );
-            })}
-          </ul>
+          todos.slice(0, 2).map((t) => {
+            const who = s.member(t.doneBy ?? t.assignee);
+            return (
+              <ListRow
+                key={t.id}
+                title={t.title}
+                meta={t.doneBy ? `done by ${who?.name}` : [t.due && t.due < today ? relativeDue(t.due, today) : undefined, who && `for ${who.name}`].filter(Boolean).join(" · ") || undefined}
+                checkLabel={`Done: ${t.title}`}
+                checked={!!t.doneBy}
+                onChange={() => s.toggleTodo(t.id)}
+              />
+            );
+          })
         )}
-      </Section>
+      </ListCard>
 
-      <Section title="Chores">
+      <ListCard level="info" title="Chores" tint="chores" more={chores.length > 2 ? { href: "/chores", label: `See all ${chores.length}` } : { href: "/chores", label: "Open" }}>
         {chores.length === 0 ? (
-          <Quiet>the house is happy ✿</Quiet>
+          <Quiet>The house is happy.</Quiet>
         ) : (
-          <ul>
-            {chores.map((c) => {
-              const done = c.lastOn === today;
-              return (
-                <li key={c.id} className="flex items-center gap-1">
-                  <InkCheck done={done} ink={s.member(done ? c.lastBy : s.me)?.ink} onToggle={() => s.toggleChore(c.id)} label={`Mark ${c.title} done`} />
-                  <span className="flex-1 py-2">
-                    <Struck done={done} ink={s.member(c.lastBy)?.ink}>{c.title}</Struck>
-                    {!done && <span className="block text-sm text-ink-soft">due {relativeDue(c.nextDue, today)}</span>}
-                  </span>
-                  {done && <Who member={s.member(c.lastBy)} />}
-                </li>
-              );
-            })}
-          </ul>
+          chores.slice(0, 2).map((c) => {
+            const done = c.lastOn === today;
+            return (
+              <ListRow
+                key={c.id}
+                title={c.title}
+                meta={done ? `done by ${s.member(c.lastBy)?.name}` : `due ${relativeDue(c.nextDue, today)}`}
+                checkLabel={`Done: ${c.title}`}
+                checked={done}
+                onChange={() => s.toggleChore(c.id)}
+              />
+            );
+          })
         )}
-      </Section>
+      </ListCard>
 
-      <Section title="Bills this week">
-        {bills.length === 0 ? (
-          <Quiet>all settled ✿</Quiet>
-        ) : (
-          <ul className="space-y-1">
-            {bills.map((b) => (
-              <li key={b.id}>
-                <Link href="/bills" className="flex min-h-11 items-baseline justify-between px-1 py-1.5">
-                  <span>
-                    {b.name} <span className="text-sm text-ink-soft">· {relativeDue(dueDateInMonth(today, b.dueDay), today)}</span>
-                  </span>
-                  <span className="font-serif tabular-nums">{ringgit(b.amountSen)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Section>
+      {bills.length > 0 && (
+        <Section title="Bills this week">
+          <ExpenseTable
+            caption="Bills due this week"
+            rows={bills.map((b) => ({ label: `${b.name} · ${relativeDue(dueDateInMonth(today, b.dueDay), today)}`, amount: ringgit(b.amountSen) }))}
+            total={ringgit(bills.reduce((n, b) => n + b.amountSen, 0))}
+          />
+        </Section>
+      )}
 
       <Section title="What we did today">
         {log.length === 0 ? (
-          <Quiet>the page is still blank</Quiet>
+          <div className={cardClass("info")}>
+            <Quiet>Nothing yet today.</Quiet>
+          </div>
         ) : (
-          <ol className="relative ml-2 space-y-3 border-l border-dashed border-line pl-5">
-            {log.map((l) => (
-              <li key={l.id} className="relative">
-                <span aria-hidden className="absolute -left-[1.6rem] top-1.5 size-2.5 rounded-full border-2 border-card" style={{ backgroundColor: s.member(l.by)?.ink }} />
-                <p className="font-hand text-xs text-ink-soft">{klTime(l.at)}</p>
-                <p>
-                  <Who member={s.member(l.by)} /> {l.text}
-                </p>
-              </li>
-            ))}
-          </ol>
+          <Timeline items={log.map((l) => ({ id: l.id, title: `${s.member(l.by)?.name ?? "Someone"} ${l.text}`, meta: klTime(l.at), tone: KIND_TONE[l.kind] }))} />
         )}
       </Section>
 
-      {burst > 0 && <Petals key={burst} inks={s.members.map((m) => m.ink)} />}
+      {burst > 0 && <Confetti key={burst} />}
     </Page>
   );
 }

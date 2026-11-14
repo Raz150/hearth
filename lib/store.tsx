@@ -54,6 +54,8 @@ type Store = Shared &
   Mock & {
     me: string;
     member: (id?: string) => Member | undefined;
+    /** Which colour a member wears in the design: the first account is "h", the second "w". */
+    person: (id?: string) => "h" | "w" | undefined;
     paymentFor: (billId: string, month: string) => Payment | undefined;
     undo: Flash | null;
     revert: () => void;
@@ -77,6 +79,10 @@ type Store = Shared &
     thanksText: (c: Chore) => string;
     togglePaid: (billId: string, month: string) => void;
     setNote: (text: string) => void;
+    /** Send a heart back for the other's note (a line in the shared log). */
+    heartNote: () => void;
+    /** I've already sent a heart for the current note. */
+    noteHearted: boolean;
     askDoa: (text: string) => void;
     /** I prayed for my spouse's request today, or (if already today) take it back. */
     prayFor: (id: string) => void;
@@ -179,6 +185,8 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
   };
 
   /** Add a log line (shown at once, saved in the background). Returns its id so undo can remove it. */
+  const heartText = () => `sent ${data.members.find((m) => m.id === data.note?.by)?.name ?? "you"} a heart for their note`;
+  const noteHearted = !!data.note && data.log.some((l) => l.kind === "thanks" && l.by === me && l.text === heartText() && Date.parse(l.at) >= Date.parse(data.note!.at));
   const logLine = (kind: LogEntry["kind"], text: string) => {
     const entry: LogEntry = { id: crypto.randomUUID(), kind, text, by: me, at: new Date().toISOString() };
     setLog((l) => [entry, ...l]);
@@ -196,6 +204,10 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
     undo,
     dismissUndo,
     member: (id) => data.members.find((m) => m.id === id),
+    person: (id) => {
+      const i = data.members.findIndex((m) => m.id === id);
+      return i < 0 ? undefined : i === 0 ? "h" : "w";
+    },
     paymentFor: (billId, m) => mock.payments.find((p) => p.billId === billId && p.month === m),
     revert: () => {
       undo?.undo?.();
@@ -267,7 +279,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       );
       setUndo({
         id: Date.now(),
-        label: `${t.title} · done`,
+        label: `Done: ${t.title}`,
         undo: () => {
           mark(undefined);
           write(() => mark(me), clear(), unlog(log.entry.id));
@@ -284,7 +296,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       write(putBack, sb.from("todos").delete().eq("id", id));
       setUndo({
         id: Date.now(),
-        label: "Removed",
+        label: "Deleted",
         undo: () => {
           putBack();
           write(
@@ -322,7 +334,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       );
       setUndo({
         id: Date.now(),
-        label: text ? "Note pinned" : "Note removed",
+        label: text ? "Note sent" : "Note deleted",
         undo: () => {
           show(prev);
           write(() => show(next), save(prev), ...(log ? [unlog(log.entry.id)] : []));
@@ -353,7 +365,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       write(() => setChores((p) => [...p, c]), sb.from("chores").delete().eq("id", id));
       setUndo({
         id: Date.now(),
-        label: "Removed",
+        label: "Deleted",
         undo: () => {
           setChores((p) => [...p, c]);
           write(() => setChores((p) => p.filter((x) => x.id !== id)), sb.from("chores").insert({ id, ...choreMeta(c), ...tickRow(tickOf(c)) }));
@@ -389,7 +401,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       );
       setUndo({
         id: Date.now(),
-        label: `${c.title} · done`,
+        label: `Done: ${c.title}`,
         undo: () => {
           putChore(id, before);
           write(() => putChore(id, done), save(before), unlog(log.entry.id));
@@ -398,6 +410,13 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
     },
 
     thanksText,
+    noteHearted,
+    heartNote: () => {
+      if (!data.note || data.note.by === me || noteHearted) return;
+      const log = logLine("thanks", heartText());
+      write(() => setLog((l) => l.filter((x) => x.id !== log.entry.id)), log.query);
+    },
+
     thank: (choreId) => {
       const c = data.chores.find((x) => x.id === choreId);
       if (!c?.lastBy || c.lastBy === me) return;
@@ -483,7 +502,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       write(putBack, sb.from("doa_requests").delete().eq("id", id));
       setUndo({
         id: Date.now(),
-        label: "Removed",
+        label: "Deleted",
         undo: () => {
           putBack();
           // Prayers were deleted with it and can't be re-added for past days, so they don't come back.
@@ -505,7 +524,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       }
       const before = mock;
       setMock((p) => ({ ...p, payments: [...p.payments, { billId, month: m, by: me, on: klToday() }] }));
-      setUndo({ id: Date.now(), label: `${b.name} · paid`, undo: () => setMock(before) });
+      setUndo({ id: Date.now(), label: `Paid: ${b.name}`, undo: () => setMock(before) });
     },
 
     updateMe: async (patch) => {

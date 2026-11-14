@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Outline Pop — Component kit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Inter:wght@400;500;600;700&amp;family=Special+Elite&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1A1A1A}a:hover{color:#000}
+button{font-family:inherit;cursor:pointer;color:#1A1A1A}
+.sec{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-bottom:2px solid #1A1A1A;padding-bottom:8px}
+.k{font-size:11px;font-weight:600;color:#4A5550}
+input.cb,input.sq{appearance:none;-webkit-appearance:none;margin:0;width:24px;height:24px;border:2px solid #1A1A1A;border-radius:50%;background:#FFFFFF;display:grid;place-content:center;flex:none;cursor:pointer}
+input.sq{border-radius:7px}
+input.cb:checked,input.sq:checked{background:#5BC98C}
+input.cb:checked::before,input.sq:checked::before{content:"";width:9px;height:5px;border-left:2px solid #1A1A1A;border-bottom:2px solid #1A1A1A;transform:translateY(-1px) rotate(-45deg)}
+input.rd{appearance:none;-webkit-appearance:none;margin:0;width:24px;height:24px;border:2px solid #1A1A1A;border-radius:50%;background:#FFFFFF;display:grid;place-content:center;flex:none;cursor:pointer}
+input.rd:checked::before{content:"";width:10px;height:10px;border-radius:50%;background:#1A1A1A}
+input.tg{appearance:none;-webkit-appearance:none;margin:0;width:52px;height:30px;border:2px solid #1A1A1A;border-radius:999px;background:#FFFFFF;position:relative;flex:none;cursor:pointer}
+input.tg::before{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;box-sizing:border-box;border:2px solid #1A1A1A;border-radius:50%;background:#FFD25A;transition:left .15s}
+input.tg:checked{background:#C9BEF5}
+input.tg:checked::before{left:25px;background:#FFFFFF}
+.field{height:48px;box-sizing:border-box;border:2px solid #1A1A1A;border-radius:12px;background:#FFFFFF;padding:0 14px;font:500 14px 'Inter',sans-serif;color:#1A1A1A;width:100%}
+.field::placeholder{color:#5F6B63}
+input:focus-visible,button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid #3F6FAD;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1400px; box-sizing: border-box; background-color: #DCEBDD; background-image: linear-gradient(#CFE2D2 1px, transparent 1px), linear-gradient(90deg, #CFE2D2 1px, transparent 1px); background-size: 26px 26px; font-family: 'Inter', sans-serif; color: #1A1A1A; padding: 56px 60px; display: flex; flex-direction: column; gap: 44px">
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span class="k" style="letter-spacing: 2px">FAMILY HOME APP · UI KIT</span>
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 44px; font-weight: 700; letter-spacing: -1.5px">E · Outline Pop — Components</span>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center">
+      <span style="width: 28px; height: 28px; border: 2px solid #1A1A1A; border-radius: 8px; background: #FF8A5B"></span>
+      <span style="width: 28px; height: 28px; border: 2px solid #1A1A1A; border-radius: 8px; background: #C9BEF5"></span>
+      <span style="width: 28px; height: 28px; border: 2px solid #1A1A1A; border-radius: 8px; background: #FFD25A"></span>
+      <span style="width: 28px; height: 28px; border: 2px solid #1A1A1A; border-radius: 8px; background: #FFE1C4"></span>
+      <span style="width: 28px; height: 28px; border: 2px solid #1A1A1A; border-radius: 8px; background: #EEF6EF"></span>
+      <span style="width: 28px; height: 28px; border: 2px solid #1A1A1A; border-radius: 8px; background: #5BC98C"></span>
+      <span style="width: 28px; height: 28px; border: 2px solid #1A1A1A; border-radius: 8px; background: #FF6B6B"></span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; align-items: start">
+
+    <!-- COLUMN 1 -->
+    <div style="display: flex; flex-direction: column; gap: 40px">
+      <section style="display: flex; flex-direction: column; gap: 16px">
+        <h2 class="sec">01 · Buttons</h2>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+          <button style="height: 48px; padding: 0 22px; border: 2px solid #1A1A1A; border-radius: 12px; background: #1A1A1A; color: #FFFEFA; box-shadow: 3px 3px 0 #FFE1C4, 3px 3px 0 2px #1A1A1A; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700">Save</button>
+          <button style="height: 48px; padding: 0 22px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFFFFF; box-shadow: 3px 3px 0 #1A1A1A; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700">Cancel</button>
+        </div>
+        <span class="k">primary (ink) · secondary (white) · 48 h · hard 3px</span>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+          <button style="height: 48px; padding: 0 18px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FF8A5B; box-shadow: 3px 3px 0 #1A1A1A; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add item</button>
+          <button style="height: 48px; padding: 0 18px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FF6B6B; box-shadow: 3px 3px 0 #1A1A1A; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700">Delete</button>
+        </div>
+        <span class="k">accent with icon · destructive (coral)</span>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center">
+          <button style="height: 48px; padding: 0 22px; border: 2px solid #1A1A1A; border-radius: 12px; background: #1A1A1A; color: #FFFEFA; transform: translate(3px, 3px); font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700">Pressed</button>
+          <button disabled style="height: 48px; padding: 0 22px; border: 2px solid #A9B8AD; border-radius: 12px; background: #D2DED4; color: #5F6B63; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700; cursor: not-allowed">Disabled</button>
+        </div>
+        <span class="k">pressed: shadow 0, moves 3px · disabled: no shadow</span>
+        <button style="height: 52px; width: 100%; border: 2px solid #1A1A1A; border-radius: 14px; background: #FFD25A; box-shadow: 6px 6px 0 0 #FFE1C4, 6px 6px 0 2px #1A1A1A; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 700">Add to shopping list</button>
+        <span class="k">block button · stacked shadow (1 per screen)</span>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <button aria-label="Edit" style="width: 44px; height: 44px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button>
+          <button aria-label="Delete" style="width: 44px; height: 44px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></button>
+          <button aria-label="More" style="width: 44px; height: 44px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="#1A1A1A"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
+          <button aria-label="Add" style="width: 56px; height: 56px; border: 2px solid #1A1A1A; border-radius: 50%; background: #FFD25A; box-shadow: 3px 3px 0 #1A1A1A; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></button>
+          <a href="#" style="font-size: 14px; font-weight: 700">See all →</a>
+        </div>
+        <span class="k">icon 44 · FAB 56 · text link</span>
+      </section>
+
+      <section style="display: flex; flex-direction: column; gap: 14px">
+        <h2 class="sec">02 · Inputs</h2>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">List name<input class="field" value="Weekly groceries"></label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">Focused<input class="field" placeholder="Type an item…" style="box-shadow: 3px 3px 0 #C9BEF5, 3px 3px 0 2px #1A1A1A"></label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">Error<input class="field" value="" placeholder="Amount (RM)" style="background: #FFF1EE; box-shadow: 3px 3px 0 #FF6B6B, 3px 3px 0 2px #1A1A1A"><span style="font-size: 12px; font-weight: 600; color: #A92F1F">Enter an amount first</span></label>
+        <div style="height: 52px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 14px; background: #FFFFFF; box-shadow: 3px 3px 0 #1A1A1A; display: flex; align-items: center; padding-left: 14px; gap: 10px">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+          <input aria-label="Search items" placeholder="Search items" style="flex: 1; min-width: 0; border: none; background: none; font: 500 14px 'Inter', sans-serif; color: #1A1A1A">
+          <span aria-hidden="true" style="align-self: stretch; border-left: 1.5px dashed #8A978D"></span>
+          <button aria-label="Scan barcode" style="width: 36px; height: 36px; margin-right: 6px; border: 2px solid #1A1A1A; border-radius: 9px; background: #C9BEF5; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M14 9v6M17 9v6"></path></svg></button>
+        </div>
+        <span class="k">search with scan action</span>
+        <button style="height: 48px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFFFFF; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 500">Groceries<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+        <textarea aria-label="Note" class="field" placeholder="Write a note for W…" style="height: 88px; padding: 12px 14px; font-family: 'Special Elite', monospace; font-size: 16px; resize: none"></textarea>
+        <span class="k">select · note textarea (typewriter)</span>
+      </section>
+    </div>
+
+    <!-- COLUMN 2 -->
+    <div style="display: flex; flex-direction: column; gap: 40px">
+      <section style="display: flex; flex-direction: column; gap: 16px">
+        <h2 class="sec">03 · Selection</h2>
+        <div style="display: flex; gap: 18px; flex-wrap: wrap">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><input type="checkbox" class="cb">To do</label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><input type="checkbox" class="cb" checked>Done</label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><input type="checkbox" class="sq" checked>Square</label>
+        </div>
+        <span class="k">checkbox (lists) · square (settings)</span>
+        <fieldset style="border: none; margin: 0; padding: 0; display: flex; gap: 18px; align-items: center">
+          <legend class="k" style="float: left; margin-right: 6px">Paid by</legend>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><input type="radio" class="rd" name="payer" checked>H</label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><input type="radio" class="rd" name="payer">W</label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><input type="radio" class="rd" name="payer">Split</label>
+        </fieldset>
+        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600">Remind me at 7 PM<input type="checkbox" role="switch" class="tg" checked></label>
+        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600">Share with W<input type="checkbox" role="switch" class="tg"></label>
+        <div role="group" aria-label="Range" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 2px solid #1A1A1A; border-radius: 12px; background: #EEF6EF; padding: 3px; gap: 3px">
+          <button aria-pressed="true" style="height: 38px; border: 2px solid #1A1A1A; border-radius: 9px; background: #FFFFFF; font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; font-weight: 700">Today</button>
+          <button aria-pressed="false" style="height: 38px; border: 2px solid transparent; border-radius: 9px; background: none; font-size: 14px; font-weight: 600">Week</button>
+          <button aria-pressed="false" style="height: 38px; border: 2px solid transparent; border-radius: 9px; background: none; font-size: 14px; font-weight: 600">Month</button>
+        </div>
+        <span class="k">segmented control</span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button aria-pressed="true" style="height: 34px; padding: 0 14px; border: 2px solid #1A1A1A; border-radius: 999px; background: #FFD25A; font-size: 13px; font-weight: 700">All</button>
+          <button aria-pressed="false" style="height: 34px; padding: 0 14px; border: 2px solid #1A1A1A; border-radius: 999px; background: #FFFFFF; font-size: 13px; font-weight: 600">Groceries 6</button>
+          <button aria-pressed="false" style="height: 34px; padding: 0 14px; border: 2px solid #1A1A1A; border-radius: 999px; background: #FFFFFF; font-size: 13px; font-weight: 600">Household</button>
+          <span style="height: 34px; box-sizing: border-box; padding: 0 6px 0 12px; border: 2px solid #1A1A1A; border-radius: 999px; background: #ECE8FB; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px">Eggs<button aria-label="Remove eggs" style="width: 22px; height: 22px; border: none; background: none; padding: 0; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+        </div>
+        <span class="k">filter chips · removable chip</span>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+          <span style="min-width: 24px; height: 24px; box-sizing: border-box; padding: 0 6px; border: 2px solid #1A1A1A; border-radius: 999px; background: #FF8A5B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">3</span>
+          <span style="height: 24px; box-sizing: border-box; padding: 0 8px; border: 2px solid #1A1A1A; border-radius: 6px; background: #FFD25A; font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center">NEW</span>
+          <span style="height: 26px; box-sizing: border-box; padding: 0 10px; border: 2px solid #1A1A1A; border-radius: 999px; background: #C9BEF5; font-size: 12px; font-weight: 700; display: flex; align-items: center">Done</span>
+          <span style="height: 26px; box-sizing: border-box; padding: 0 10px; border: 2px solid #1A1A1A; border-radius: 999px; background: #FFE1C4; font-size: 12px; font-weight: 700; display: flex; align-items: center">Due today</span>
+        </div>
+        <span class="k">count · new · status badges</span>
+      </section>
+
+      <section style="display: flex; flex-direction: column; gap: 16px">
+        <h2 class="sec">04 · Progress</h2>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <div style="display: flex; border: 2px solid #1A1A1A; border-radius: 12px; overflow: hidden; background: #FFFFFF">
+            <button aria-label="Less" style="width: 40px; height: 40px; border: none; border-right: 2px solid #1A1A1A; background: none; font-size: 20px; font-weight: 700">−</button>
+            <span style="width: 40px; display: flex; align-items: center; justify-content: center; background: #FFD25A; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 700">2</span>
+            <button aria-label="More" style="width: 40px; height: 40px; border: none; border-left: 2px solid #1A1A1A; background: none; font-size: 20px; font-weight: 700">+</button>
+          </div>
+          <span class="k">quantity stepper</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700"><span>November budget</span><span>62%</span></div>
+          <div style="height: 18px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 999px; background: #FFFFFF; overflow: hidden"><div style="width: 62%; height: 100%; background: #FF8A5B; border-right: 2px solid #1A1A1A"></div></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; align-items: center">
+            <span style="width: 26px; height: 26px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #5BC98C; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"></path></svg></span>
+            <span style="flex: 1; height: 4px; background: #5BC98C; border-top: 1.5px solid #1A1A1A; border-bottom: 1.5px solid #1A1A1A"></span>
+            <span style="width: 26px; height: 26px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #5BC98C; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"></path></svg></span>
+            <span style="flex: 1; height: 0; border-top: 2px dashed #1A1A1A"></span>
+            <span style="width: 26px; height: 26px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #FFFFFF"></span>
+            <span style="flex: 1; height: 0; border-top: 2px dashed #1A1A1A"></span>
+            <span style="width: 26px; height: 26px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #FFFFFF"></span>
+          </div>
+          <div style="display: flex; justify-content: space-between" class="k"><span>Listed</span><span>Bought</span><span>Paid</span><span>Stored</span></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; font-weight: 700">Syncing…</span>
+          <div style="height: 14px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 4px; background: #FFFFFF; overflow: hidden"><div style="width: 70%; height: 100%; background: repeating-linear-gradient(-45deg, #C9BEF5 0, #C9BEF5 6px, #FFFFFF 6px, #FFFFFF 10px); border-right: 2px solid #1A1A1A"></div></div>
+        </div>
+        <span class="k">budget bar · step tracker · loading</span>
+      </section>
+
+      <section style="display: flex; flex-direction: column; gap: 14px">
+        <h2 class="sec">05 · Avatars</h2>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <span style="width: 48px; height: 48px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #C9BEF5; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 700; position: relative">H<span aria-label="online" style="position: absolute; right: -2px; bottom: -2px; width: 14px; height: 14px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #5BC98C"></span></span>
+          <span style="width: 38px; height: 38px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #FFB59A; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700">W</span>
+          <div style="display: flex"><span style="width: 30px; height: 30px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #C9BEF5; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">H</span><span style="width: 30px; height: 30px; margin-left: -8px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #FFB59A; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">W</span></div>
+          <span style="height: 28px; box-sizing: border-box; padding: 0 10px 0 3px; border: 2px solid #1A1A1A; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600"><span style="width: 18px; height: 18px; border-radius: 50%; background: #FFB59A; border: 1.5px solid #1A1A1A; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center">W</span>added by W</span>
+        </div>
+        <span class="k">48 with status · 38 · 30 group · byline tag</span>
+      </section>
+    </div>
+
+    <!-- COLUMN 3 -->
+    <div style="display: flex; flex-direction: column; gap: 40px">
+      <section style="display: flex; flex-direction: column; gap: 16px">
+        <h2 class="sec">06 · Cards</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+          <div style="height: 88px; box-sizing: border-box; background: #FF8A5B; border: 2px solid #1A1A1A; border-radius: 14px; box-shadow: 3px 3px 0 #1A1A1A; padding: 10px 12px; display: flex; flex-direction: column; justify-content: space-between"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.5 9h-12z"></path><path d="M6 6 5 3H2"></path></svg><div style="display: flex; flex-direction: column"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700; line-height: 1">6</span><span style="font-size: 12px; font-weight: 600">to buy</span></div></div>
+          <div style="height: 88px; box-sizing: border-box; background: #C9BEF5; border: 2px solid #1A1A1A; border-radius: 14px; box-shadow: 3px 3px 0 #1A1A1A; padding: 10px 12px; display: flex; flex-direction: column; justify-content: space-between"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg><div style="display: flex; flex-direction: column"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700; line-height: 1">2/5</span><span style="font-size: 12px; font-weight: 600">chores</span></div></div>
+        </div>
+        <span class="k">stat tile · one flat colour each</span>
+
+        <div style="background: #FFFDF6; border: 2px solid #1A1A1A; border-radius: 14px; overflow: hidden; box-shadow: 6px 6px 0 0 #FFE1C4, 6px 6px 0 2px #1A1A1A">
+          <div style="height: 32px; box-sizing: border-box; background: #FFD25A; border-bottom: 2px solid #1A1A1A; padding: 0 10px 0 12px; display: flex; align-items: center; justify-content: space-between"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; font-weight: 700">note from W</span><span aria-hidden="true" style="display: flex; gap: 5px"><span style="width: 12px; height: 12px; border: 1.5px solid #1A1A1A; border-radius: 3px; background: #FFFFFF"></span><span style="width: 12px; height: 12px; border: 1.5px solid #1A1A1A; border-radius: 3px; background: #FF8A5B"></span></span></div>
+          <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px"><span style="font-family: 'Special Elite', monospace; font-size: 18px; line-height: 1.3">Don't forget the eggs, sayang!</span><span class="k">7:12 AM · seen</span></div>
+        </div>
+        <span class="k">note window · stacked shadow</span>
+
+        <div style="background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px; box-shadow: 3px 3px 0 #1A1A1A; padding: 14px; display: flex; justify-content: space-between; align-items: center">
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700">Dinner at Mak's</span><span class="k">Today · both of you</span></div>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -1px">7:30<span style="font-size: 12px; letter-spacing: 0"> PM</span></span>
+        </div>
+        <span class="k">event card</span>
+
+        <div style="background: #FF8A5B; border: 2px solid #1A1A1A; border-radius: 14px; box-shadow: 3px 3px 0 #1A1A1A; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+          <span style="width: 30px; height: 30px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.4" stroke-linejoin="round"><path d="M12 20C5 15.5 3 12 3 8.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 9 2.5c0 3.5-2 7-9 11.5z"></path></svg></span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 700; line-height: 1.1">Date night</span>
+          <span style="font-size: 12px; font-weight: 600">Fri, 20 Nov · 8:00 PM</span>
+        </div>
+        <span class="k">highlight card</span>
+
+        <div style="border: 2px dashed #1A1A1A; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+          <span style="width: 44px; height: 44px; box-sizing: border-box; border: 1.5px dashed #1A1A1A; border-radius: 12px; background: #ECE8FB; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#FFD25A" stroke="#1A1A1A" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2c.6 5 2 6.6 7 7.4-5 .8-6.4 2.4-7 7.6-.6-5.2-2-6.8-7-7.6 5-.8 6.4-2.4 7-7.4z"></path></svg></span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700">No chores left today</span>
+          <button style="height: 36px; padding: 0 14px; border: 2px solid #1A1A1A; border-radius: 10px; background: #FFFFFF; font-size: 13px; font-weight: 700">Add a chore</button>
+        </div>
+        <span class="k">empty state · dashed</span>
+      </section>
+    </div>
+
+    <!-- COLUMN 4 -->
+    <div style="display: flex; flex-direction: column; gap: 40px">
+      <section style="display: flex; flex-direction: column; gap: 16px">
+        <h2 class="sec">07 · Lists</h2>
+        <div style="background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px; overflow: hidden; box-shadow: 3px 3px 0 #1A1A1A">
+          <div style="height: 42px; box-sizing: border-box; background: #EEF6EF; border-bottom: 2px solid #1A1A1A; padding: 0 14px; display: flex; align-items: center; justify-content: space-between"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700">Shopping list</span><a href="#" style="font-size: 13px; font-weight: 700; text-decoration: none">See all 6</a></div>
+          <label style="height: 54px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; gap: 12px"><span style="width: 34px; height: 34px; box-sizing: border-box; border: 1.5px dashed #1A1A1A; border-radius: 9px; background: #FFF4D6; flex: none"></span><span style="display: flex; flex-direction: column; flex: 1"><span style="font-size: 14px; font-weight: 700">Rice 5kg</span><span class="k">added by W</span></span><input type="checkbox" class="cb" aria-label="Got rice"></label>
+          <label style="height: 54px; box-sizing: border-box; padding: 0 14px; border-top: 1.5px dashed #8A978D; display: flex; align-items: center; gap: 12px"><span style="width: 34px; height: 34px; box-sizing: border-box; border: 1.5px dashed #1A1A1A; border-radius: 9px; background: #ECE8FB; flex: none"></span><span style="display: flex; flex-direction: column; flex: 1"><span style="font-size: 14px; font-weight: 700; text-decoration: line-through; color: #5F6B63">Eggs</span><span class="k">bought by H</span></span><input type="checkbox" class="cb" aria-label="Got eggs" checked></label>
+        </div>
+        <span class="k">list card · row 54 · checked row</span>
+
+        <div style="background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px; overflow: hidden; box-shadow: 3px 3px 0 #1A1A1A; font-size: 14px">
+          <div style="height: 46px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; justify-content: space-between"><span>Groceries</span><span style="font-weight: 700">RM 86.40</span></div>
+          <div style="height: 46px; box-sizing: border-box; padding: 0 14px; border-top: 1.5px dashed #8A978D; display: flex; align-items: center; justify-content: space-between"><span>Electricity</span><span style="font-weight: 700">RM 186.00</span></div>
+          <div style="height: 50px; box-sizing: border-box; padding: 0 14px; border-top: 2px solid #1A1A1A; background: #FFE1C4; display: flex; align-items: center; justify-content: space-between"><span style="font-weight: 700">Total</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700">RM 272.40</span></div>
+        </div>
+        <span class="k">expense table · total row</span>
+
+        <div style="background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px; box-shadow: 3px 3px 0 #1A1A1A; padding: 12px 14px; display: flex; flex-direction: column">
+          <div style="display: flex; gap: 12px; align-items: flex-start"><div style="display: flex; flex-direction: column; align-items: center"><span style="width: 32px; height: 32px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 9px; background: #C9BEF5"></span><span aria-hidden="true" style="height: 18px; border-left: 2px dashed #1A1A1A"></span></div><div style="display: flex; flex-direction: column; padding-top: 2px"><span style="font-size: 13px; font-weight: 700">W added Rice 5kg</span><span class="k">7:10 AM</span></div></div>
+          <div style="display: flex; gap: 12px; align-items: flex-start"><div style="display: flex; flex-direction: column; align-items: center"><span style="width: 32px; height: 32px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 9px; background: #FFFFFF"></span><span aria-hidden="true" style="height: 18px; border-left: 2px dashed #1A1A1A"></span></div><div style="display: flex; flex-direction: column; padding-top: 2px"><span style="font-size: 13px; font-weight: 700">H finished Trash out</span><span class="k">6:55 AM</span></div></div>
+          <div style="display: flex; gap: 12px; align-items: flex-start"><span style="width: 32px; height: 32px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 9px; background: #FFFFFF; flex: none"></span><div style="display: flex; flex-direction: column; padding-top: 2px"><span style="font-size: 13px; font-weight: 700">W paid Electricity</span><span class="k">Yesterday</span></div></div>
+        </div>
+        <span class="k">activity timeline</span>
+      </section>
+
+      <section style="display: flex; flex-direction: column; gap: 16px">
+        <h2 class="sec">08 · Feedback</h2>
+        <div role="dialog" aria-label="Delete list?" style="background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px; overflow: hidden; box-shadow: 6px 6px 0 0 #FFE1C4, 6px 6px 0 2px #1A1A1A">
+          <div style="height: 32px; box-sizing: border-box; background: #FF6B6B; border-bottom: 2px solid #1A1A1A; padding: 0 10px 0 12px; display: flex; align-items: center; justify-content: space-between"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; font-weight: 700">Delete list?</span><button aria-label="Close" style="width: 22px; height: 22px; border: 1.5px solid #1A1A1A; border-radius: 4px; background: #FFFFFF; padding: 0; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="3.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 14px"><span style="font-size: 14px">This removes 6 items for both of you.</span><div style="display: flex; gap: 10px; justify-content: flex-end"><button style="height: 40px; padding: 0 16px; border: 2px solid #1A1A1A; border-radius: 10px; background: #FFFFFF; font-size: 14px; font-weight: 700">No</button><button style="height: 40px; padding: 0 16px; border: 2px solid #1A1A1A; border-radius: 10px; background: #FF6B6B; box-shadow: 3px 3px 0 #1A1A1A; font-size: 14px; font-weight: 700">Yes, delete</button></div></div>
+        </div>
+        <span class="k">dialog · retro window</span>
+        <div role="status" style="height: 52px; box-sizing: border-box; background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px; box-shadow: 3px 3px 0 #1A1A1A; padding: 0 8px 0 10px; display: flex; align-items: center; gap: 10px">
+          <span style="width: 28px; height: 28px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #5BC98C; display: flex; align-items: center; justify-content: center; flex: none"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"></path></svg></span>
+          <span style="flex: 1; font-size: 14px; font-weight: 600">Saved to Shopping</span>
+          <button style="height: 36px; padding: 0 12px; border: none; background: none; font-size: 14px; font-weight: 700; text-decoration: underline">Undo</button>
+        </div>
+        <span class="k">toast</span>
+        <div style="display: flex; gap: 8px; align-items: flex-end">
+          <span style="width: 30px; height: 30px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 50%; background: #FFB59A; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex: none">W</span>
+          <div style="position: relative; background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px 14px 14px 4px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">On my way home!</span><span class="k">7:45 PM</span></div>
+        </div>
+        <span class="k">message bubble</span>
+      </section>
+    </div>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 class="sec">09 · Navigation</h2>
+    <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap">
+      <div style="width: 340px; height: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between">
+        <button aria-label="Back" style="width: 44px; height: 44px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700">Shopping</span>
+        <button aria-label="More options" style="width: 44px; height: 44px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="#1A1A1A"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
+      </div>
+      <nav style="width: 354px; height: 62px; box-sizing: border-box; background: #EEF6EF; border: 2px solid #1A1A1A; border-radius: 16px; box-shadow: 3px 3px 0 #1A1A1A; padding: 0 8px; display: flex; align-items: center; justify-content: space-between">
+        <button style="height: 42px; padding: 0 14px; border: 2px solid #1A1A1A; border-radius: 12px; background: #FFE1C4; display: flex; align-items: center; gap: 8px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>Home</button>
+        <button aria-label="Lists" style="width: 44px; height: 44px; border: none; background: none; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 10h6M9 14h6"></path></svg></button>
+        <button aria-label="Write a note" style="width: 44px; height: 44px; border: none; background: none; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button>
+        <button aria-label="Calendar" style="width: 44px; height: 44px; border: none; background: none; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg></button>
+        <button aria-label="Money" style="width: 44px; height: 44px; border: none; background: none; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="6" width="18" height="14" rx="3"></rect><path d="M16 13h2M3 10h18"></path></svg></button>
+      </nav>
+      <div style="width: 340px; box-sizing: border-box; background: #FFFFFF; border: 2px solid #1A1A1A; border-radius: 14px; box-shadow: 3px 3px 0 #1A1A1A; padding: 8px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center">
+        <div style="display: flex; flex-direction: column; align-items: center"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700; color: #4A5550">12</span><span class="k">Thu</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700; color: #4A5550">13</span><span class="k">Fri</span></div>
+        <div style="height: 60px; box-sizing: border-box; border: 2px solid #1A1A1A; border-radius: 12px; background: #C9BEF5; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-size: 11px; font-weight: 700">Sat</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 700">14</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700">15</span><span class="k">Sun</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700">16</span><span class="k">Mon</span></div>
+      </div>
+    </div>
+    <span class="k">top bar (back · title · more) · tab bar with active chip · day picker</span>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

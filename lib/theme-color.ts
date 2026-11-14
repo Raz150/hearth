@@ -1,2 +1,2 @@
-/** Page paper colour per theme; also the browser/status bar colour. Must match --paper in globals.css. */
-export const THEME_COLOR = { light: "#eef0df", dark: "#1a201b" };
+/** Page colour per theme; also the browser/status bar colour. Must match --bg in docs/design/tokens.css. */
+export const THEME_COLOR = { light: "#DCEBDD", dark: "#1C1D15" };

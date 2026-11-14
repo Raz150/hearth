@@ -3,12 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Amiri } from "next/font/google";
-import { Check, ChevronDown, Eye, EyeOff, HandHeart, Pause, Play, Send, Share, Sprout, Trash2 } from "lucide-react";
-import { Card, Page, PageHeader, Section, Who, chipClass, chipStyle } from "@/components/ui";
+import { Check, ChevronDown, HandHeart, Pause, Play, Send, Share, Sprout, Trash2 } from "lucide-react";
+import { Button, iconButtonClass } from "@/components/kit/button";
+import { Card, cardClass } from "@/components/kit/card";
+import { Chip, Segmented, Toggle } from "@/components/kit/selection";
+import { HIT_44, cx } from "@/components/kit/shared";
+import { Face, Page, PageHeader, Section, Who } from "@/components/ui";
 import { daysBetween, klHour, klToday } from "@/lib/date";
 import { doaForHour, type Doa, type DoaGroup } from "@/lib/doa";
 import doaJson from "@/lib/doa.json";
-import { inkText, useStore, type DoaRequest } from "@/lib/store";
+import { useStore, type DoaRequest } from "@/lib/store";
 
 const amiri = Amiri({ subsets: ["arabic"], weight: "400" });
 const GROUPS = doaJson as DoaGroup[];
@@ -57,58 +61,49 @@ export default function DoaPage() {
 
   return (
     <Page>
-      <PageHeader kicker="doa & zikir" title="Doa" />
+      <PageHeader kicker="Doa & zikir" title="Doa" />
 
       <AskDoa />
 
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <div role="radiogroup" aria-label="Translation" className="flex rounded-full bg-paper-deep p-0.5 text-sm">
-          {(["en", "ms"] as const).map((l) => (
-            <button
-              key={l}
-              role="radio"
-              aria-checked={lang === l}
-              onClick={() => setLang(l)}
-              className={`min-h-11 min-w-12 rounded-full px-3 transition-colors ${lang === l ? "bg-card text-ink shadow-sm" : "text-ink-soft"}`}
-            >
-              {l === "en" ? "EN" : "BM"}
-            </button>
-          ))}
+      <div className="flex items-center justify-between gap-4">
+        <div className="w-36">
+          <Segmented
+            label="Translation"
+            value={lang}
+            onChange={setLang}
+            options={[
+              { value: "en", label: "EN" },
+              { value: "ms", label: "BM" },
+            ]}
+          />
         </div>
-        <button
-          onClick={() => setRumi(rumi === "on" ? "off" : "on")}
-          aria-pressed={rumi === "on"}
-          className={`flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm transition-colors ${rumi === "on" ? "border-transparent bg-accent-soft text-ink" : "border-line text-ink-soft"}`}
-        >
-          {rumi === "on" ? <Eye size={16} /> : <EyeOff size={16} />}
-          Rumi
-        </button>
+        <Toggle label="Rumi" checked={rumi === "on"} onChange={() => setRumi(rumi === "on" ? "off" : "on")} />
       </div>
 
       {/* Groups: scrolls sideways, edge to edge on the phone. */}
-      <div className="-mx-5 mb-6 flex gap-2 overflow-x-auto px-5 py-2 [scrollbar-width:none]">
+      <div className="-ml-5 -mr-[22px] flex gap-2 overflow-x-auto py-1 pl-5 pr-[22px] [scrollbar-width:none]">
         {GROUPS.map((x) => (
-          <button key={x.id} onClick={() => pick(x.id)} aria-pressed={x.id === g.id} className={`${chipClass(x.id === g.id)} shrink-0`} style={chipStyle(x.id === g.id)}>
+          <Chip key={x.id} selected={x.id === g.id} onClick={() => pick(x.id)}>
             {lang === "ms" ? x.ms : x.en}
-          </button>
+          </Chip>
         ))}
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div key={g.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}>
-          <Card>
-            <ul className="divide-y divide-dashed divide-line">
+          <div className={cx(cardClass("info"), "overflow-hidden")}>
+            <ul className="divide-y-[1.5px] divide-dashed divide-divider">
               {g.items.map((d) => (
                 <li key={d.id}>
                   <DoaRow d={d} lang={lang} rumi={rumi === "on"} player={player} />
                 </li>
               ))}
             </ul>
-          </Card>
+          </div>
         </motion.div>
       </AnimatePresence>
 
-      <p className="mt-8 px-1 font-hand text-xs leading-relaxed text-ink-soft">
+      <p className="px-0.5 text-xs font-semibold leading-relaxed text-muted">
         Text, Rumi, English and audio: Hisnul Muslim (hisnmuslim.com) and the Quran (alquran.cloud). Bahasa Melayu and hadith sources: Hisnul Muslim, JPN Johor (e-JAUHAR).
       </p>
     </Page>
@@ -163,24 +158,24 @@ function DoaRow({ d, lang, rumi, player }: { d: Doa; lang: Lang; rumi: boolean; 
 
   return (
     <div>
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left">
+      <button onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-16 w-full items-center gap-3 px-3.5 py-3 text-left">
         <span className="min-w-0 flex-1">
-          <span lang={lang} className="line-clamp-2 font-serif leading-snug">
+          <span lang={lang} className="line-clamp-2 text-sm font-bold leading-snug">
             {opening(d[lang])}
           </span>
           {!open && (
-            <span lang="ar" dir="rtl" className={`${amiri.className} mt-1 block truncate text-lg leading-loose text-ink-soft`}>
+            <span lang="ar" dir="rtl" className={`${amiri.className} mt-1 block truncate text-lg leading-loose text-muted`}>
               {d.ar}
             </span>
           )}
         </span>
         {d.repeat > 1 && (
-          <span className={`shrink-0 rounded-full px-2 py-0.5 font-hand text-xs tabular-nums ${done ? "bg-accent-soft text-ink" : "bg-paper-deep text-ink-soft"}`}>
+          <span className={cx("inline-flex h-[26px] shrink-0 items-center rounded-full border-2 px-2.5 text-xs font-bold tabular-nums", done ? "border-edge-on-fill bg-done text-on-fill" : "border-edge-control bg-surface-sunken")}>
             {count > 0 && !done ? `${count}/${d.repeat}` : `${d.repeat}×`}
           </span>
         )}
-        {playing && !open && <Pause size={14} aria-label="Playing" className="shrink-0 text-accent" />}
-        <ChevronDown size={18} className={`shrink-0 text-ink-soft transition-transform ${open ? "rotate-180" : ""}`} />
+        {playing && !open && <Pause size={14} aria-label="Playing" className="shrink-0" />}
+        <ChevronDown size={18} strokeWidth={2.2} className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       <AnimatePresence initial={false}>
@@ -192,22 +187,22 @@ function DoaRow({ d, lang, rumi, player }: { d: Doa; lang: Lang; rumi: boolean; 
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-1">
+            <div className="px-3.5 pb-2">
               <p lang="ar" dir="rtl" className={`${amiri.className} text-[1.65rem] leading-[2.15]`}>
                 {d.ar}
               </p>
-              {rumi && <p className="pt-2 font-serif italic leading-relaxed text-accent">{d.tr}</p>}
-              <p lang={lang} className="mt-3 leading-relaxed">
+              {rumi && <p className="pt-2 text-sm font-medium italic leading-relaxed text-muted">{d.tr}</p>}
+              <p lang={lang} className="mt-3 text-sm font-medium leading-relaxed">
                 {d[lang]}
               </p>
 
-              <div className="mt-3 flex items-center gap-1 border-t border-dashed border-line pt-1">
-                <p className="flex-1 py-2 font-hand text-xs leading-snug text-ink-soft">{d.src}</p>
-                <button onClick={() => player.toggle(d)} aria-label={playing ? "Stop" : "Listen"} className="grid size-11 shrink-0 place-items-center text-ink-soft">
-                  {playing ? <Pause size={18} className="text-accent" /> : <Play size={18} />}
+              <div className="mt-3 flex items-center gap-2 border-t-[1.5px] border-dashed border-divider pt-2">
+                <p className="flex-1 py-1 text-xs font-semibold leading-snug text-muted">{d.src}</p>
+                <button onClick={() => player.toggle(d)} aria-label={playing ? "Stop" : "Listen"} className={cx(iconButtonClass, playing && "bg-chores text-on-fill")}>
+                  {playing ? <Pause strokeWidth={2.2} /> : <Play strokeWidth={2.2} />}
                 </button>
-                <button onClick={share} aria-label="Share" className="grid size-11 shrink-0 place-items-center text-ink-soft">
-                  <Share size={18} />
+                <button onClick={share} aria-label="Share" className={iconButtonClass}>
+                  <Share strokeWidth={2.2} />
                 </button>
                 {d.repeat > 1 && <Counter n={count} setN={setCount} repeat={d.repeat} />}
               </div>
@@ -221,11 +216,8 @@ function DoaRow({ d, lang, rumi, player }: { d: Doa; lang: Lang; rumi: boolean; 
 
 /** Tap to count recitations; the ring fills, then a tick. Tap once more to start again. */
 function Counter({ n, setN, repeat }: { n: number; setN: (n: number) => void; repeat: number }) {
-  const s = useStore();
   const done = n >= repeat;
-  const ink = s.member(s.me)?.ink ?? "var(--accent)";
   const R = 19;
-  const C = 2 * Math.PI * R;
   return (
     <button
       onClick={() => setN(done ? 0 : n + 1)}
@@ -233,11 +225,11 @@ function Counter({ n, setN, repeat }: { n: number; setN: (n: number) => void; re
       className="relative grid size-12 shrink-0 place-items-center transition-transform active:scale-90"
     >
       <svg viewBox="0 0 44 44" className="absolute inset-0 size-12 -rotate-90" aria-hidden>
-        <circle cx="22" cy="22" r={R} fill="none" stroke="var(--line)" strokeWidth="3" />
+        <circle cx="22" cy="22" r={R} fill="var(--surface)" stroke="var(--edge-control)" strokeWidth="2" />
         <motion.circle
-          cx="22" cy="22" r={R} fill="none" stroke={ink} strokeWidth="3" strokeLinecap="round" strokeDasharray={C}
+          cx="22" cy="22" r={R - 3} fill="none" stroke="var(--chores)" strokeWidth="4" strokeLinecap="round" strokeDasharray={2 * Math.PI * (R - 3)}
           initial={false}
-          animate={{ strokeDashoffset: C * (1 - Math.min(n, repeat) / repeat) }}
+          animate={{ strokeDashoffset: 2 * Math.PI * (R - 3) * (1 - Math.min(n, repeat) / repeat) }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       </svg>
@@ -248,8 +240,7 @@ function Counter({ n, setN, repeat }: { n: number; setN: (n: number) => void; re
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.6, opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="font-hand text-xs tabular-nums"
-          style={done ? { color: inkText(ink) } : undefined}
+          className="relative text-xs font-bold tabular-nums"
         >
           {done ? <Check size={18} strokeWidth={3} /> : `${n}/${repeat}`}
         </motion.span>
@@ -273,21 +264,26 @@ function AskDoa() {
 
   return (
     <Section title="Doakan saya" note={open.length ? `${open.length} open` : undefined}>
-      <form onSubmit={ask} className="mb-3 flex items-center gap-2">
+      <form onSubmit={ask} className="flex h-[52px] items-center gap-2.5 rounded-card border-2 border-edge-control bg-surface pl-3.5 pr-1.5 text-fg shadow-hard transition-shadow focus-within:shadow-focus">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           maxLength={200}
           aria-label="What should we pray for?"
-          placeholder="pray for me… exam on Thursday"
-          className="min-h-11 flex-1 rounded-full bg-paper-deep px-4 font-hand text-base outline-none placeholder:text-ink-soft"
+          placeholder="Pray for me… exam on Thursday"
+          className="h-full min-w-0 flex-1 bg-transparent text-base font-medium placeholder:text-subtle focus:outline-none"
         />
-        <button type="submit" disabled={!text.trim()} aria-label="Ask for doa" className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-paper transition-opacity disabled:opacity-40">
-          <Send size={18} />
+        <button
+          type="submit"
+          disabled={!text.trim()}
+          aria-label="Ask for doa"
+          className={cx("flex size-9 shrink-0 items-center justify-center rounded-icon border-2 border-edge-control bg-primary text-primary-fg transition-opacity disabled:opacity-40", HIT_44)}
+        >
+          <Send className="size-[18px]" strokeWidth={2.2} />
         </button>
       </form>
 
-      <ul className="space-y-2">
+      <ul className="flex flex-col gap-2.5">
         <AnimatePresence initial={false}>
           {open.map((d) => (
             <motion.li key={d.id} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
@@ -296,12 +292,15 @@ function AskDoa() {
           ))}
         </AnimatePresence>
       </ul>
-      {open.length === 0 && <p className="px-1 py-2 font-hand text-ink-soft">nothing asked yet ✿</p>}
+      {open.length === 0 && <p className="px-0.5 text-sm font-semibold text-muted">Nothing asked yet.</p>}
 
       {answered.length > 0 && (
-        <details className="mt-3 px-1">
-          <summary className="flex min-h-11 cursor-pointer items-center font-hand text-sm text-accent">Alhamdulillah, answered ({answered.length})</summary>
-          <ul className="space-y-2 pb-2">
+        <details className="group">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5 px-0.5 text-sm font-bold">
+            <ChevronDown aria-hidden className="size-4 transition-transform group-open:rotate-180" strokeWidth={2.4} />
+            Alhamdulillah, answered ({answered.length})
+          </summary>
+          <ul className="flex flex-col gap-2.5 pt-1">
             {answered.map((d) => (
               <li key={d.id}>
                 <Request d={d} />
@@ -322,13 +321,13 @@ function Request({ d }: { d: DoaRequest }) {
   const prayedToday = d.prayers.some((p) => p.by === s.me && p.day === today);
   const last = d.prayers.reduce<string | undefined>((m, p) => (!m || p.day > m ? p.day : m), undefined);
   const spouse = s.members.find((m) => m.id !== s.me);
-  const myInk = s.member(s.me)?.ink;
 
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-line bg-card py-2 pr-1 pl-3" style={{ borderLeft: `4px solid ${asker?.ink}` }}>
+    <Card className="flex items-start gap-3 py-3 pl-3 pr-1.5">
+      <Face member={asker} />
       <div className="min-w-0 flex-1">
-        <p className={`font-hand text-lg leading-snug ${d.answeredAt ? "text-ink-soft" : ""}`}>{d.text}</p>
-        <p className="text-xs text-ink-soft">
+        <p className={cx("font-note text-[17px] leading-snug", d.answeredAt && "text-subtle")}>{d.text}</p>
+        <p className="mt-1 text-xs font-semibold text-muted">
           <Who member={asker} /> · {ago(klToday(new Date(d.at)), today)}
           {d.prayers.length > 0 && (
             <>
@@ -340,34 +339,27 @@ function Request({ d }: { d: DoaRequest }) {
       </div>
 
       {mine ? (
-        <>
+        <div className="flex shrink-0 gap-1.5">
           <button
             onClick={() => s.answerDoa(d.id)}
             aria-pressed={!!d.answeredAt}
             aria-label={d.answeredAt ? "Mark as not answered yet" : "Answered, Alhamdulillah"}
-            className="grid size-11 shrink-0 place-items-center rounded-full"
-            style={{ color: d.answeredAt ? inkText(myInk ?? "#6f8c5c") : "var(--ink-soft)" }}
+            className={cx(iconButtonClass, d.answeredAt && "border-edge-on-fill bg-done text-on-fill")}
           >
-            <Sprout size={20} />
+            <Sprout strokeWidth={2.2} />
           </button>
-          <button onClick={() => s.removeDoa(d.id)} aria-label="Remove" className="grid size-11 shrink-0 place-items-center text-ink-soft">
-            <Trash2 size={18} />
+          <button onClick={() => s.removeDoa(d.id)} aria-label="Delete" className={iconButtonClass}>
+            <Trash2 strokeWidth={2.2} />
           </button>
-        </>
+        </div>
       ) : (
         !d.answeredAt && (
-          <motion.button
-            onClick={() => s.prayFor(d.id)}
-            aria-pressed={prayedToday}
-            whileTap={{ scale: 0.92 }}
-            className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm transition-colors ${prayedToday ? "text-paper" : "border border-line text-ink-soft"}`}
-            style={prayedToday ? { backgroundColor: inkText(myInk ?? "#6f8c5c") } : undefined}
-          >
-            <HandHeart size={16} />
+          <Button variant={prayedToday ? "chores" : "secondary"} size="sm" aria-pressed={prayedToday} onClick={() => s.prayFor(d.id)} className="shrink-0">
+            <HandHeart aria-hidden className="size-4" strokeWidth={2.2} />
             {prayedToday ? "Prayed" : "Aamiin"}
-          </motion.button>
+          </Button>
         )
       )}
-    </div>
+    </Card>
   );
 }

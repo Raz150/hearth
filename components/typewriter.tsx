@@ -43,7 +43,7 @@ export function Typewriter({ parts, day, className }: { parts: Part[]; day: stri
           </span>
         ) : null;
       })}
-      {typing && <span aria-hidden className="ml-0.5 inline-block h-[1em] w-[0.5ch] translate-y-[0.15em] animate-pulse bg-ink" />}
+      {typing && <span aria-hidden className="ml-0.5 inline-block h-[1em] w-[0.5ch] translate-y-[0.15em] animate-pulse bg-fg" />}
     </p>
   );
 }

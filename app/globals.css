@@ -1,98 +1,86 @@
 @import "tailwindcss";
+@import "../docs/design/tokens.css";
 
-/* Pistachio paper (light) and Forest night (dark).
-   Paper hexes must match THEME_COLOR in lib/theme-color.ts. */
+/* Two values the reference uses that differ per theme in a way no single token covers. */
 :root {
-  --paper: #eef0df;
-  --paper-deep: #e4e8d1;
-  --card: #f8f8ee;
-  --ink: #35392b;
-  --ink-soft: #6c715d;
-  --line: #d4d9bf;
-  --accent: #6f8c5c;
-  --accent-soft: #c9d8b4;
-  --highlight: #f3dd9b;
-  --grain-opacity: 0.35;
-  --marker: #ffd75e; /* "important" highlighter: brighter than the paper so it reads at a glance */
-  --marker-top: 24%;
-  --marker-ink: var(--ink);
-  color-scheme: light;
+  --radio: var(--text); /* checked radio: ink by day */
+  --money-tint: color-mix(in srgb, var(--money) 25%, var(--surface)); /* pale yellow icon box (#FFF4D6) */
 }
-
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #1a201b;
-    --paper-deep: #151a16;
-    --card: #232b24;
-    --ink: #e9e6d2;
-    --ink-soft: #a2a78f;
-    --line: #343d35;
-    --accent: #b3c897;
-    --accent-soft: #3a4834;
-    --highlight: #e3b76b;
-    --grain-opacity: 0.12;
-    --marker: #e0b04a;
-    --marker-top: 2%; /* full height at night: the dark text sits on the band */
-    --marker-ink: #1a201b;
-    color-scheme: dark;
+    --radio: var(--chores); /* lilac at night */
+    --money-tint: color-mix(in srgb, var(--money) 10%, var(--surface)); /* #3A3426 */
   }
 }
-
 :root[data-theme="dark"] {
-  --paper: #1a201b;
-  --paper-deep: #151a16;
-  --card: #232b24;
-  --ink: #e9e6d2;
-  --ink-soft: #a2a78f;
-  --line: #343d35;
-  --accent: #b3c897;
-  --accent-soft: #3a4834;
-  --highlight: #e3b76b;
-  --grain-opacity: 0.12;
-  --marker: #e0b04a;
-  --marker-top: 2%;
-  --marker-ink: #1a201b;
-  color-scheme: dark;
+  --radio: var(--chores);
+  --money-tint: color-mix(in srgb, var(--money) 10%, var(--surface));
 }
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-paper-deep: var(--paper-deep);
-  --color-card: var(--card);
-  --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-  --color-highlight: var(--highlight);
-  --font-serif: var(--font-fraunces);
-  --font-sans: var(--font-patrick-hand);
-  --font-hand: var(--font-special-elite);
+  /* Outline Pop tokens as utilities (bg-surface, border-edge-control, shadow-hard, rounded-card…).
+     Values come from docs/design/tokens.css, which is unlayered, so it wins over these self-references. */
+  --color-page: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-note: var(--surface-note);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-disabled: var(--disabled-bg);
+  --color-disabled-edge: var(--disabled-edge);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+  --color-on-fill: var(--on-fill);
+  --color-edge-card: var(--edge-card);
+  --color-edge-control: var(--edge-control);
+  --color-edge-on-fill: var(--edge-on-fill);
+  --color-edge-hero: var(--edge-hero);
+  --color-divider: var(--divider);
+  --color-shopping: var(--shopping);
+  --color-shopping-tint: var(--shopping-tint);
+  --color-chores: var(--chores);
+  --color-chores-tint: var(--chores-tint);
+  --color-money: var(--money);
+  --color-hero: var(--hero);
+  --color-danger: var(--danger);
+  --color-done: var(--done);
+  --color-person-h: var(--person-h);
+  --color-person-w: var(--person-w);
+  --color-error-bg: var(--error-bg);
+  --color-error-text: var(--error-text);
+  --color-primary: var(--primary-bg);
+  --color-primary-fg: var(--primary-text);
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+  --radius-nav: var(--radius-nav);
+  --radius-icon: var(--radius-icon);
+  --shadow-hard: var(--shadow-hard);
+  --shadow-hero: var(--shadow-hero);
+  --shadow-primary: 3px 3px 0 var(--hero), 3px 3px 0 2px var(--shadow); /* ink button: peach offset with an ink edge */
+  --shadow-focus: 3px 3px 0 var(--chores), 3px 3px 0 2px var(--shadow); /* input focus */
+  --shadow-error: 3px 3px 0 var(--danger), 3px 3px 0 2px var(--shadow);
+  --animate-stripes: stripes 0.6s linear infinite;
+  --animate-pop: pop 0.16s ease-out;
+  @keyframes stripes {
+    to { background-position: 14.142px 0; } /* one stripe period of a -45deg 10px pattern */
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.96); }
+  }
+  /* font-display / font-body / font-note utilities */
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-note: var(--font-note);
 }
 
 html {
-  background: var(--paper);
+  background: var(--bg);
   -webkit-tap-highlight-color: transparent;
 }
 
+/* background, colour and font come from tokens.css */
 body {
   min-height: 100dvh;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-sans);
   overscroll-behavior-y: none;
-}
-
-/* Paper grain: fixed noise layer so it doesn't scroll with content. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: var(--grain-opacity);
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -104,14 +92,14 @@ body::before {
   }
 }
 
-/* Highlighter swipe behind text. Add .marker-off to hide it; toggling draws it across left to right. */
+/* "Important": a money-yellow highlighter swipe behind the text. Add .marker-off to hide it; toggling draws it across. */
 .marker {
-  background-image: linear-gradient(transparent var(--marker-top), var(--marker) var(--marker-top), var(--marker) 96%, transparent 96%);
+  background-image: linear-gradient(var(--money), var(--money));
   background-repeat: no-repeat;
   background-size: 100% 100%;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  color: var(--marker-ink);
+  color: var(--on-fill); /* dark on the yellow in both themes */
   margin-left: -0.2em;
   padding: 0 0.7em 0 0.2em; /* runs past the last letter, like a real marker stroke */
   border-radius: 0.15em 0.6em 0.4em 0.2em;

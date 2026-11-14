@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
-import { Fraunces, Patrick_Hand, Special_Elite } from "next/font/google";
+import { Bricolage_Grotesque, Inter, Special_Elite } from "next/font/google";
 import { ServiceWorkerRegister } from "@/components/sw-register";
 import { THEME_COLOR } from "@/lib/theme-color";
 import "./globals.css";
 
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", axes: ["SOFT", "opsz"] });
-const patrickHand = Patrick_Hand({ subsets: ["latin"], weight: "400", variable: "--font-patrick-hand" });
+// Variable names are read by --font-display / --font-body / --font-note in docs/design/tokens.css.
+const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", axes: ["opsz"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const specialElite = Special_Elite({ subsets: ["latin"], weight: "400", variable: "--font-special-elite" });
 
 /** Theme picked in Settings ("light" | "dark"), or undefined to follow the phone. */
@@ -40,7 +41,7 @@ export async function generateViewport(): Promise<Viewport> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme={await savedTheme()} className={`${fraunces.variable} ${patrickHand.variable} ${specialElite.variable}`}>
+    <html lang="en" data-theme={await savedTheme()} className={`${bricolage.variable} ${inter.variable} ${specialElite.variable}`}>
       <body className="antialiased">
         {children}
         <ServiceWorkerRegister />

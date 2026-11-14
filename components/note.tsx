@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "motion/react";
-import { Tape } from "./ui";
-import { inkText, klTime, useStore } from "@/lib/store";
+import { Button } from "@/components/kit/button";
+import { NoteWindow } from "@/components/kit/card";
+import { klTime, useStore } from "@/lib/store";
 
-/** A typed sticky note either of us can leave for the other. */
+const MAX = 140;
+
+/** The note either of us leaves for the other: the one loud thing on Today. */
 export function StickyNote() {
   const s = useStore();
   const [draft, setDraft] = useState<string | null>(null);
   const by = s.member(s.note?.by);
+  const mine = s.note?.by === s.me;
+  const other = s.members.find((m) => m.id !== s.me);
 
   function save(e: React.FormEvent) {
     e.preventDefault();
@@ -17,53 +21,57 @@ export function StickyNote() {
     setDraft(null);
   }
 
-  return (
-    <motion.div
-      initial={{ rotate: -3, y: -6, opacity: 0 }}
-      animate={{ rotate: -1.2, y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="relative mb-8 rounded-sm bg-[color-mix(in_oklab,var(--highlight)_45%,var(--card))] px-5 pt-6 pb-4 shadow-[0_14px_24px_-16px_rgba(40,40,20,0.5)]"
-    >
-      <Tape className="left-1/2 -translate-x-1/2 rotate-2" />
-
-      {draft !== null ? (
-        <form onSubmit={save}>
+  if (draft !== null) {
+    return (
+      <NoteWindow title={other ? `Note for ${other.name}` : "Note"}>
+        <form onSubmit={save} className="flex flex-col gap-3">
           <textarea
             autoFocus
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            maxLength={140}
+            maxLength={MAX}
             rows={3}
             aria-label="Note"
-            placeholder="leave a little note…"
-            className="w-full resize-none bg-transparent font-hand text-base leading-relaxed outline-none placeholder:text-ink-soft"
+            placeholder={other ? `Write a note for ${other.name}…` : "Write a note…"}
+            className="w-full resize-none rounded-control border-2 border-edge-control bg-surface px-3.5 py-3 font-note text-base text-fg placeholder:text-subtle focus:shadow-focus"
           />
-          <div className="flex items-center justify-between">
-            <span className="font-hand text-xs text-ink-soft">{140 - draft.length} left</span>
-            <div className="flex gap-1">
-              <button type="button" onClick={() => setDraft(null)} className="min-h-11 px-3 text-sm text-ink-soft">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-muted">{MAX - draft.length} left</span>
+            <div className="flex gap-2.5">
+              <Button variant="secondary" size="sm" onClick={() => setDraft(null)}>
                 Cancel
-              </button>
-              <button type="submit" className="min-h-11 px-3 text-sm font-semibold text-accent">
-                Pin it
-              </button>
+              </Button>
+              <Button type="submit" size="sm">
+                Send
+              </Button>
             </div>
           </div>
         </form>
-      ) : (
-        <button onClick={() => setDraft(s.note?.text ?? "")} className="block min-h-11 w-full text-left">
-          {s.note ? (
-            <>
-              <p className="font-hand text-base leading-relaxed">{s.note.text}</p>
-              <p className="mt-2 text-right font-hand text-xs" style={{ color: by && inkText(by.ink) }}>
-                — {by?.name}, {klTime(s.note.at)}
-              </p>
-            </>
-          ) : (
-            <p className="font-hand text-ink-soft">tap to leave a note for each other…</p>
-          )}
-        </button>
-      )}
-    </motion.div>
+      </NoteWindow>
+    );
+  }
+
+  if (!s.note) {
+    return (
+      <NoteWindow
+        title="Note"
+        text={other ? `Nothing from ${other.name} yet.` : "No note yet."}
+        action="Write one"
+        onAction={() => setDraft("")}
+      />
+    );
+  }
+
+  return (
+    <NoteWindow
+      title={mine ? "Your note" : `From ${by?.name ?? "them"}`}
+      text={s.note.text}
+      meta={`Sent ${klTime(s.note.at)}`}
+      onHeart={mine ? undefined : s.heartNote}
+      hearted={s.noteHearted}
+      heartLabel={`Send a heart back to ${by?.name ?? "them"}`}
+      action={mine ? "Edit" : "Reply"}
+      onAction={() => setDraft(mine ? s.note!.text : "")}
+    />
   );
 }

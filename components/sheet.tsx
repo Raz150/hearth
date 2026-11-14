@@ -22,7 +22,7 @@ export function Sheet({ label, onClose, children }: { label: string; onClose: ()
   // Portal: the page wrapper is transformed, which would pin "fixed" to it instead of the screen.
   return createPortal(
     <>
-      <motion.div aria-hidden initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="fixed inset-0 z-40 bg-[#1a201b]/35" />
+      <motion.div aria-hidden initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="fixed inset-0 z-40 bg-[color-mix(in_srgb,var(--shadow)_45%,transparent)]" />
       <motion.div
         role="dialog"
         aria-modal
@@ -37,10 +37,10 @@ export function Sheet({ label, onClose, children }: { label: string; onClose: ()
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={{ top: 0, bottom: 0.7 }}
         onDragEnd={(_, i) => (i.offset.y > 90 || i.velocity.y > 500) && onClose()}
-        className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[88dvh] max-w-md overflow-y-auto rounded-t-[1.75rem] border-t border-line bg-card px-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] shadow-[0_-12px_40px_-16px_rgba(30,40,25,0.45)]"
+        className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[88dvh] max-w-md overflow-y-auto rounded-t-[22px] border-2 border-b-0 border-edge-hero bg-surface px-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] text-fg"
       >
         <div onPointerDown={(e) => drag.start(e)} className="-mx-5 flex cursor-grab touch-none justify-center pt-2.5 pb-3">
-          <span className="h-1.5 w-10 rounded-full bg-line" />
+          <span className="h-1.5 w-10 rounded-full bg-divider" />
         </div>
         {children}
       </motion.div>

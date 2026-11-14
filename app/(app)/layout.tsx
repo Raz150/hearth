@@ -1,7 +1,8 @@
 import { Nav } from "@/components/nav";
 import { TopBar } from "@/components/top-bar";
 import { UndoToast } from "@/components/undo-toast";
-import { Page } from "@/components/ui";
+import { buttonClass } from "@/components/kit/button";
+import { Page, PageHeader } from "@/components/ui";
 import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadTodos } from "@/lib/queries";
 import { HouseholdProvider } from "@/lib/store";
 import { createClient } from "@/lib/supabase/server";
@@ -20,10 +21,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!me || !household) {
     return (
       <Page>
-        <h1 className="font-serif text-3xl">Almost there</h1>
-        <p className="mt-3 text-ink-soft">This account isn&apos;t linked to a household yet. Run the seed script in Supabase, then sign in again.</p>
+        <PageHeader kicker="Hearth" title="Almost there" />
+        <p className="text-sm font-medium text-muted">This account isn&apos;t linked to a household yet. Run the seed script in Supabase, then sign in again.</p>
         <form action={signOut}>
-          <button className="mt-6 min-h-11 rounded-full border border-line px-5">Sign out</button>
+          <button className={buttonClass({ variant: "secondary" })}>Sign out</button>
         </form>
       </Page>
     );

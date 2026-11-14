@@ -1,0 +1,106 @@
+/* Outline Pop design tokens: light (pastel green) + dark (warm olive).
+   Theme: follows the phone's setting; force one with <html data-theme="light|dark">. */
+
+/* Fonts are self-hosted by next/font in app/layout.tsx (works offline in the PWA); it sets the --font-bricolage/inter/special-elite vars. */
+
+:root,
+:root[data-theme="light"] {
+  /* ground */
+  --bg: #DCEBDD;
+  --bg-grid: #CFE2D2;
+  --surface: #FFFFFF;          /* cards, inputs, list rows */
+  --surface-note: #FFFDF6;     /* note body */
+  --surface-sunken: #EEF6EF;   /* card headers, segmented track */
+  --disabled-bg: #D2DED4;
+  --disabled-edge: #A9B8AD;
+
+  /* text */
+  --text: #1A1A1A;
+  --text-muted: #4A5550;
+  --text-subtle: #5F6B63;
+  --on-fill: #1A1A1A;          /* text/icons on any coloured fill, both themes */
+
+  /* lines + depth */
+  --edge-card: #1A1A1A;        /* info cards */
+  --edge-control: #1A1A1A;     /* buttons, inputs, checkboxes */
+  --edge-on-fill: #1A1A1A;
+  --edge-hero: #1A1A1A;
+  --divider: #8A978D;          /* dashed row dividers */
+  --shadow: #1A1A1A;           /* hard offset shadow */
+  --hero-offset-fill: #FFE1C4;
+  --hero-offset-edge: #1A1A1A;
+
+  /* categories: colour = meaning, use the same on every screen */
+  --shopping: #FF8A5B;  --shopping-tint: #FFE3D6;
+  --chores:   #C9BEF5;  --chores-tint:   #ECE8FB;
+  --money:    #FFD25A;
+  --hero:     #FFE1C4;         /* note / "you are here" (active tab) */
+  --danger:   #FF6B6B;
+  --done:     #5BC98C;
+  --person-h: #C9BEF5;  --person-w: #FFB59A;
+
+  --error-bg: #FFF1EE;  --error-text: #A92F1F;
+  --focus: #3F6FAD;
+  --primary-bg: #1A1A1A; --primary-text: #FFFEFA;   /* main action is ink, never a category colour */
+
+  /* shape + depth recipes */
+  --radius-card: 14px; --radius-control: 12px; --radius-nav: 16px; --radius-icon: 9px; --radius-pill: 999px;
+  --border: 2px;
+  --shadow-hard: 3px 3px 0 var(--shadow);
+  --shadow-hero: 6px 6px 0 0 var(--hero-offset-fill), 6px 6px 0 2px var(--hero-offset-edge);
+
+  /* type */
+  --font-display: var(--font-bricolage), sans-serif;  /* titles, numbers, buttons */
+  --font-body: var(--font-inter), sans-serif;             /* everything else */
+  --font-note: var(--font-special-elite), monospace;            /* notes between you two ONLY */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+
+/* dark values: warm olive. Shadows go DARKER than the ground, never bright. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1C1D15; --bg-grid: #232419;
+    --surface: #282A1F; --surface-note: #2D2E22; --surface-sunken: #313326;
+    --disabled-bg: #282A1F; --disabled-edge: #46483A;
+    --text: #F0EADB; --text-muted: #B3AC97; --text-subtle: #A39E88;
+    --edge-card: #46483A; --edge-control: #918F78; --edge-on-fill: #0A0A06; --edge-hero: #F0EADB;
+    --divider: #46483A; --shadow: #0A0A06;
+    --hero-offset-fill: #3B3127; --hero-offset-edge: #E8C9AC;
+    --shopping: #E8875E; --shopping-tint: #E8B9A3;
+    --chores: #B4A8DE;   --chores-tint: #36303F;
+    --money: #E9C25A; --hero: #E8C9AC; --danger: #E66A64; --done: #55B583;
+    --person-h: #B4A8DE; --person-w: #E3A58C;
+    --error-bg: #3A2622; --error-text: #F29B8C; --focus: #9DBDF5;
+    --primary-bg: #F0EADB; --primary-text: #282A1F;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1C1D15; --bg-grid: #232419;
+  --surface: #282A1F; --surface-note: #2D2E22; --surface-sunken: #313326;
+  --disabled-bg: #282A1F; --disabled-edge: #46483A;
+  --text: #F0EADB; --text-muted: #B3AC97; --text-subtle: #A39E88;
+  --edge-card: #46483A; --edge-control: #918F78; --edge-on-fill: #0A0A06; --edge-hero: #F0EADB;
+  --divider: #46483A; --shadow: #0A0A06;
+  --hero-offset-fill: #3B3127; --hero-offset-edge: #E8C9AC;
+  --shopping: #E8875E; --shopping-tint: #E8B9A3;
+  --chores: #B4A8DE;   --chores-tint: #36303F;
+  --money: #E9C25A; --hero: #E8C9AC; --danger: #E66A64; --done: #55B583;
+  --person-h: #B4A8DE; --person-w: #E3A58C;
+  --error-bg: #3A2622; --error-text: #F29B8C; --focus: #9DBDF5;
+  --primary-bg: #F0EADB; --primary-text: #282A1F;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--bg-grid) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+  background-size: 26px 26px;
+  color: var(--text);
+  font-family: var(--font-body);
+}
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }

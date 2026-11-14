@@ -35,3 +35,5 @@ A shared household app for a married couple. All data is shared between both use
 3. Be creative with design and UX: take bold visual ideas, use UI and animation libraries when they make the app better, and propose or add touches that make it feel good to use. No state-management library unless needed.
 4. After each step, tell me exactly what to configure manually in the Supabase and Vercel dashboards, then stop so I can test before moving on.
 5. Include a short README with setup and deploy steps.
+
+UI must follow docs/design/DESIGN.md and use the variables in docs/design/tokens.css. Never hard-code colours.
