@@ -40,6 +40,7 @@
   --color-chores: var(--chores);
   --color-chores-tint: var(--chores-tint);
   --color-money: var(--money);
+  --color-plans: var(--plans);
   --color-hero: var(--hero);
   --color-danger: var(--danger);
   --color-done: var(--done);

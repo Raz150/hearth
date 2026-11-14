@@ -3,17 +3,17 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
 import { addDays, klToday } from "./date";
-import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadTodos, type Chore, type DoaProgress, type LogEntry, type Member, type Note, type Step, type Todo } from "./queries";
+import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadPlans, loadShifts, loadTodos, type Chore, type DoaProgress, type LogEntry, type Member, type Note, type Plan, type Shift, type Step, type Todo } from "./queries";
 import { createClient } from "./supabase/client";
 
 export { INKS, inkText } from "./inks";
-export type { Chore, DoaProgress, LogEntry, Member, Note, Step, Todo } from "./queries";
+export type { Chore, DoaProgress, LogEntry, Member, Note, Plan, Shift, Step, Todo } from "./queries";
 /** The editable details of a to-do besides its title. */
-export type TodoMeta = Pick<Todo, "assignee" | "due" | "priority" | "tags">;
+export type TodoMeta = Pick<Todo, "assignee" | "due" | "dueTime" | "priority" | "tags">;
 /** The editable parts of a chore. */
 export type ChoreMeta = Pick<Chore, "title" | "everyDays" | "owner" | "nextDue">;
 
-export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaProgress[] };
+export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaProgress[]; shifts: Shift[]; plans: Plan[] };
 
 /** The toast: an undoable action, or an error (no undo). */
 type Flash = { id: number; label: string; undo?: () => void; error?: boolean };
@@ -50,14 +50,18 @@ type Store = Shared & {
     noteHearted: boolean;
     /** Set my mark on a doa (null = not started). Memorising adds a line to the shared log, named by `title`. */
     markDoa: (doa: string, status: DoaProgress["status"] | null, title: string) => void;
+    /** Put a shift on someone's day (replacing theirs), or clear the day with null. */
+    setShift: (member: string, day: string, shift: Pick<Shift, "label" | "starts" | "ends"> | null) => void;
+    savePlan: (plan: Plan) => void;
+    removePlan: (id: string) => void;
     /** Saves my own name/ink. Returns an error message or null. */
     updateMe: (patch: Partial<Omit<Member, "id">>) => Promise<string | null>;
   };
 
 const Ctx = createContext<Store | null>(null);
-const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, doa: loadDoa } as const;
+const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, doa: loadDoa, shifts: loadShifts, plans: loadPlans } as const;
 const TABLES: Record<string, keyof typeof LOADERS> = {
-  members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", doa_progress: "doa",
+  members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", doa_progress: "doa", shifts: "shifts", events: "plans",
 };
 
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
@@ -106,7 +110,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
 
   const setTodos = (fn: (t: Todo[]) => Todo[]) => setData((p) => ({ ...p, todos: fn(p.todos) }));
   const setSteps = (todoId: string, fn: (s: Step[]) => Step[]) => setTodos((p) => p.map((t) => (t.id === todoId ? { ...t, steps: fn(t.steps) } : t)));
-  const row = (m: TodoMeta) => ({ assignee: m.assignee ?? null, due_date: m.due ?? null, priority: m.priority, tags: m.tags });
+  const row = (m: TodoMeta) => ({ assignee: m.assignee ?? null, due_date: m.due ?? null, due_time: (m.due && m.dueTime) || null, priority: m.priority, tags: m.tags });
   const setLog = (fn: (l: LogEntry[]) => LogEntry[]) => setData((p) => ({ ...p, log: fn(p.log) }));
   const setChores = (fn: (c: Chore[]) => Chore[]) => setData((p) => ({ ...p, chores: fn(p.chores) }));
   const putChore = (id: string, v: Partial<Chore>) => setChores((p) => p.map((c) => (c.id === id ? { ...c, ...v } : c)));
@@ -121,6 +125,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
     prev_last_by: t.prev?.lastBy ?? null,
     prev_last_on: t.prev?.lastOn ?? null,
   });
+  const planRow = (p: Plan) => ({ id: p.id, title: p.title, starts_on: p.start, ends_on: p.end, at: p.at ?? null, member: p.member ?? null, note: p.note ?? null });
   const setDoa = (fn: (d: DoaProgress[]) => DoaProgress[]) => setData((p) => ({ ...p, doa: fn(p.doa) }));
   const choreLine = (c: Chore) => `did ${c.title}`;
   const thanksText = (c: Chore) => `thanked ${data.members.find((m) => m.id === c.lastBy)?.name ?? "you"} for ${c.title}`;
@@ -183,7 +188,7 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
       const old = data.todos.find((t) => t.id === id);
       if (!old || !title) return;
       const put = (v: TodoMeta & { title: string }) => setTodos((p) => p.map((t) => (t.id === id ? { ...t, ...v } : t)));
-      const was = { title: old.title, due: old.due, assignee: old.assignee, priority: old.priority, tags: old.tags };
+      const was = { title: old.title, due: old.due, dueTime: old.dueTime, assignee: old.assignee, priority: old.priority, tags: old.tags };
       put({ ...next, title });
       write(() => put(was), sb.from("todos").update({ title, ...row(next) }).eq("id", id));
     },
@@ -413,6 +418,49 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
             write(() => show(next), save(before), unlog(log.entry.id));
           },
         });
+    },
+
+    setShift: (member, day, next) => {
+      const old = data.shifts.find((x) => x.member === member && x.day === day);
+      if (!old && !next) return;
+      const show = (sh?: Shift) => setData((p) => ({ ...p, shifts: [...p.shifts.filter((x) => !(x.member === member && x.day === day)), ...(sh ? [sh] : [])] }));
+      show(next ? { id: old?.id ?? crypto.randomUUID(), member, day, ...next } : undefined);
+      write(
+        () => show(old),
+        next
+          ? sb.from("shifts").upsert({ member, day, label: next.label.trim().slice(0, 20), starts: next.starts, ends: next.ends }, { onConflict: "household_id,member,day" })
+          : sb.from("shifts").delete().match({ member, day }),
+      );
+    },
+
+    savePlan: (plan) => {
+      const title = plan.title.trim().slice(0, 100);
+      if (!title || plan.end < plan.start) return;
+      const p: Plan = { ...plan, title, note: plan.note?.trim().slice(0, 500) || undefined };
+      const old = data.plans.find((x) => x.id === p.id);
+      const show = (v?: Plan) => setData((d) => ({ ...d, plans: [...d.plans.filter((x) => x.id !== p.id), ...(v ? [v] : [])].sort((a, b) => a.start.localeCompare(b.start)) }));
+      show(p);
+      write(
+        () => show(old),
+        sb.from("events").upsert(planRow(p)),
+      );
+    },
+
+    removePlan: (id) => {
+      const p = data.plans.find((x) => x.id === id);
+      if (!p) return;
+      const without = () => setData((d) => ({ ...d, plans: d.plans.filter((x) => x.id !== id) }));
+      const putBack = () => setData((d) => ({ ...d, plans: [...d.plans, p].sort((a, b) => a.start.localeCompare(b.start)) }));
+      without();
+      write(putBack, sb.from("events").delete().eq("id", id));
+      setUndo({
+        id: Date.now(),
+        label: "Deleted",
+        undo: () => {
+          putBack();
+          write(without, sb.from("events").insert(planRow(p)));
+        },
+      });
     },
 
     updateMe: async (patch) => {

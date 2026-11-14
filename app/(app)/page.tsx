@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ListChecks, Sparkles } from "lucide-react";
+import { BriefcaseBusiness, CalendarDays, ListChecks, Moon, Plane, Sparkles } from "lucide-react";
 import { StatTile, cardClass } from "@/components/kit/card";
 import { ListCard, ListRow, Timeline } from "@/components/kit/list";
 import { WeekStrip } from "@/components/kit/nav";
@@ -9,7 +9,7 @@ import { type Tone } from "@/components/kit/shared";
 import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
 import { Confetti, Faces, Page, PageHeader, Quiet, Section } from "@/components/ui";
-import { addDays, formatDay, klToday, relativeDue } from "@/lib/date";
+import { addDays, formatDay, formatTime, klToday, relativeDue, timeSpan } from "@/lib/date";
 import { klTime, useStore, type LogEntry } from "@/lib/store";
 
 /** Colour = meaning: each kind of log line wears its category. */
@@ -32,8 +32,29 @@ export default function Today() {
   const dots: Partial<Record<string, Tone>> = {};
   for (const d of days) {
     if (s.todos.some((t) => !t.doneBy && t.due === d)) dots[d] = "shopping";
+    else if (s.plans.some((p) => p.start <= d && d <= p.end)) dots[d] = "plans";
     else if (s.chores.some((c) => (d === today ? c.nextDue <= d && c.lastOn !== today : c.nextDue === d))) dots[d] = "chores";
   }
+
+  // Calendar card: shifts that touch today (incl. last night's), today's plans, and the next plan coming up.
+  const shiftFill = (id: string) => (s.person(id) === "h" ? "bg-person-h" : "bg-person-w");
+  const yesterday = addDays(today, -1);
+  const next = s.plans.find((p) => p.start > today);
+  const calendar = [
+    ...s.shifts
+      .filter((x) => x.day === today || (x.day === yesterday && x.ends < x.starts))
+      .map((x) => ({
+        id: x.id,
+        fill: shiftFill(x.member),
+        icon: x.ends < x.starts ? <Moon strokeWidth={2} /> : <BriefcaseBusiness strokeWidth={2} />,
+        title: `${s.member(x.member)?.name}: ${x.label}${x.day === yesterday ? " (from last night)" : ""}`,
+        meta: x.day === today ? timeSpan(x.starts, x.ends) : `Until ${formatTime(x.ends)}`,
+      })),
+    ...s.plans
+      .filter((p) => p.start <= today && today <= p.end)
+      .map((p) => ({ id: p.id, fill: "bg-plans", icon: <CalendarDays strokeWidth={2} />, title: p.title, meta: p.at ? formatTime(p.at) : "Today" })),
+    ...(next ? [{ id: next.id, fill: "bg-plans", icon: <Plane strokeWidth={2} />, title: next.title, meta: `${formatDay(next.start, { weekday: "short", day: "numeric", month: "short" })}, ${relativeDue(next.start, today)}` }] : []),
+  ];
 
   // Confetti once per day, the moment everything for today is done.
   const [burst, setBurst] = useState(0);
@@ -72,6 +93,24 @@ export default function Today() {
       </div>
 
       <WeekStrip days={days} today={today} dots={dots} />
+
+      <ListCard level="info" title="Calendar" more={{ href: "/calendar", label: "Open" }}>
+        {calendar.length === 0 ? (
+          <Quiet>Nothing on the calendar today.</Quiet>
+        ) : (
+          calendar.map((c) => (
+            <div key={c.id} className="flex min-h-[54px] items-center gap-3 px-3.5 py-2">
+              <span aria-hidden className={`flex size-[34px] shrink-0 items-center justify-center rounded-icon border-2 border-edge-on-fill text-on-fill [&_svg]:size-[18px] ${c.fill}`}>
+                {c.icon}
+              </span>
+              <span className="flex min-w-0 flex-col">
+                <span className="text-sm font-bold">{c.title}</span>
+                <span className="text-xs font-semibold text-muted">{c.meta}</span>
+              </span>
+            </div>
+          ))
+        )}
+      </ListCard>
 
       <ListCard level="info" title="To do" tint="shopping" more={todos.length > 2 ? { href: "/todo", label: `See all ${todos.length}` } : { href: "/todo", label: "See all" }}>
         {todos.length === 0 ? (

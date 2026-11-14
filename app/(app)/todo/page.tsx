@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { CalendarDays, ListChecks, Plus, Trash2, X } from "lucide-react";
+import { CalendarDays, Clock, ListChecks, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/kit/button";
 import { EmptyState } from "@/components/kit/card";
 import { ListCard } from "@/components/kit/list";
@@ -10,7 +10,7 @@ import { Chip, CountBadge, Tick, chipClass } from "@/components/kit/selection";
 import { HIT_44, cx } from "@/components/kit/shared";
 import { Sheet } from "@/components/sheet";
 import { Face, Page, PageHeader } from "@/components/ui";
-import { addDays, formatDay, klToday, parseQuickAdd, relativeDue, TAG, thisWeekend } from "@/lib/date";
+import { addDays, formatDay, formatTime, klToday, parseQuickAdd, relativeDue, TAG, thisWeekend } from "@/lib/date";
 import { useStore, type Todo, type TodoMeta } from "@/lib/store";
 
 const WHEN: [string, (today: string) => string][] = [
@@ -22,7 +22,7 @@ const WHEN: [string, (today: string) => string][] = [
 const PERSON_FILL = { h: "bg-person-h", w: "bg-person-w" } as const;
 
 /** People and dates. Tap a lit chip to clear it. */
-function WhoWhen({ value, set }: { value: Pick<TodoMeta, "assignee" | "due">; set: (patch: Partial<TodoMeta>) => void }) {
+function WhoWhen({ value, set }: { value: Pick<TodoMeta, "assignee" | "due" | "dueTime">; set: (patch: Partial<TodoMeta>) => void }) {
   const s = useStore();
   const today = klToday();
   const presets = WHEN.map(([label, fn]) => [label, fn(today)] as const);
@@ -52,6 +52,19 @@ function WhoWhen({ value, set }: { value: Pick<TodoMeta, "assignee" | "due">; se
           className="absolute inset-0 cursor-pointer opacity-0"
         />
       </label>
+      {value.due && (
+        <label className={chipClass(!!value.dueTime)}>
+          <Clock aria-hidden />
+          {value.dueTime ? `by ${formatTime(value.dueTime)}` : "Time"}
+          <input
+            type="time"
+            aria-label="Due by (time)"
+            value={value.dueTime ?? ""}
+            onChange={(e) => set({ dueTime: e.target.value || undefined })}
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+        </label>
+      )}
     </div>
   );
 }
@@ -62,7 +75,7 @@ const BIG_INPUT =
 /** Bottom sheet with everything about one to-do. Changes save as they're made. */
 function TodoSheet({ todo: t, knownTags, onClose }: { todo: Todo; knownTags: string[]; onClose: () => void }) {
   const s = useStore();
-  const meta: TodoMeta & { title: string } = { title: t.title, assignee: t.assignee, due: t.due, priority: t.priority, tags: t.tags };
+  const meta: TodoMeta & { title: string } = { title: t.title, assignee: t.assignee, due: t.due, dueTime: t.dueTime, priority: t.priority, tags: t.tags };
   const edit = (patch: Partial<TodoMeta & { title: string }>) => s.editTodo(t.id, { ...meta, ...patch });
   const tags = [...new Set([...knownTags, ...t.tags])];
   const important = t.priority > 0;
@@ -195,6 +208,7 @@ export default function TodoPage() {
   const meta: TodoMeta = {
     assignee: picked.assignee === undefined ? typed.assignee : (picked.assignee ?? undefined),
     due: picked.due === undefined ? typed.due : (picked.due ?? undefined),
+    dueTime: picked.dueTime ?? undefined,
     priority: picked.priority ?? typed.priority ?? 0,
     tags: picked.tags ?? typed.tags,
   };
@@ -256,11 +270,12 @@ export default function TodoPage() {
             <span className="block text-sm font-bold">
               <span className={cx("marker", (t.priority === 0 || isDone) && "marker-off", isDone && "text-subtle line-through")}>{t.title}</span>
             </span>
-            {!isDone && ((t.due && t.due !== today) || t.tags.length > 0 || t.steps.length > 0) && (
+            {!isDone && ((t.due && (t.due !== today || t.dueTime)) || t.tags.length > 0 || t.steps.length > 0) && (
               <span className="flex flex-wrap items-center gap-x-2.5 text-xs font-semibold text-muted">
-                {t.due && t.due !== today && (
+                {t.due && (t.due !== today || t.dueTime) && (
                   <span className={late ? "text-error-text" : undefined}>
-                    {formatDay(t.due, { weekday: "short", day: "numeric", month: "short" })}, {relativeDue(t.due, today)}
+                    {t.due !== today && `${formatDay(t.due, { weekday: "short", day: "numeric", month: "short" })}, ${relativeDue(t.due, today)}`}
+                    {t.dueTime && `${t.due !== today ? ", " : ""}by ${formatTime(t.dueTime)}`}
                   </span>
                 )}
                 {t.steps.length > 0 && (

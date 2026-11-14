@@ -1,10 +1,14 @@
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-import { klToday, weekStart } from "./date";
+import { addDays, klToday, weekStart } from "./date";
 
 export type Member = { id: string; name: string; ink: string };
 export type Step = { id: string; title: string; done: boolean };
 /** priority: 0 normal, anything above 0 = important (the app only sets 1). */
-export type Todo = { id: string; title: string; due?: string; assignee?: string; doneBy?: string; priority: number; tags: string[]; steps: Step[] };
+export type Todo = { id: string; title: string; due?: string; dueTime?: string; assignee?: string; doneBy?: string; priority: number; tags: string[]; steps: Step[] };
+/** A work shift on `day` (KL), "HH:MM" times; ends < starts means it ends the next morning. */
+export type Shift = { id: string; member: string; day: string; label: string; starts: string; ends: string };
+/** A plan or trip from `start` to `end` (YYYY-MM-DD, inclusive). `at` = start time, none = all day. `member` none = both. */
+export type Plan = { id: string; title: string; start: string; end: string; at?: string; member?: string; note?: string };
 export type Note = { text: string; by: string; at: string };
 /** One of us is learning, or has memorised, one doa (id from lib/doa.json). No row = not started. */
 export type DoaProgress = { by: string; doa: string; status: "learning" | "memorised"; at: string };
@@ -32,7 +36,7 @@ export async function loadTodos(sb: SupabaseClient): Promise<Todo[]> {
   const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
   const { data, error } = await sb
     .from("todos")
-    .select("id, title, due_date, assignee, done_by, priority, tags, todo_steps(id, title, done)")
+    .select("id, title, due_date, due_time, assignee, done_by, priority, tags, todo_steps(id, title, done)")
     .or(`done_at.is.null,done_at.gt."${since}"`)
     .order("created_at", { ascending: false })
     .order("created_at", { referencedTable: "todo_steps" });
@@ -41,6 +45,7 @@ export async function loadTodos(sb: SupabaseClient): Promise<Todo[]> {
     id: r.id,
     title: r.title,
     due: r.due_date ?? undefined,
+    dueTime: r.due_time?.slice(0, 5) ?? undefined,
     assignee: r.assignee ?? undefined,
     doneBy: r.done_by ?? undefined,
     priority: r.priority,
@@ -90,4 +95,27 @@ export async function loadDoa(sb: SupabaseClient): Promise<DoaProgress[]> {
   const { data, error } = await sb.from("doa_progress").select("user_id, doa_id, status, updated_at").order("updated_at", { ascending: false });
   if (error) fail("doa_progress", error);
   return data.map((r) => ({ by: r.user_id, doa: r.doa_id, status: r.status, at: r.updated_at }));
+}
+
+// shortcut: the calendar only loads from ~6 weeks back; older months show empty. Add a range fetch if we want history.
+const calendarFrom = () => addDays(klToday(), -45);
+
+export async function loadShifts(sb: SupabaseClient): Promise<Shift[]> {
+  const { data, error } = await sb.from("shifts").select("id, member, day, label, starts, ends").gte("day", calendarFrom()).order("day");
+  if (error) fail("shifts", error);
+  return data.map((r) => ({ ...r, starts: r.starts.slice(0, 5), ends: r.ends.slice(0, 5) }));
+}
+
+export async function loadPlans(sb: SupabaseClient): Promise<Plan[]> {
+  const { data, error } = await sb.from("events").select("id, title, starts_on, ends_on, at, member, note").gte("ends_on", calendarFrom()).order("starts_on").order("at");
+  if (error) fail("events", error);
+  return data.map((r) => ({
+    id: r.id,
+    title: r.title,
+    start: r.starts_on,
+    end: r.ends_on,
+    at: r.at?.slice(0, 5) ?? undefined,
+    member: r.member ?? undefined,
+    note: r.note ?? undefined,
+  }));
 }

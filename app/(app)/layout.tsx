@@ -3,7 +3,7 @@ import { TopBar } from "@/components/top-bar";
 import { UndoToast } from "@/components/undo-toast";
 import { buttonClass } from "@/components/kit/button";
 import { MotionPrefs, Page, PageHeader } from "@/components/ui";
-import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadTodos } from "@/lib/queries";
+import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadPlans, loadShifts, loadTodos } from "@/lib/queries";
 import { HouseholdProvider } from "@/lib/store";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./settings/actions";
@@ -13,8 +13,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { data } = await supabase.auth.getClaims();
   const me = data?.claims.sub;
   // RLS returns only rows of my household.
-  const [members, todos, chores, note, log, doa] = await Promise.all([
-    loadMembers(supabase), loadTodos(supabase), loadChores(supabase), loadNote(supabase), loadLog(supabase), loadDoa(supabase),
+  const [members, todos, chores, note, log, doa, shifts, plans] = await Promise.all([
+    loadMembers(supabase), loadTodos(supabase), loadChores(supabase), loadNote(supabase), loadLog(supabase), loadDoa(supabase), loadShifts(supabase), loadPlans(supabase),
   ]);
   const household = members.find((m) => m.id === me)?.household;
 
@@ -31,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <HouseholdProvider initial={{ members, todos, chores, note, log, doa }} me={me} household={household}>
+    <HouseholdProvider initial={{ members, todos, chores, note, log, doa, shifts, plans }} me={me} household={household}>
       <MotionPrefs>
         <TopBar />
         {children}

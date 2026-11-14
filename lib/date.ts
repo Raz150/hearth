@@ -99,3 +99,28 @@ export function parseQuickAdd(
   }
   return { title: words.join(" "), due, assignee, priority, tags };
 }
+
+/** "21:30" (or "21:30:00" from Postgres) → "9:30 PM". */
+export function formatTime(hhmm: string): string {
+  const [h, m] = hhmm.split(":").map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+}
+
+/** "07:30" → "7:30a", "21:00" → "9p": fits a calendar cell. */
+export function shortTime(hhmm: string): string {
+  const [h, m] = hhmm.split(":").map(Number);
+  return `${h % 12 || 12}${m ? `:${String(m).padStart(2, "0")}` : ""}${h < 12 ? "a" : "p"}`;
+}
+
+/** Monday-first weeks covering the month of `ymd` (each week = 7 YYYY-MM-DD strings). */
+export function monthWeeks(ymd: string): string[][] {
+  const first = `${ymd.slice(0, 7)}-01`;
+  const weeks: string[][] = [];
+  for (let d = weekStart(first); d.slice(0, 7) <= first.slice(0, 7); d = addDays(d, 7)) {
+    weeks.push([0, 1, 2, 3, 4, 5, 6].map((n) => addDays(d, n)));
+  }
+  return weeks;
+}
+
+/** "9:30 PM – 7:30 AM next day" (ends before it starts = overnight). */
+export const timeSpan = (starts: string, ends: string) => `${formatTime(starts)} – ${formatTime(ends)}${ends < starts ? " next day" : ""}`;

@@ -34,6 +34,7 @@
   --shopping: #FF8A5B;  --shopping-tint: #FFE3D6;
   --chores:   #C9BEF5;  --chores-tint:   #ECE8FB;
   --money:    #FFD25A;
+  --plans:    #8FD3E8;         /* calendar: plans and trips */
   --hero:     #FFE1C4;         /* note / "you are here" (active tab) */
   --danger:   #FF6B6B;
   --done:     #5BC98C;
@@ -72,7 +73,7 @@
     --hero-offset-fill: #3B3127; --hero-offset-edge: #E8C9AC;
     --shopping: #E8875E; --shopping-tint: #E8B9A3;
     --chores: #B4A8DE;   --chores-tint: #36303F;
-    --money: #E9C25A; --hero: #E8C9AC; --danger: #E66A64; --done: #55B583;
+    --money: #E9C25A; --plans: #6FB4C8; --hero: #E8C9AC; --danger: #E66A64; --done: #55B583;
     --person-h: #B4A8DE; --person-w: #E3A58C;
     --error-bg: #3A2622; --error-text: #F29B8C; --focus: #9DBDF5;
     --primary-bg: #F0EADB; --primary-text: #282A1F;
@@ -88,7 +89,7 @@
   --hero-offset-fill: #3B3127; --hero-offset-edge: #E8C9AC;
   --shopping: #E8875E; --shopping-tint: #E8B9A3;
   --chores: #B4A8DE;   --chores-tint: #36303F;
-  --money: #E9C25A; --hero: #E8C9AC; --danger: #E66A64; --done: #55B583;
+  --money: #E9C25A; --plans: #6FB4C8; --hero: #E8C9AC; --danger: #E66A64; --done: #55B583;
   --person-h: #B4A8DE; --person-w: #E3A58C;
   --error-bg: #3A2622; --error-text: #F29B8C; --focus: #9DBDF5;
   --primary-bg: #F0EADB; --primary-text: #282A1F;

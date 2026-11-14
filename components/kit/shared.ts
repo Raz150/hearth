@@ -3,7 +3,7 @@
 export const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
 
 /** Category colours. Text on any of these fills is always on-fill (dark) in both themes. */
-export type Tone = "shopping" | "chores" | "money" | "hero" | "danger" | "done";
+export type Tone = "shopping" | "chores" | "money" | "hero" | "danger" | "done" | "plans";
 
 export const FILL: Record<Tone, string> = {
   shopping: "bg-shopping",
@@ -12,6 +12,7 @@ export const FILL: Record<Tone, string> = {
   hero: "bg-hero",
   danger: "bg-danger",
   done: "bg-done",
+  plans: "bg-plans",
 };
 
 /** Pressed: the shadow disappears and the element moves 3px right and down. */
