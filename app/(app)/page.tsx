@@ -13,7 +13,7 @@ import { addDays, formatDay, formatTime, klToday, nextStart, relativeDue, timeSp
 import { klTime, useStore, type LogEntry } from "@/lib/store";
 
 /** Colour = meaning: each kind of log line wears its category. */
-const KIND_TONE: Record<LogEntry["kind"], Tone> = { todo: "shopping", chore: "chores", note: "hero", thanks: "hero", doa: "done" };
+const KIND_TONE: Record<LogEntry["kind"], Tone> = { todo: "shopping", chore: "chores", note: "hero", thanks: "hero", doa: "done", shop: "shopping" };
 
 export default function Today() {
   const s = useStore();

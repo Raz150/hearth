@@ -3,17 +3,20 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
 import { addDays, klToday } from "./date";
-import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadPlans, loadShifts, loadTodos, type Chore, type DoaProgress, type LogEntry, type Member, type Note, type Plan, type Shift, type Step, type Todo } from "./queries";
+import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadPlans, loadShifts, loadShopping, loadTodos, type Chore, type DoaProgress, type Item, type LogEntry, type Member, type Note, type Plan, type Shift, type Step, type Todo } from "./queries";
+import { guessAisle, parseItem } from "./shopping";
 import { createClient } from "./supabase/client";
 
 export { INKS, inkText } from "./inks";
-export type { Chore, DoaProgress, LogEntry, Member, Note, Plan, Shift, Step, Todo } from "./queries";
+export type { Chore, DoaProgress, Item, LogEntry, Member, Note, Plan, Shift, Step, Todo } from "./queries";
+/** The editable parts of a shopping item. */
+export type ItemMeta = Pick<Item, "name" | "qty" | "aisle">;
 /** The editable details of a to-do besides its title. */
 export type TodoMeta = Pick<Todo, "assignee" | "due" | "dueTime" | "priority" | "tags">;
 /** The editable parts of a chore. */
 export type ChoreMeta = Pick<Chore, "title" | "everyDays" | "owner" | "nextDue">;
 
-export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaProgress[]; shifts: Shift[]; plans: Plan[] };
+export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaProgress[]; shifts: Shift[]; plans: Plan[]; shopping: Item[] };
 
 /** The toast: an undoable action, or an error (no undo). */
 type Flash = { id: number; label: string; undo?: () => void; error?: boolean };
@@ -54,14 +57,23 @@ type Store = Shared & {
     setShift: (member: string, day: string, shift: Pick<Shift, "label" | "starts" | "ends"> | null) => void;
     savePlan: (plan: Plan) => void;
     removePlan: (id: string) => void;
+    /** "2 susu" → on the list (an item bought before comes back with its aisle and last quantity). */
+    addItem: (text: string) => void;
+    editItem: (id: string, meta: ItemMeta) => void;
+    /** Into the trolley, or back out. */
+    toggleItem: (id: string) => void;
+    /** Off the list; forgotten if never bought, else kept for "buy again". */
+    removeItem: (id: string) => void;
+    /** Everything in the trolley goes back to history. */
+    finishShopping: () => void;
     /** Saves my own name/ink. Returns an error message or null. */
     updateMe: (patch: Partial<Omit<Member, "id">>) => Promise<string | null>;
   };
 
 const Ctx = createContext<Store | null>(null);
-const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, doa: loadDoa, shifts: loadShifts, plans: loadPlans } as const;
+const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, doa: loadDoa, shifts: loadShifts, plans: loadPlans, shopping: loadShopping } as const;
 const TABLES: Record<string, keyof typeof LOADERS> = {
-  members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", doa_progress: "doa", shifts: "shifts", events: "plans",
+  members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", doa_progress: "doa", shifts: "shifts", events: "plans", shopping_items: "shopping",
 };
 
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
@@ -126,6 +138,10 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
     prev_last_on: t.prev?.lastOn ?? null,
   });
   const planRow = (p: Plan) => ({ id: p.id, title: p.title, starts_on: p.start, ends_on: p.end, at: p.at ?? null, member: p.member ?? null, note: p.note ?? null, yearly: p.yearly, important: p.important });
+  const setItems = (fn: (i: Item[]) => Item[]) => setData((p) => ({ ...p, shopping: fn(p.shopping) }));
+  /** Put these items back exactly as given (by id), on screen. */
+  const putItems = (items: Item[]) => setItems((p) => [...items.filter((x) => !p.some((y) => y.id === x.id)), ...p.map((x) => items.find((y) => y.id === x.id) ?? x)]);
+  const itemRow = (i: Item) => ({ id: i.id, name: i.name, qty: i.qty ?? null, aisle: i.aisle, on_list: i.onList, added_by: i.addedBy ?? null, got_by: i.gotBy ?? null, got_at: i.gotAt ?? null, times: i.times });
   const setDoa = (fn: (d: DoaProgress[]) => DoaProgress[]) => setData((p) => ({ ...p, doa: fn(p.doa) }));
   const choreLine = (c: Chore) => `did ${c.title}`;
   const thanksText = (c: Chore) => `thanked ${data.members.find((m) => m.id === c.lastBy)?.name ?? "you"} for ${c.title}`;
@@ -459,6 +475,81 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
         undo: () => {
           putBack();
           write(without, sb.from("events").insert(planRow(p)));
+        },
+      });
+    },
+
+    addItem: (text) => {
+      const parsed = parseItem(text);
+      const name = parsed.name.slice(0, 60).trim();
+      const qty = parsed.qty?.slice(0, 20);
+      if (!name) return;
+      const old = data.shopping.find((x) => x.name.trim().toLowerCase() === name.toLowerCase());
+      if (old?.onList && !old.gotBy && (!qty || qty === old.qty)) {
+        setUndo({ id: Date.now(), label: `${old.name} is already on the list` });
+        return;
+      }
+      const next: Item = old
+        ? { ...old, onList: true, gotBy: undefined, qty: qty ?? old.qty, addedBy: old.onList ? old.addedBy : me }
+        : { id: crypto.randomUUID(), name, qty, aisle: guessAisle(name), onList: true, addedBy: me, times: 0 };
+      putItems([next]);
+      write(() => (old ? putItems([old]) : setItems((p) => p.filter((x) => x.id !== next.id))), old ? sb.from("shopping_items").update(itemRow(next)).eq("id", old.id) : sb.from("shopping_items").insert(itemRow(next)));
+    },
+
+    editItem: (id, meta) => {
+      const old = data.shopping.find((x) => x.id === id);
+      const name = meta.name.trim().slice(0, 60);
+      if (!old || !name) return;
+      const next = { ...old, name, qty: meta.qty?.trim().slice(0, 20) || undefined, aisle: meta.aisle };
+      putItems([next]);
+      write(() => putItems([old]), sb.from("shopping_items").update({ name, qty: next.qty ?? null, aisle: next.aisle }).eq("id", id));
+    },
+
+    toggleItem: (id) => {
+      const old = data.shopping.find((x) => x.id === id);
+      if (!old?.onList) return;
+      const next = old.gotBy ? { ...old, gotBy: undefined } : { ...old, gotBy: me, gotAt: new Date().toISOString() };
+      putItems([next]);
+      write(() => putItems([old]), sb.from("shopping_items").update({ got_by: next.gotBy ?? null, got_at: next.gotAt ?? null }).eq("id", id));
+    },
+
+    removeItem: (id) => {
+      const old = data.shopping.find((x) => x.id === id);
+      if (!old) return;
+      const forget = old.times === 0;
+      const gone = () => (forget ? setItems((p) => p.filter((x) => x.id !== id)) : putItems([{ ...old, onList: false, gotBy: undefined }]));
+      gone();
+      write(() => putItems([old]), forget ? sb.from("shopping_items").delete().eq("id", id) : sb.from("shopping_items").update({ on_list: false, got_by: null }).eq("id", id));
+      setUndo({
+        id: Date.now(),
+        label: `Removed ${old.name}`,
+        undo: () => {
+          putItems([old]);
+          write(gone, sb.from("shopping_items").upsert(itemRow(old)));
+        },
+      });
+    },
+
+    finishShopping: () => {
+      const got = data.shopping.filter((x) => x.onList && x.gotBy);
+      if (!got.length) return;
+      const done = got.map((x) => ({ ...x, onList: false, gotBy: undefined, times: x.times + 1 }));
+      putItems(done);
+      const log = logLine("shop", `finished shopping (${got.length} ${got.length === 1 ? "item" : "items"})`);
+      write(
+        () => {
+          putItems(got);
+          setLog((l) => l.filter((x) => x.id !== log.entry.id));
+        },
+        sb.rpc("finish_shopping"),
+        log.query,
+      );
+      setUndo({
+        id: Date.now(),
+        label: "Shopping done",
+        undo: () => {
+          putItems(got);
+          write(() => putItems(done), sb.from("shopping_items").upsert(got.map(itemRow)), unlog(log.entry.id));
         },
       });
     },

@@ -1,5 +1,6 @@
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { addDays, klToday, weekStart } from "./date";
+import type { Aisle } from "./shopping";
 
 export type Member = { id: string; name: string; ink: string };
 export type Step = { id: string; title: string; done: boolean };
@@ -13,7 +14,9 @@ export type Plan = { id: string; title: string; start: string; end: string; at?:
 export type Note = { text: string; by: string; at: string };
 /** One of us is learning, or has memorised, one doa (id from lib/doa.json). No row = not started. */
 export type DoaProgress = { by: string; doa: string; status: "learning" | "memorised"; at: string };
-export type LogEntry = { id: string; kind: "todo" | "chore" | "note" | "thanks" | "doa"; text: string; by: string; at: string };
+export type LogEntry = { id: string; kind: "todo" | "chore" | "note" | "thanks" | "doa" | "shop"; text: string; by: string; at: string };
+/** onList false = history, kept for "buy again". gotBy = in the trolley. times = how often bought; gotAt = last ticked. */
+export type Item = { id: string; name: string; qty?: string; aisle: Aisle; onList: boolean; addedBy?: string; gotBy?: string; gotAt?: string; times: number };
 type ChoreState = { nextDue: string; lastBy?: string; lastOn?: string };
 /** owner: who looks after it (undefined = either of us). prev: state before the last tick, for un-ticking. */
 export type Chore = ChoreState & { id: string; title: string; everyDays: number; owner?: string; prev?: ChoreState };
@@ -120,5 +123,22 @@ export async function loadPlans(sb: SupabaseClient): Promise<Plan[]> {
     note: r.note ?? undefined,
     yearly: r.yearly,
     important: r.important,
+  }));
+}
+
+export async function loadShopping(sb: SupabaseClient): Promise<Item[]> {
+  // shortcut: the 500 most recent rows; history past that drops out of "buy again". Fine for one household for years.
+  const { data, error } = await sb.from("shopping_items").select("id, name, qty, aisle, on_list, added_by, got_by, got_at, times").order("created_at", { ascending: false }).limit(500);
+  if (error) fail("shopping_items", error);
+  return data.map((r) => ({
+    id: r.id,
+    name: r.name,
+    qty: r.qty ?? undefined,
+    aisle: r.aisle,
+    onList: r.on_list,
+    addedBy: r.added_by ?? undefined,
+    gotBy: r.got_by ?? undefined,
+    gotAt: r.got_at ?? undefined,
+    times: r.times,
   }));
 }

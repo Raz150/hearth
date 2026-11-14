@@ -49,7 +49,8 @@ export function TabBar({ tabs, floating = true }: { tabs: readonly Tab[]; floati
             href={t.href}
             aria-current={on ? "page" : undefined}
             aria-label={on ? undefined : t.label}
-            className={cx("relative flex h-11 items-center justify-center [&_svg]:size-5", on ? "gap-2 px-3.5 text-on-fill" : "w-11 [&_svg]:size-[22px]")}
+            // With six tabs on a 375pt iPhone the icon tabs give up a few px (~39 wide, still 44 tall); the chip never shrinks.
+            className={cx("relative flex h-11 items-center justify-center [&_svg]:size-5", on ? "shrink-0 gap-2 px-3.5 text-on-fill" : "w-11 [&_svg]:size-[22px]")}
           >
             {on && <motion.span layoutId="tab-chip" aria-hidden className="absolute inset-0 rounded-control border-2 border-edge-on-fill bg-hero" transition={{ type: "spring", stiffness: 500, damping: 38 }} />}
             <span aria-hidden className="relative">

@@ -70,6 +70,10 @@ select pg_temp.expect_fail($$insert into public.shifts (member, day, label, star
 insert into public.events (title, starts_on, ends_on) values ('Trip', '2026-12-12', '2026-12-15');
 select pg_temp.expect_fail($$insert into public.events (title, starts_on, ends_on) values ('x', '2026-12-12', '2026-12-11')$$, 'event ending before it starts rejected');
 select pg_temp.expect_fail($$insert into public.todos (title, due_time) values ('x', '23:59')$$, 'due time without a date rejected');
+insert into public.shopping_items (name, qty, aisle) values ('Susu', '2', 'dairy');
+select pg_temp.expect_fail($$insert into public.shopping_items (name) values (' susu ')$$, 'same item twice rejected');
+select pg_temp.expect_fail($$insert into public.shopping_items (name, aisle) values ('x', 'garage')$$, 'unknown aisle rejected');
+select pg_temp.expect_fail($$insert into public.shopping_items (name, on_list, got_by) values ('x', false, auth.uid())$$, 'in trolley but off the list rejected');
 reset role;
 
 -- ── as a2 (spouse): sees everything a1 made ──
@@ -86,6 +90,9 @@ delete from public.activity;
 select pg_temp.expect((select count(*) from public.activity) = 3, 'a2 cannot delete a1''s log line');
 select pg_temp.expect((select count(*) from public.doa_progress) = 1, 'a2 sees a1''s doa progress');
 select pg_temp.expect((select count(*) from public.shifts) = 1 and (select count(*) from public.events) = 1, 'a2 sees shifts and plans');
+update public.shopping_items set got_by = auth.uid(), got_at = now();
+select pg_temp.expect(public.finish_shopping() = 1, 'a2 can tick a1''s item and finish shopping');
+select pg_temp.expect((select times = 1 and not on_list and got_by is null from public.shopping_items), 'finished item goes to history');
 update public.doa_progress set status = 'memorised';
 delete from public.doa_progress;
 select pg_temp.expect((select status from public.doa_progress where user_id = '00000000-0000-0000-0000-0000000000a1') = 'learning', 'a2 cannot change or clear a1''s doa progress');
@@ -108,6 +115,9 @@ update public.events set title = 'pwned';
 select pg_temp.expect_fail($$insert into public.doa_progress (doa_id, status, household_id) values ('hm101', 'learning', '00000000-0000-0000-0000-00000000000a')$$, 'b1 cannot add doa progress into A');
 update public.doa_progress set status = 'memorised';
 update public.todos set title = 'pwned';
+select pg_temp.expect((select count(*) from public.shopping_items) = 0, 'b1 sees none of A''s shopping');
+update public.shopping_items set on_list = true, got_by = auth.uid();
+select pg_temp.expect(public.finish_shopping() = 0, 'b1 cannot finish A''s shopping');
 update public.chores set title = 'pwned';
 select pg_temp.expect_fail($$insert into public.todos (household_id, title) values ('00000000-0000-0000-0000-00000000000a', 'spam')$$, 'b1 cannot insert into A');
 reset role;
@@ -123,6 +133,7 @@ update public.doa_progress set status = 'memorised' where user_id = auth.uid();
 select pg_temp.expect((select status from public.doa_progress where user_id = '00000000-0000-0000-0000-0000000000a1') = 'memorised', 'a1 can mark own doa memorised');
 delete from public.doa_progress;
 select pg_temp.expect((select count(*) from public.doa_progress) = 1, 'a1 clears only own doa progress');
+select pg_temp.expect((select not on_list and got_by is null from public.shopping_items), 'b1 update had no effect on shopping');
 reset role;
 
 -- ── logged out ──
@@ -130,9 +141,10 @@ set role anon;
 select pg_temp.expect_fail($$select * from public.todos$$, 'anon cannot read todos');
 select pg_temp.expect_fail($$select * from public.members$$, 'anon cannot read members');
 select pg_temp.expect_fail($$select private.my_household_id()$$, 'anon cannot call helper');
+select pg_temp.expect_fail($$select public.finish_shopping()$$, 'anon cannot finish shopping');
 reset role;
 
-select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 9, 'realtime publishes 9 tables');
+select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 10, 'realtime publishes 10 tables');
 select pg_temp.expect((select bool_and(rowsecurity) from pg_tables where schemaname = 'public'), 'RLS on every public table');
 delete from public.todos where title = 'Groceries';
 select pg_temp.expect((select count(*) from public.todo_steps) = 0, 'deleting a todo deletes its steps');
