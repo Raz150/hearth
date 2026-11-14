@@ -66,10 +66,10 @@ select pg_temp.expect_fail($$insert into public.chores (title, every_days, next_
 insert into public.activity (kind, body) values ('thanks', 'thanked Wife for Laundry');
 select pg_temp.expect_fail($$insert into public.activity (kind, body) values ('hug', 'x')$$, 'unknown log kind rejected');
 insert into public.activity (kind, body) values ('doa', 'asked for doa');
-insert into public.doa_requests (id, body) values ('00000000-0000-0000-0000-0000000000d1', 'Exam on Thursday');
-select pg_temp.expect_fail($$insert into public.doa_requests (body) values ('  ')$$, 'blank doa request rejected');
-select pg_temp.expect_fail($$insert into public.doa_requests (body, asked_by) values ('x', '00000000-0000-0000-0000-0000000000a2')$$, 'cannot ask as spouse');
-select pg_temp.expect_fail($$insert into public.doa_prayers (request_id) values ('00000000-0000-0000-0000-0000000000d1')$$, 'cannot pray on own request');
+insert into public.doa_progress (doa_id, status) values ('hm101', 'learning');
+select pg_temp.expect_fail($insert into public.doa_progress (doa_id, status) values ('hm75; drop', 'learning')$, 'unknown doa id rejected');
+select pg_temp.expect_fail($insert into public.doa_progress (doa_id, status) values ('hm102', 'done')$, 'unknown doa status rejected');
+select pg_temp.expect_fail($insert into public.doa_progress (doa_id, status, user_id) values ('hm102', 'learning', '00000000-0000-0000-0000-0000000000a2')$, 'cannot mark doa progress as spouse');
 reset role;
 
 -- ── as a2 (spouse): sees everything a1 made ──
@@ -84,15 +84,12 @@ update public.todo_steps set done = true;
 select pg_temp.expect((select done from public.todo_steps), 'a2 can tick a1''s step');
 delete from public.activity;
 select pg_temp.expect((select count(*) from public.activity) = 3, 'a2 cannot delete a1''s log line');
-insert into public.doa_prayers (request_id) values ('00000000-0000-0000-0000-0000000000d1');
-select pg_temp.expect((select prayed_by from public.doa_prayers) = '00000000-0000-0000-0000-0000000000a2', 'a2 can pray on a1''s request');
-select pg_temp.expect_fail($$insert into public.doa_prayers (request_id) values ('00000000-0000-0000-0000-0000000000d1')$$, 'only one prayer per day');
-select pg_temp.expect_fail($$insert into public.doa_prayers (request_id, day) values ('00000000-0000-0000-0000-0000000000d1', '2020-01-01')$$, 'cannot backdate a prayer');
-select pg_temp.expect_fail($$insert into public.doa_prayers (request_id, prayed_by) values ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000a1')$$, 'cannot pray as spouse');
-select pg_temp.expect_fail($$update public.doa_prayers set day = '2020-01-01'$$, 'prayers cannot be edited');
-update public.doa_requests set answered_at = now();
-delete from public.doa_requests;
-select pg_temp.expect((select count(*) from public.doa_requests where answered_at is null) = 1, 'a2 cannot answer or delete a1''s request');
+select pg_temp.expect((select count(*) from public.doa_progress) = 1, 'a2 sees a1''s doa progress');
+update public.doa_progress set status = 'memorised';
+delete from public.doa_progress;
+select pg_temp.expect((select status from public.doa_progress where user_id = '00000000-0000-0000-0000-0000000000a1') = 'learning', 'a2 cannot change or clear a1''s doa progress');
+insert into public.doa_progress (doa_id, status) values ('hm101', 'memorised');
+select pg_temp.expect((select count(*) from public.doa_progress) = 2, 'a2 can mark own doa progress');
 reset role;
 
 -- ── as b1 (outsider) ──
@@ -103,9 +100,9 @@ update public.todo_steps set title = 'pwned';
 select pg_temp.expect_fail($$insert into public.todo_steps (todo_id, title) values ('00000000-0000-0000-0000-0000000000e1', 'spam')$$, 'b1 cannot add a step to A''s todo');
 select pg_temp.expect((select count(*) from public.members) = 1, 'b1 sees only self');
 select pg_temp.expect((select count(*) from public.notes) + (select count(*) from public.activity) + (select count(*) from public.bills) + (select count(*) from public.bill_payments) + (select count(*) from public.chores) = 0, 'b1 sees nothing else of A');
-select pg_temp.expect((select count(*) from public.doa_requests) + (select count(*) from public.doa_prayers) = 0, 'b1 sees none of A''s doa');
-select pg_temp.expect_fail($$insert into public.doa_prayers (request_id) values ('00000000-0000-0000-0000-0000000000d1')$$, 'b1 cannot pray on A''s request');
-select pg_temp.expect_fail($$insert into public.doa_prayers (request_id, household_id) values ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-00000000000a')$$, 'b1 cannot pray into A');
+select pg_temp.expect((select count(*) from public.doa_progress) = 0, 'b1 sees none of A''s doa progress');
+select pg_temp.expect_fail($insert into public.doa_progress (doa_id, status, household_id) values ('hm101', 'learning', '00000000-0000-0000-0000-00000000000a')$, 'b1 cannot add doa progress into A');
+update public.doa_progress set status = 'memorised';
 update public.todos set title = 'pwned';
 update public.chores set title = 'pwned';
 delete from public.bills;
@@ -115,16 +112,16 @@ reset role;
 select pg_temp.expect((select count(*) from public.todos where title = 'pwned') + (select count(*) from public.todo_steps where title = 'pwned') + (select count(*) from public.chores where title = 'pwned') = 0, 'b1 updates had no effect');
 select pg_temp.expect((select count(*) from public.bills where household_id = '00000000-0000-0000-0000-00000000000a') = 1, 'b1 delete had no effect');
 
--- ── a1 removes own log line (undo), answers own doa ──
+-- ── a1 removes own log line (undo), memorises and clears own doa ──
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a1';
 delete from public.activity;
 select pg_temp.expect((select count(*) from public.activity) = 0, 'a1 can delete own log line');
-delete from public.doa_prayers;
-select pg_temp.expect((select count(*) from public.doa_prayers) = 1, 'a1 cannot undo a2''s prayer');
-select pg_temp.expect_fail($$update public.doa_requests set body = 'edited'$$, 'doa request words cannot be edited');
-update public.doa_requests set answered_at = now();
-select pg_temp.expect((select answered_at is not null from public.doa_requests), 'a1 can mark own request answered');
+select pg_temp.expect((select status from public.doa_progress where user_id = '00000000-0000-0000-0000-0000000000a1') = 'learning', 'b1 update had no effect on doa progress');
+update public.doa_progress set status = 'memorised' where user_id = auth.uid();
+select pg_temp.expect((select status from public.doa_progress where user_id = '00000000-0000-0000-0000-0000000000a1') = 'memorised', 'a1 can mark own doa memorised');
+delete from public.doa_progress;
+select pg_temp.expect((select count(*) from public.doa_progress) = 1, 'a1 clears only own doa progress');
 reset role;
 
 -- ── logged out ──
@@ -134,7 +131,7 @@ select pg_temp.expect_fail($$select * from public.members$$, 'anon cannot read m
 select pg_temp.expect_fail($$select private.my_household_id()$$, 'anon cannot call helper');
 reset role;
 
-select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 10, 'realtime publishes 10 tables');
+select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 9, 'realtime publishes 9 tables');
 select pg_temp.expect((select bool_and(rowsecurity) from pg_tables where schemaname = 'public'), 'RLS on every public table');
 delete from public.todos where title = 'Groceries';
 select pg_temp.expect((select count(*) from public.todo_steps) = 0, 'deleting a todo deletes its steps');

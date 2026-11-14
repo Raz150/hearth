@@ -1,23 +1,15 @@
 // Builds lib/doa.json (the Doa tab). Run: node scripts/doa.mjs
 // Edit GROUPS below to change what shows up, then re-run and commit the JSON.
-// Hadith doa: Hisnul Muslim API (Arabic, transliteration, English, repeat count, audio)
+// Only doa to learn and say at their moments (no counted adhkar/zikir).
+// Hadith doa: Hisnul Muslim API (Arabic, transliteration, English, audio)
 //   cross-checked against JPN Johor's Hisnul Muslim (KPM), which gives the Malay and the source reference.
 //   The build fails if the two sources' Arabic don't agree, so a wrong pairing can't slip in.
 // Quran doa: api.alquran.cloud (Uthmani Arabic, transliteration, Sahih International, Basmeih, Alafasy audio).
 import { writeFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 
-// hm: Hisnul Muslim item IDs. quran: ayah refs ("s:a" or "s:a-b"), optionally with repeat and the hadith that says to recite it.
+// hm: Hisnul Muslim item IDs. quran: ayah refs ("s:a" or "s:a-b").
 const GROUPS = [
-  {
-    id: "pagi-petang", ms: "Pagi & Petang", en: "Morning & Evening", section: /pagi dan petang/,
-    hm: [75], quran: [
-      { ref: "112:1-4", repeat: 3, src: "Abu Dawud 4/322, At-Tirmizi 5/567" },
-      { ref: "113:1-5", repeat: 3, src: "Abu Dawud 4/322, At-Tirmizi 5/567" },
-      { ref: "114:1-6", repeat: 3, src: "Abu Dawud 4/322, At-Tirmizi 5/567" },
-    ],
-    hm2: [77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 94, 95, 96, 97, 98],
-  },
   { id: "tidur", ms: "Tidur & Bangun", en: "Sleep & Waking", section: /tidur/, hm: [101, 102, 103, 104, 105, 106, 111, 1, 3] },
   { id: "rumah", ms: "Keluar & Masuk Rumah", en: "Leaving & Entering Home", hm: [16, 17, 18] },
   { id: "makan", ms: "Makan & Berbuka", en: "Eating & Breaking Fast", hm: [178, 179, 180, 181, 182, 176] },
@@ -125,12 +117,11 @@ function hadithDoa(id, section) {
     en: h.TRANSLATED_TEXT.trim(),
     ms: more.slice(0, -1).join(" "),
     src: `${src.replace(/\.$/, "")} · Hisnul Muslim ${id}`,
-    repeat: h.REPEAT || 1,
     audio: [https(h.AUDIO)],
   };
 }
 
-async function quranDoa({ ref, repeat = 1, src }) {
+async function quranDoa({ ref }) {
   const [s, range] = ref.split(":");
   const [from, to = from] = range.split("-").map(Number);
   const parts = [];
@@ -142,7 +133,7 @@ async function quranDoa({ ref, repeat = 1, src }) {
   const name = `${parts[0][0].surah.englishName} ${ref}`;
   return {
     id: `q${ref}`, ar: join(0), tr: join(1), en: join(2), ms: join(3),
-    src: src ? `${name} · ${src}` : name, repeat, audio: parts.map((p) => https(p[4].audio)),
+    src: name, audio: parts.map((p) => https(p[4].audio)),
   };
 }
 
@@ -151,7 +142,6 @@ for (const g of GROUPS) {
   const items = [];
   for (const id of g.hm ?? []) items.push(hadithDoa(id, g.section));
   for (const q of g.quran ?? []) items.push(await quranDoa(q));
-  for (const id of g.hm2 ?? []) items.push(hadithDoa(id, g.section));
   out.push({ id: g.id, ms: g.ms, en: g.en, items: items.filter(Boolean) });
 }
 assert.deepEqual(failures, [], "fix or drop these doa in GROUPS");

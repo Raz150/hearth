@@ -1,17 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ChevronRight, HandHeart, ListChecks, Receipt, Sparkles } from "lucide-react";
+import { ListChecks, Receipt, Sparkles } from "lucide-react";
 import { StatTile, cardClass } from "@/components/kit/card";
 import { ExpenseTable, ListCard, ListRow, Timeline } from "@/components/kit/list";
 import { WeekStrip } from "@/components/kit/nav";
-import { PRESS, cx, type Tone } from "@/components/kit/shared";
+import { type Tone } from "@/components/kit/shared";
 import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
 import { Confetti, Faces, Page, PageHeader, Quiet, Section } from "@/components/ui";
-import { addDays, daysBetween, dueDateInMonth, formatDay, klHour, klToday, relativeDue } from "@/lib/date";
-import { doaForHour } from "@/lib/doa";
+import { addDays, daysBetween, dueDateInMonth, formatDay, klToday, relativeDue } from "@/lib/date";
 import { klTime, ringgit, useStore, type LogEntry } from "@/lib/store";
 
 /** Colour = meaning: each kind of log line wears its category. */
@@ -30,7 +28,6 @@ export default function Today() {
   const left = todosLeft + chores.length - choresDone + bills.length;
   const log = s.log.filter((l) => klToday(new Date(l.at)) === today);
   const didToday = log.length > 0;
-  const now = doaForHour(klHour());
   const days = [-3, -2, -1, 0, 1, 2, 3].map((n) => addDays(today, n));
 
   // One dot per day with something due: to-do first, then chore, then bill.
@@ -79,19 +76,6 @@ export default function Today() {
       </div>
 
       <WeekStrip days={days} today={today} dots={dots} />
-
-      {now && (
-        <Link href={`/doa#${now.group}`} className={cx(cardClass("interactive"), PRESS, "flex items-center gap-2.5 px-3.5 py-2.5")}>
-          <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-icon border-[1.5px] border-dashed border-edge-card">
-            <HandHeart className="size-[18px]" strokeWidth={2} />
-          </span>
-          <span className="flex flex-1 flex-col">
-            <span className="text-sm font-bold">Time for a few minutes of zikir</span>
-            <span className="text-xs font-semibold text-muted">{now.label}</span>
-          </span>
-          <ChevronRight aria-hidden className="size-[18px]" strokeWidth={2.2} />
-        </Link>
-      )}
 
       <ListCard level="info" title="To do" tint="shopping" more={todos.length > 2 ? { href: "/todo", label: `See all ${todos.length}` } : { href: "/todo", label: "See all" }}>
         {todos.length === 0 ? (

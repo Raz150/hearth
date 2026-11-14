@@ -1,324 +1,5 @@
 [
  {
-  "id": "pagi-petang",
-  "ms": "Pagi & Petang",
-  "en": "Morning & Evening",
-  "items": [
-   {
-    "id": "hm75",
-    "ar": "أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ ﴿اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَوَاتِ وَالْأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ﴾.",
-    "tr": "Recite Ayat-Al-Kursiy (Al-Baqarah :255)",
-    "en": "Allah - there is no deity except Him, the Ever-Living, the Sustainer of [all] existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
-    "ms": "Aku berlindung dengan Allah daripada syaitan yang direjam. Allah, tiada Tuhan yang berhak disembah melainkan Dia Yang Tetap hidup, yang Kekal se lama-lamanya mentadbirkan (sekalian makhlukNya). Yang tidak mengantuk dan tidak tidur. Yang memiliki segala yang ada di langit dan yang ada di bumi. Tiada sesiapa yang dapat memberi syafaat pertolongan) di sisiNya melainkan dengan izinNya, Yang Mengetahui segala yang ada di hadapan mereka dan segala yang ada di belakang mereka, sedang mereka tidak mengetahui sesuatu pun dari kandungan) ilmu Allah melainkan perkara yang Allah kehendaki (memberitahu kepadanya). Luasnya Kursi Allah meliputi langit dan bumi dan tiadalah menjadi keberatan kepada Allah menJaga serta memelihra keduanya dan Dialah Yang Maha Tinggi (darjat kemuliaanNya), lagi Maha Besar (kekuasaanNya).(Sesiapa yang membacanya pada waktu pagi dipelihara dari gangguan jin hingga petang dan sesiapa yang membacanya pada waktu petang dipelihara daripada gangguan jin hingga pagi.)",
-    "src": "Al-Hakim 1 / 562, Sahih at-Targhib wa at-Tarhib 1/273, at-Tabarani · Hisnul Muslim 75",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/75.mp3"
-    ]
-   },
-   {
-    "id": "q112:1-4",
-    "ar": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ هُوَ ٱللَّهُ أَحَدٌ ٱللَّهُ ٱلصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
-    "tr": "Qul huwal laahu ahad Allah hus-samad Lam yalid wa lam yoolad Wa lam yakul-lahu kufuwan ahad",
-    "en": "Say, \"He is Allah, [who is] One, Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent.\"",
-    "ms": "Katakanlah (wahai Muhammad): \"(Tuhanku) ialah Allah Yang Maha Esa; \"Allah Yang menjadi tumpuan sekalian makhluk untuk memohon sebarang hajat; \"Ia tiada beranak, dan Ia pula tidak diperanakkan; \"Dan tidak ada sesiapapun yang serupa denganNya\".",
-    "src": "Al-Ikhlaas 112:1-4 · Abu Dawud 4/322, At-Tirmizi 5/567",
-    "repeat": 3,
-    "audio": [
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6222.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6223.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6224.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6225.mp3"
-    ]
-   },
-   {
-    "id": "q113:1-5",
-    "ar": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ مِن شَرِّ مَا خَلَقَ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
-    "tr": "Qul a'uzoo bi rabbil-falaq Min sharri ma khalaq Wa min sharri ghasiqin iza waqab Wa min sharrin-naffaa-thaati fil 'uqad Wa min shar ri haasidin iza hasad",
-    "en": "Say, \"I seek refuge in the Lord of daybreak From the evil of that which He created And from the evil of darkness when it settles And from the evil of the blowers in knots And from the evil of an envier when he envies.\"",
-    "ms": "Katakanlah (wahai Muhammad); \"Aku berlindung kepada (Allah) Tuhan yang menciptakan sekalian makhluk, \"Dari bencana makhluk-makhluk yang Ia ciptakan; \"Dan dari bahaya gelap apabila ia masuk; \"Dan dari kejahatan makhluk-makhluk yang menghembus-hembus pada simpulan-simpulan (dan ikatan-ikatan); \"Dan dari kejahatan orang yang dengki apabila ia melakukan dengkinya\".",
-    "src": "Al-Falaq 113:1-5 · Abu Dawud 4/322, At-Tirmizi 5/567",
-    "repeat": 3,
-    "audio": [
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6226.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6227.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6228.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6229.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6230.mp3"
-    ]
-   },
-   {
-    "id": "q114:1-6",
-    "ar": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ مَلِكِ ٱلنَّاسِ إِلَٰهِ ٱلنَّاسِ مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ",
-    "tr": "Qul a'uzu birabbin naas Malikin naas Ilaahin naas Min sharril was waasil khannaas Al lazee yuwas wisu fee sudoorin naas Minal jinnati wan naas",
-    "en": "Say, \"I seek refuge in the Lord of mankind, The Sovereign of mankind. The God of mankind, From the evil of the retreating whisperer - Who whispers [evil] into the breasts of mankind - From among the jinn and mankind.\"",
-    "ms": "Katakanlah (wahai Muhammad): \"Aku berlindung kepada (Allah) Pemulihara sekalian manusia. \"Yang Menguasai sekalian manusia, \"Tuhan yang berhak disembah oleh sekalian manusia, \"Dari kejahatan pembisik penghasut yang timbul tenggelam, - \"Yang melemparkan bisikan dan hasutannya ke dalam hati manusia, - \"(Iaitu pembisik dan penghasut) dari kalangan jin dan manusia\".",
-    "src": "An-Naas 114:1-6 · Abu Dawud 4/322, At-Tirmizi 5/567",
-    "repeat": 3,
-    "audio": [
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6232.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6233.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6234.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6235.mp3",
-     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6236.mp3"
-    ]
-   },
-   {
-    "id": "hm77",
-    "ar": "((أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيرَ مَا بَعْدَهُ ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي  هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ)). [ وإذا أمسى قال: أمسينا وأمسى الملك للَّه] [وإذا أمسى قال: رب أسألك خير ما في هذه الليلة، وخير ما بعدها، وأعوذ بك من شر ما في هذه الليلة، وشر ما بعدها.]",
-    "tr": "Asbahna wa-asbahal-mulku lillah walhamdu lillah la ilaha illal-lah, wahdahu la shareeka lah, lahul-mulku walahul-hamd, wahuwa AAala kulli shayin qadeer, rabbi as-aluka khayra ma fee hathihil-laylah, wakhayra ma baAAdaha, wa-aAAoothu bika min sharri hathihil-laylah, washarri ma baAAdaha, rabbi aAAoothu bika minal-kasal, wasoo-il kibar, rabbi aAAoothu bika min AAathabin fin-nar, waAAathabin fil-qabr.‘We have reached the morning and at this very time unto Allah belongs all sovereignty, and all praise is for Allah.  None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this night and the good of what follows it and I take refuge in You from the evil of this night and the evil of what follows it.  My Lord, I take refuge in You from laziness and senility.  My Lord, I take refuge in You from torment in the Fire and punishment in the grave.’…likewise, one says in the morning:Amsayna wa-amsal-mulku lillah….‘We have reached the evening and at this very time unto Allah belongs all sovereignty…’",
-    "en": "‘We have reached the morning and at this very time unto Allaah, belongs all sovereignty , and all praise is for Allaah. None has the right to be worshipped except Allaah, alone, without any partner, to Him belong all sovereignty and praise and He is over all things omnipotent. My Lord, I ask You for the good of this day and the good of what follows it and I take refuge in You from the evil of this day and the evil of what follows it . My Lord, I take refuge in You from laziness and senility. My Lord, I take refuge in You from torment in the Fire and punishment in the grave.’",
-    "ms": "[Kami hayati pagi (petang) kami dan pagi (petang) yang penuh Kekuasaan bagi AIIah dan segala kepujian bagi AlIah, tiada Tuhan yang berhak disembah melainkan Allah yang Esa Yang tiada sekutu bagiNya, baginya Kekuasaan dan baginya Kepujian dan Dia berkuasa di atas setiap sesuatu. Ya Tuhanku, Aku memohon kepadaMu, kebaikan yang terdapat pada hari ini dan kebaikkan yang terdapat selepasnya dan aku berlindung denganMu daripada kejahatan yang terdapat pada hari ini dan kejahatan yang berlaku selepasnya, Tuhanku aku berlindung denganMu daripada kemalasan dan terlalu tua, Tuhanku aku berlindung denganMu daripada azab neraka dana azab kubur]. Baca di dalam kurungan pada waktu petang.",
-    "src": "Muslim 4/2088 · Hisnul Muslim 77",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/77.mp3"
-    ]
-   },
-   {
-    "id": "hm78",
-    "ar": "((اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا ، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ)). [وإذا أمسى قال: اللَّهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.]",
-    "tr": "(Allahumma bika asbahna wabika amsayna, wabika nahya ,wabika namootu wa-ilaykan-nushoor.)[In the evening:] (Allahumma bika amsayna, wabika asbahna, wabika nahya wabika namootu wa-ilaykal-maseer.)",
-    "en": "(O Allah, by your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die and unto You is our resurrection.)[In the evening:](O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die and unto You is our return.)",
-    "ms": "[Ya Allah, denganMu kami hayati waktu pagi (petang) kami, denganMu kami hayati waktu petang (pagi) kami, denganMu kami hidup, denganMu kami mati dan kepadaMu kebangkitan kami]. Baca di dalam kurungan pada waktu petang.",
-    "src": "Sahih At-Tirmizi 3/142 · Hisnul Muslim 78",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/78.mp3"
-    ]
-   },
-   {
-    "id": "hm79",
-    "ar": "((اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنوبَ إِلاَّ أَنْتَ)).",
-    "tr": "(Allahumma anta rabbee la ilaha illa ant, khalaqtanee wa-ana AAabduk, wa-ana AAala AAahdika wawaAAdika mas-tataAAt, aAAoothu bika min sharri ma sanaAAt, aboo-o laka biniAAmatika AAalay, wa-aboo-o bithanbee, faghfir lee fa-innahu la yaghfiruth-thunooba illa ant.)",
-    "en": "(O Allah, You are my Lord, none has the right to be worshipped except You, You created me and I am Your servant and I abide to Your covenant and promise as best I can, I take refuge in You from the evil of which I have committed.  I acknowledge Your favour upon me and I acknowledge my sin, so forgive me, for verily none can forgive sin except You.)",
-    "ms": "Ya Allah, engkaulah Tuhanku, tidak ada Tuhan yang berhak disembah melainkan Engkau, Engkau telah menjadikanku dan aku adalah hambaMu dan aku di atas perintah dan perjanjianMu sekadar keupayaanku. Aku berlindung denganMu daripada segala kejahatan yang telah aku lakukan, aku mengakui nikmatMu ke atasku dan aku mengaku akan dosaku. Ampunilah dosaku, sesungguhnya tiada yang dapat mengampunkan segala dosa melainkan Engkau. (Sesiapa yang membacanya dengan penuh keyakinan ketika petang kemudia dia mati pada malamnya dia akan dapat masuk syurga. Demikian juga kalau dia membacanya pada waktu pagi.)",
-    "src": "Al-Bukhari 7/150, An-Nasa'i, At-Tirmizi · Hisnul Muslim 79",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/79.mp3"
-    ]
-   },
-   {
-    "id": "hm80",
-    "ar": "((اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتِكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّداً عَبْدُكَ وَرَسُولُكَ)) (أربعَ مَرَّاتٍ).[ وإذا أمسى قال: اللَّهم إني أمسيت...]",
-    "tr": "(Allahumma innee asbahtu oshhiduk, wa-oshhidu hamalata AAarshik, wamala-ikatak, wajameeAAa khalqik, annaka antal-lahu la ilaha illa ant, wahdaka la shareeka lak, wa-anna Muhammadan AAabduka warasooluk .) (four times in the morning & evening)(Note: for the evening, one reads (amsaytu) instead of (asbahtu).)",
-    "en": "(O Allah, verily I have reached the morning and call on You, the bearers of Your throne, Your angles, and all of Your creation to witness that You are Allah, none has the right to be worshipped except You, alone, without partner and that Muhammad is Your Servant and Messenger.) (four times in the morning & evening)(Note: for the evening, one reads (amsaytu) instead of (asbahtu).)",
-    "ms": "[Ya Allah, sesungguhnya pada pagi (petang) ini aku mempersaksikan kepadamu dan aku mempersaksikan Malaikat yang memikul arasyMu, malaikat-malaikat dan semua makhlukMu bahawa sesungguhnya Engkau adalah Tuhan kami. Tidak ada tuhan yang berhak disembah melainkan Engkau, Yang Esa tidak ada sekutu bagiMu dan sesungguhnya Nabi Muhammad adalah hamba dan rasulMu]. Baca di dalam kurungan pada waktu petang. Sesiapa yang membaca pada waktu pagi atau petang empat kali Allah swt akan memerdekakannya dari api neraka.",
-    "src": "Abu Dawud 4/317, An-Nasa'i, Ibn As-Sunni · Hisnul Muslim 80",
-    "repeat": 4,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/80.mp3"
-    ]
-   },
-   {
-    "id": "hm81",
-    "ar": "((اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ)). [وإذا أمسى قال: اللَّهم ما أمسى بي...]",
-    "tr": "(Allahumma ma asbaha bee min niAAmatin, aw bi-ahadin min khalqik, faminka wahdaka la shareeka lak, falakal-hamdu walakash-shukr.)(Note: for the evening, one reads (amsa) instead of (asbaha).)",
-    "en": "(O Allah, what blessing I or any of Your creation have risen upon, is from You alone, without partner, so for You is all praise and unto You all thanks.)(…whoever says this in the morning has indeed offered his day’s thanks and whoever says this in the evening has indeed offered his night’s thanks.)(Note: for the evening, one reads (amsa) instead of (asbaha).)",
-    "ms": "[Ya Allah, segala nikmat yang aku perolehi pada pagi (petang) ini atau segala yang diperolehi oleh setiap sesuatu daripada makhlukMu pada pagi (petang) ini adalah daripadaMu Yang Esa, tidak ada sekutu bagiMu, maka untukMulah segala pujian dan untukMulah segala kesyukuran]. Baca di dalam kurungan pada waktu petang. Sesiapa yang membacanya pada waktu pagi maka dia telah bersyukur pada hari itu dan siapa yang membacanya pada waktu petang maka dia telah bersyukur pada malam itu.",
-    "src": "Abu Dawud 4/318, Ibn As-Sunni (Hadith no. 41), Ibn Hibban (Hadith no. 2361) · Hisnul Muslim 81",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/81.mp3"
-    ]
-   },
-   {
-    "id": "hm82",
-    "ar": "((اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لاَ إِلَهَ إِلاَّ أَنْتَ. اللَّهُمَّ  إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ القَبْرِ، لاَ إِلَهَ إِلاَّ أَنْتَ)) (ثلاثَ مرَّاتٍ).",
-    "tr": "(Allahumma AAafinee fee badanee, allahumma AAafinee fee samAAee, allahumma AAafinee fee basaree, la ilaha illa ant.(three times).)(Allahumma innee aAAoothu bika minal-kufr, walfaqr, wa-aAAoothu bika min AAathabil-qabr, la ilaha illa ant (three times).)",
-    "en": "(O Allah, grant my body health, O Allah, grant my hearing health, O Allah, grant my sight health.  None has the right to be worshipped except You.)(three times) (O Allah, I take refuge with You from disbelief and poverty, and I take refuge with You from the punishment of the grave.  None has the right to be worshipped except You. (three times))",
-    "ms": "Ya Allah, kurniakanlah kesihatan pada badanku, Ya Allah, kurniakanlah kesihatan pada pendengaranku, Ya Allah, kurniakanlah kesihatan pada penglihatanku, tiada Tuhan yang berhak disembah melainkan Engkau. Ya Allah, aku berlindung denganMu daripada kekufuran dan kefakiran. Ya Allah aku berlindung denganMu daripada azab kubur, tiada Tuhan yang berhak disembah melainkan Engkau. (Tiga kali)",
-    "src": "Abu Dawud 4/324, Ahmad 5/42, An-Nasa'i, Ibn As-Sunni (Hadith no. 69), Ibn Hibban (Hadith no. 2361) · Hisnul Muslim 82",
-    "repeat": 3,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/82.mp3"
-    ]
-   },
-   {
-    "id": "hm83",
-    "ar": "((حَسْبِيَ اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ عَلَيهِ تَوَكَّلتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ)) (سَبْعَ مَرّاتٍ).",
-    "tr": "(Hasbiyal-lahu la ilaha illa huwa, AAalayhi tawakkalt, wahuwa rabbul-AAarshil-AAatheem (Recite seven times in Arabic.)",
-    "en": "Allah is Sufficient for me, none has the right to be worshipped except Him, upon Him I rely and He is Lord of the exalted throne.’ (Recite seven times in Arabic.)",
-    "ms": "Cukuplah Allah (sebagai pelindung) bagiku tiada Tuhan yang berhak disembah melainkan Dia, kepadanyalah aku bertawakkal dan dialah Tuhan yang menguasai Arasy yang agung. (Tujuh kali) Sesiapa yang membacanya pada waktu pagi dan petang sebanyak Tujuh kali, Allah swt mencukupkannya apa yang diperlukan dirinya daripada pekerjaaan dunia dan akhirat.",
-    "src": "Ibn As-Sunni (no. 71), Abu Dawud 4/321, Ibn As-Sunni · Hisnul Muslim 83",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/83.mp3"
-    ]
-   },
-   {
-    "id": "hm84",
-    "ar": "((اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ: فِي دِينِي وَدُنْيَايَ وَأَهْلِي، وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَينِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي)).",
-    "tr": "Allahumma innee as-alukal-AAafwa walAAafiyah, fid-dunya wal-akhirah, allahumma innee as-alukal-AAafwa walAAafiyah fee deenee, wadunyaya wa-ahlee, wamalee, allahummas-tur AAawratee, wa-amin rawAAatee, allahummah-fathnee min bayni yaday, wamin khalfee, waAAan yameenee, waAAan shimalee, wamin fawqee, wa-aAAoothu biAAathamatika an oghtala min tahtee.",
-    "en": "O Allah, I ask You for pardon and well-being in this life and the next. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, veil my weaknesses and set at ease my dismay. O Allah, preserve me from the front and from behind and on my right and on my left and from above, and I take refuge with You lest I be swallowed up by the earth.",
-    "ms": "Ya Allah aku memohon kepadaMu keampunan dan kesejahteraan di dunia dan di akhirat Ya Allah aku memohon kepadaMu keampunan dan kesejahteraan pada agamaku, duniaku keluargaku dan hartaku. Ya Allah, tutupkanlah keaibanku dan amankanlah diriku daripada rasa takut. Ya Allah, peliharalah diriku dari hadapan dan belakangku, dari kanan dan kiriku serta dari atasku dan aku berlindung dengan keagunganMu daripada diceroboh di sebelah bawahku.",
-    "src": "Sahih Ibn Majah 2/332, Abu Dawud · Hisnul Muslim 84",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/84.mp3"
-    ]
-   },
-   {
-    "id": "hm85",
-    "ar": "((اللَّهُمَّ عَالِمَ الغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطانِ وَشَرَكِهِ، وَأَنْ أَقْتَرِفَ عَلَى  نَفْسِي سُوءاً، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ)).",
-    "tr": "(Allahumma AAalimal-ghaybi washshahadah, fatiras-samawati wal-ard, rabba kulli shayin wamaleekah, ashhadu an la ilaha illa ant, aAAoothu bika min sharri nafsee wamin sharrish-shaytani washirkih, waan aqtarifa AAala nafsee soo-an aw ajurrahu ila muslim.)",
-    "en": "(O Allah, Knower of the unseen and the seen, Creator of the heavens and the Earth, Lord and Sovereign of all things, I bear witness that none has the right to be worshipped except You. I take refuge in You from the evil of my soul and from the evil and shirk of the devil, and from committing wrong against my soul or bringing such upon another Muslim.)(shirk: to associate others with Allah in those things which are specific to Him.  This can occur in (1) belief, e.g. to believe that other than Allah has the power to benefit or harm, (2) speech, e.g. to swear by other than Allah and (3) action, e.g. to bow or prostrate to other than Allah.)",
-    "ms": "Ya Allah, Tuhan yang mengetahui perkara ghaib dan nyata, Pencipta langit dan bumi, Tuhan setiap sesuatu dan Pemiliknya, aku mengaku bahawa Tiada Tuhan yang berhak disembah melainkan Engkau, aku berlindung denganMu daripada kejahatan diriku dan kejahatan syaitan dan sekutunya dan aku berlindung dan tidak pada berusaha untuk melakukan kejahatan terhadap diriku atau aku mendorong orang Islam melakukannya.",
-    "src": "Sahih At-Tirmizi 3/142, Abu Dawud · Hisnul Muslim 85",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/85.mp3"
-    ]
-   },
-   {
-    "id": "hm86",
-    "ar": "((بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلاَ فِي السّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ)) (ثلاثَ مرَّاتٍ).",
-    "tr": "(Bismil-lahil-lathee la yadurru maAAas-mihi shay-on fil-ardi wala fis-sama-i wahuwas-sameeAAul-AAaleem. (three times).)",
-    "en": "(In the name of Allah with whose name nothing is harmed on earth nor in the heavens and He is The All-Seeing, The All-Knowing.’(three times))",
-    "ms": "Dengan Nama Allah yang tidak memberi mudharat bersama namaNya oleh sesuatu di bumi dan tidak juga di langit, Dialah Yang Maha Mendengar lagi Maha Mengetahui. (Tiga kali) Sesiapa yang membacanya pada waktu pagi dan petang maka tidak ada sesuatu pun yang boleh memudharatkannya.",
-    "src": "Abu Dawud 4/323, At-Tirmizi 5/465, Ibn Majah 2/332, Ahmad · Hisnul Muslim 86",
-    "repeat": 3,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/86.mp3"
-    ]
-   },
-   {
-    "id": "hm87",
-    "ar": "((رَضِيتُ بِاللَّهِ رَبَّاً، وَبِالْإِسْلاَمِ دِيناً، وَبِمُحَمَّدٍ صلى الله عليه وسلم نَبِيّاً)) (ثلاثَ مرَّاتٍ).",
-    "tr": "(Radeetu billahi rabban wabil-islami deenan wabiMuhammadin  nabiyya. (three times))",
-    "en": "(I am pleased with Allah as a Lord, and Islam as a religion and Muhammad  as a Prophet.’(three times))",
-    "ms": "Aku redha Allah sebagai Tuhan, lslam sebagai agama dan Muhammad saw sebagai Nabi. (Tiga kali) Sesiapa yang membacanya pada waktu pagi dan petang dia akan mendapat keredhaan Allah pada hari kiamat.",
-    "src": "Ahmad 4/ 337, An-Nasa'i, Ibn As-Sunni (no. 68), At-Tirmizi 5/465 · Hisnul Muslim 87",
-    "repeat": 3,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/87.mp3"
-    ]
-   },
-   {
-    "id": "hm88",
-    "ar": "((يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغيثُ أَصْلِحْ لِي شَأْنِيَ كُلَّهُ وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ)).",
-    "tr": "(Ya hayyu ya qayyoom, birahmatika astagheeth, aslih lee sha/nee kullah, wala takilnee ila nafsee tarfata AAayn.)",
-    "en": "(O Ever Living, O Self-Subsisting and Supporter of all, by Your mercy I seek assistance, rectify for me all of my affairs and do not leave me to myself, even for the blink of an eye.)",
-    "ms": "Wahai tuhan yang Tetap Hidup, Yang Kekal memerintah selama-lamanya, dengan rahmatMu aku memohon pertolongan. Perelokkanlah bagiku segala urusanku dan janganlah Engkau biarkankan nasibku ditentukan oleh diriku sendiri walaupun sekadar sekelip mata.",
-    "src": "Al-Hakim 1/545 · Hisnul Muslim 88",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/88.mp3"
-    ]
-   },
-   {
-    "id": "hm89",
-    "ar": "((أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُـمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ:فَتْحَهُ، وَنَصْرَهُ، وَنورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ)). [وإذا أمسى قال: أمسينا وأمسى الملك للَّه ربّ العالمين اللَّهم إني أسألك خير هذه الليلة: فتحها، ونصرها، ونورها، وبركتها، وهداها، وأعوذ بك من شر ما فيها، وشر ما بعدها.]",
-    "tr": "(Asbahna wa-asbahal-mulku lillahi rabbil-AAalameen, allahumma innee as-aluka khayra hathal-yawm, fat-hahu, wanasrahu, wanoorahu, wabarakatahu, wahudahu, wa-aAAoothu bika min sharri ma feehi, washarri ma baAAdah.)[For the evening, the supplication is read as follows: ](Amsayna wa-amsal-mulku lillahi rabbil-AAalameen, allahumma innee as-aluka khayra hathihil-laylah, fat-haha, wanasraha, wanooraha, wabarakataha, wahudaha, wa-aAAoothu bika min sharri ma feeha washarri ma baAAdaha.)",
-    "en": "(We have reached the morning and at this very time all sovereignty belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of this day, its triumphs and its victories, its light and its blessings and its guidance, and I take refuge in You from the evil of this day and the evil that follows it.)[For the evening, the supplication is read as follows:](We have reached the evening and at this very time all sovereignty belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of tonight, its triumphs and its victories, its light and its blessings and its guidance, and I take refuge in You from the evil of tonight and the evil that follows it.)",
-    "ms": "[Kami hayati pagi kami dan pagi (petang) yang penuh Kekuasaan bagi Allah tuhan sekalian alam. Ya Allah, aku memohon kepadaMu kebaikan hari ini, pembukaaannya, petolongannya, cahayanya, berkatnya dan petunjuknya. Aku berlindung denganMu daripada kejahatan hari ini dan yang selepasnya]. Baca di dalam kurungan pada waktu petang.",
-    "src": "Abu Dawud 4/32 · Hisnul Muslim 89",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/89.mp3"
-    ]
-   },
-   {
-    "id": "hm90",
-    "ar": "((أَصْبَحْنا عَلَى فِطْرَةِ الْإِسْلاَمِ، وَعَلَى كَلِمَةِ الْإِخْلاَصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ صلى الله عليه وسلم، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفاً مُسْلِماً وَمَا كَانَ مِنَ الْمُشرِكِينَ)). [وإذا أمسى قال: أمسينا على فطرة الإسلام...]",
-    "tr": "(Asbahna AAala fitratil-islam, waAAala kalimatil-ikhlas, waAAala deeni nabiyyina Muhammad  waAAala millati abeena Ibraheem, haneefan musliman wama kana minal-mushrikeen.)(Note: for the evening, one reads amsayna instead of asbahna.)",
-    "en": "(We rise upon the fitrah of Islam, and the word of pure faith, and upon the religion of our Prophet Muhammad  and the religion of our forefather Ibraheem, who was a Muslim and of true faith and was not of those who associate others with Allah.)(fitrah: the religion of Islam, the way of Ibraheem u.)(Note: for the evening, one reads amsayna instead of asbahna.)",
-    "ms": "[Kami hayati pagi (petang) ini di atas landasan fitrah Islam, di atas kalimah islam dan di atas agama Nabi kami Muhammad saw yang juga agama bapa kami nabi Ibrahim yang lurus lagi tunduk kepada Allah dan baginda bukanlah seorang yang musyrik]. Baca di dalam kurungan pada waktu petang.",
-    "src": "Ahmad 3/406-7, 5/123, An-Nasa'i, At-Tirmizi 4/209 · Hisnul Muslim 90",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/90.mp3"
-    ]
-   },
-   {
-    "id": "hm91",
-    "ar": "((سُبْحَانَ اللَّهِ وَبِحَمْدِهِ)) (مائة مرَّةٍ).",
-    "tr": "(Subhanal-lahi wabihamdih.)one hundred times)",
-    "en": "(How perfect Allah is and I praise Him.)(one hundred times)",
-    "ms": "Maha Suci Allah dan segala pujian bagiNya. (100 kali) Sesiapa yang membacanya sebanyak seratus kali pada waktu pagi dan petang tidak ada seorang pun pada hari kiamat lebih baik daripada amalannya kecuali mereka yang beramal sepertinya atau lebih daripadanya.",
-    "src": "Muslim 4/2071 · Hisnul Muslim 91",
-    "repeat": 100,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/91.mp3"
-    ]
-   },
-   {
-    "id": "hm92",
-    "ar": "((لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ)) (عشرَ مرَّات) ، أَوْ (مرَّةً واحدةً عندَ الكَسَلِ).",
-    "tr": "(La ilaha illal-lah, wahdahu la shareeka lah, lahul-mulku walahul-hamd, wahuwa AAala kulli shay-in qadeer.  [ten times or once if lazy])",
-    "en": "(None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise, and He is over all things omnipotent.)( [ten times or once if lazy])",
-    "ms": "Tiada Tuhan yang berhak disembah melainkan Allah Yang Esa, tiada sekutu bagiNya, bagiNya kekuasaan dan bagiNya kepujian dan Dia berkuasa ke atas setiap sesuatu. (10 kali atau sekali sahaja ketika penat.)",
-    "src": "An-Nasa'i, Abu Dawud 4/319, Ibn Majah, Ahmad 4/60 · Hisnul Muslim 92",
-    "repeat": 10,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/92.mp3"
-    ]
-   },
-   {
-    "id": "hm94",
-    "ar": "((سُبْحَانَ اللَّهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ)) (ثلاثَ مرَّاتٍ إذا أصبحَ).",
-    "tr": "(Subhanal-lahi wabihamdih, AAadada khalqihi warida nafsih, wazinata AAarshih, wamidada kalimatih.)(three times)",
-    "en": "(How perfect Allah is and I praise Him by the number of His creation and His pleasure, and by the weight of His throne, and the ink of His words.)(three times)",
-    "ms": "Maha Suci Allah dan aku memujiNya sebanyak makhluk ciptaanNya, keredhaan diriNya, seberat timbangan ArasyNya dan sebanyak tinta KalimahNya. (Tiga kali pada waktu pagi.)",
-    "src": "Muslim 4/2090 · Hisnul Muslim 94",
-    "repeat": 3,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/94.mp3"
-    ]
-   },
-   {
-    "id": "hm95",
-    "ar": "((اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْماً نَافِعاً، وَرِزْقاً طَيِّباً، وَعَمَلاً مُتَقَبَّلاً)) (إذا أصبحَ).",
-    "tr": "(Allahumma innee as-aluka AAilman nafiAAan, warizqan tayyiban, waAAamalan mutaqabbalan.)",
-    "en": "(O Allah, I ask You for knowledge which is beneficial and sustenance which is good, and deeds which are acceptable.)",
-    "ms": "Ya Allah, aku memohon daripadaMu ilmu yang bermanfaat, rezeki yang baik dan amalan yang diterima. (Baca pada waktu pagi.)",
-    "src": "Ibn As-Sunni (Hadith no. 54), Ibn Majah (Hadith no. 925) · Hisnul Muslim 95",
-    "repeat": 1,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/95.mp3"
-    ]
-   },
-   {
-    "id": "hm96",
-    "ar": "((أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ)) (مِائَةَ مَرَّةٍ فِي الْيَوْمِ).",
-    "tr": "Astaghfirullaaha wa 'atoobu 'ilayhi[one hundred times a day]",
-    "en": "‘I seek Allaah’s forgiveness and I turn to Him in repentance.’ [one hundred times a day]",
-    "ms": "Aku memohon keampunan daripada Allah dan aku bertaubat kepadaNya. (100 kali sehari.)",
-    "src": "Al-Bukhari, Muslim 4/2075 · Hisnul Muslim 96",
-    "repeat": 100,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/96.mp3"
-    ]
-   },
-   {
-    "id": "hm97",
-    "ar": "((أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ)) (ثلاثَ مرَّاتٍ إذا أمسى).",
-    "tr": "(aAAoothu bikalimatil-lahit-tammati min sharri ma khalaq.) (three times in the evening)",
-    "en": "(I take refuge in Allah’s perfect words from the evil He has created.)(three times in the evening)",
-    "ms": "Aku berIindung dengan kaIimah-kaIimah Allah yang sempurna daripada kejahatan makhluk yang jahat. (Tiga kaIi pada waktu petang.) Sesiapa yang membacanya pada waktu petang, dia tidak akan terkena gigitan kala jengking pada waktu malamnya.",
-    "src": "Ahmad 2/ 290, An-Nasa'i, At-Tirmizi 3/187, Ibn As-Sunni (Hadith no. 68), Ibn Majah 2/266 · Hisnul Muslim 97",
-    "repeat": 3,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/97.mp3"
-    ]
-   },
-   {
-    "id": "hm98",
-    "ar": "((اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبَيِّنَا مُحَمَّدٍ)) (عشرَ مرَّاتٍ).",
-    "tr": "Allaahumma salli wa sallim 'alaa Nabiyyinaa Muhammadin[ten times]",
-    "en": "‘O Allaah, send prayers and peace upon our Prophet Muhammad.’ [ten times]",
-    "ms": "Ya Allah, kurniakanlah seIawat dan saIam ke atas junjungan kami Nabi Muhammad. (Sepuluh kali) Nabi saw bersabda: \"Sesiapa yang berselawat ke atasku pada waktu pagi 10 kali dan waktu petang 10 kali, dia akan mendapat syafaatku pada hari kiamat\".",
-    "src": "At-Tabrani, Sahih at-Targhib wa at-Tarhib 1/273 · Hisnul Muslim 98",
-    "repeat": 10,
-    "audio": [
-     "https://www.hisnmuslim.com/audio/ar/98.mp3"
-    ]
-   }
-  ]
- },
- {
   "id": "tidur",
   "ms": "Tidur & Bangun",
   "en": "Sleep & Waking",
@@ -330,7 +11,6 @@
     "en": "( 285 )   The Messenger has believed in what was revealed to him from his Lord, and [so have] the believers. All of them have believed in Allah and His angels and His books and His messengers, [saying], We make no distinction between any of His messengers. And they say, We hear and we obey. [We seek] Your forgiveness, our Lord, and to You is the [final] destination.( 286 )   Allah does not charge a soul except [with that within] its capacity. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.",
     "ms": "Rasulullah telah beriman kepada apa yang diturunkan kepadanya dari Tuhannya, dan juga orang-orang yang beriman; semuanya beriman kepada Allah, dan Malaikat-malaikatNya, dan Kitab-kitabNya, dan Rasul-rasulNya. (Mereka berkata): \"Kami tidak membezakan antara seorang dengan yang lain Rasul-rasulnya\". Mereka berkata lagi: Kami dengar dan kami taat (kami pohonkan) keampunanMu wahai Tuhan kami, dan kepadaMu jualah tempat kembali\". Allah tidak memberati seseorang melainkan apa yang terdaya olehnya. Ia mendapat pahala kebaikan yang diusahakannya, dan ia juga menanggung dosa kejahatan yang diusahakannya. (Mereka berdoa dengan berkata): \"Wahai Tuhan kami! Janganlah Engkau mengirakan kami salah jika kami lupa atau kami tersalah. Wahai Tuhan kami ! Janganlah Engkau bebankan kepada kami bebanan yang berat sebagaimana yang telah Engkau bebankan kepada orang-orang yang terdahulu daripada kami. Wahai Tuhan kami! Janganlah Engkau pikulkan kepada kami apa yang kami tidak terdaya memikulnya. Dan maafkanlah kesalahan kami, serta ampunkanlah dosa kami, dan berilah rahmat kepada kami. Engkaulah Penolong kami; oleh itu, tolonglah kami untuk mencapai kemenangan terhadap kaum-kaum yang kafir\".",
     "src": "Al-Baqarah 2:285-6, Al-Bukhari, Muslim 1/554 · Hisnul Muslim 101",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/101.mp3"
     ]
@@ -342,7 +22,6 @@
     "en": "(In Your name my Lord, I lie down and in Your name I rise, so if You should take my soul then have mercy upon it, and if You should return my soul then protect it in the manner You do so with Your righteous servants.)",
     "ms": "[Dengan namaMu wahai Tuhanku aku letakkan lambungku dan dengan namaMu aku mengangkatnya. Sekiranya Engkau memegang rohku (mati) maka ampunilah ia, sekiranya Engkau lepaskan ia maka peliharalah ia sebagaimana Engkau menjaga hamba-hamba Engkau yang Soleh]. Apabila bangun seseorang kamu dari tempat tidurnya, kemudian dia kembali semula kepadanya hendaklah dikibaskan dengan hujung kainnya sebanyak Tiga kali dan sebutlah: بِسْمِ اللَّهِ",
     "src": "Al-Bukhari 11/126, Muslim 4/2084 · Hisnul Muslim 102",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/102.mp3"
     ]
@@ -354,7 +33,6 @@
     "en": "(O Allah, verily You have created my soul and You shall take it’s life, to You belongs it’s life and death. If You should keep my soul alive then protect it, and if You should take it’s life then forgive it. O Allah, I ask You to grant me good health.)",
     "ms": "Ya Allah, Engkau telah menciptakan diriku dan Engkau mematikannya (menidurkannya), bagiMu kematian dan kehidupannya, sekiranya engkau menghidupkannya peliharalah ia, sekiranya engkau mematikannya ampunilah ia. Ya Allah, sesungguhnya aku memohon daripadaMu kesejahteraan.",
     "src": "Muslim 4/2083, Ahmad 2/79 · Hisnul Muslim 103",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/103.mp3"
     ]
@@ -366,7 +44,6 @@
     "en": "(O Allah, protect me from Your punishment on the day Your servants are resurrected.)",
     "ms": "Ya Allah peliharalah aku daripada azabMu pada hari Engkau bangkitkan hamba-hamba Mu. (Tiga kali) Apabila Nabi saw hendak tidur baginda meletakkan tangan kanan di bawah pipinya, kemudia membaca doa ini.",
     "src": "Abu Dawud 4/311, Sahih At-Tirmizi 3/143 · Hisnul Muslim 104",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/104.mp3"
     ]
@@ -378,7 +55,6 @@
     "en": "(In Your name O Allah, I live and die.)",
     "ms": "Ya Allah dengan namaMu aku mati (tidur) dan dengan namaMu aku hidup (jaga).",
     "src": "Al-Bukhari, Muslim 4/2083 · Hisnul Muslim 105",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/105.mp3"
     ]
@@ -390,7 +66,6 @@
     "en": "(How Perfect Allah is. (thirty-three times) All praise is for Allah.(thirty-three times) Allah is the greatest.(thirty-four times))",
     "ms": "Maha Suci Allah (Tiga puluh tiga kali) Segala puji bagi Allah (Tiga puluh tiga kali) Allah Maha Besar (Tiga puluh empat kali).",
     "src": "Al-Bukhari, Muslim 4/2091 · Hisnul Muslim 106",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/106.mp3"
     ]
@@ -402,7 +77,6 @@
     "en": "(O Allah, I submit my soul unto You, and I entrust my affair unto You, and I turn my face towards You, and I totally rely on You, in hope and fear of You.Verily there is no refuge nor safe haven from You except with You.  I believe in Your Book which You have revealed and in Your Prophet whom You have sent.)(If you then die, you will die upon the fitrah.)(fitrah: the religion of Islam, the way of Ibraheem u.)",
     "ms": "Ya Allah, aku serahkan diriku kepadaMu dan aku serahkan urusanku kepadaMu dan aku hadapkan mukaku kepadaMu dan aku sandarkan belakangku ini kepada (kekuasaan) Engkau, dengan keinginanku dan ketakutanku kepadaMu, tiada tempat pergantungan dan tiada tempat untuk menyelamatkan dari daripadaMu kecuali kepadaMu, aku beriman dengan kitabMu yang Engkau turunkan dan aku beriman dengan NabiMu yang Engkau utuskan.(Apabila kamu hendak tidur, berwudhu'lah seperti wudhu' untuk solat. Kemudia baringlah di atas lambung sebelah kanan dan bacalah doa ini, sekiranya engkau mati, kematianmu di atas fitrah.)",
     "src": "Al-Bukhari, Muslim 4/2081 · Hisnul Muslim 111",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/111.mp3"
     ]
@@ -414,7 +88,6 @@
     "en": "(All praise is for Allah who gave us life after having taken it from us and unto Him is the resurrection.)",
     "ms": "Segala puji bagi Allah yang menghidupkan kami selepas mematikan kami dan kepadaNya kami akan kembali.",
     "src": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/113, Muslim 4/2083 · Hisnul Muslim 1",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/1.mp3"
     ]
@@ -426,7 +99,6 @@
     "en": "(All praise is for Allah who restored to me my health and returned my soul and  has allowed me to remember Him.)",
     "ms": "Segala puji bagi Allah yang memberikan nikmat kesihatan pada tubuhku dan mengembalikan kepadaku rohku dan mengizinkan aku untuk mengingatiNya.",
     "src": "At-Tirmizi 5/473, Al-Albani's Sahih Tirmithi 3/144 · Hisnul Muslim 3",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/3.mp3"
     ]
@@ -445,7 +117,6 @@
     "en": "(In the name of Allah, I place my trust in Allah, and there is no might nor power except with Allah.)",
     "ms": "Dengan nama Allah aku bertawakkal kepadaNya dan tiada daya serta upaya kecuali dengan keizinan Allah.",
     "src": "Abu Dawud 4/325, At-Tirmizi 5/490, Al-Albani, Sahih At-Tirmizi 3/151 · Hisnul Muslim 16",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/16.mp3"
     ]
@@ -457,7 +128,6 @@
     "en": "(O Allah, I take refuge with You lest I should stray or be led astray, or slip or be tripped, or oppress or be oppressed, or behave foolishly or be treated foolishly.)(slip: i.e. to commit a sin unintentionally)",
     "ms": "Ya Allah aku berlindung denganMu supaya tidak sesat atau disesatkan menyeleweng atau diselewengkan, berbuat aniaya atau dianiayakan, bodoh atau diperbodohkan ke atasku.",
     "src": "Abu Dawud, Ibn Majah, An-Nasa'i, At-Tirmizi, Al-Albani, Sahih At-Tirmizi 3/152, Sahih Ibn Majah 2/336 · Hisnul Muslim 17",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/17.mp3"
     ]
@@ -469,7 +139,6 @@
     "en": "(In the name of Allah we enter and in the name of Allah we leave, and upon our Lord we place our trust.)",
     "ms": "Dengan nama Allah kami masuk dan dengan nama Allah kami keluar dan kepada Allah kami bertawakkal.(Apabila seorang masuk ke dalam rumahnya dengan menyebut nama Allah ketika masuk dan ketika makan, syaitan berkata: “tidak ada tempat untuk bermalam dan tidak ada makan malam”.)",
     "src": "Abu Dawud 4/325 · Hisnul Muslim 18",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/18.mp3"
     ]
@@ -488,7 +157,6 @@
     "en": "(When you are about to eat, you should say:(Bismil-lah.)and if you forget to say it before starting, then you should say (when you remember):In the name of Allah in it’s beginning and end.)",
     "ms": "(Dengan nama Allah). Jika dia terlupa: (Dengan nama Allah pada permulaanya dan akhirnya).",
     "src": "Abu Dawud 3/347, At-Tirmizi 4/288 · Hisnul Muslim 178",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/178.mp3"
     ]
@@ -500,7 +168,6 @@
     "en": "(Whomever Allah feeds, should say:(O Allah, bless it for us and feed us better than it.) and whomever Allah gives milk to drink should say:(O Allah, bless it for usand give us more of it.))",
     "ms": "Sesiapa yang diberi rezeki makanan oleh Allah, hendaklah membaca: (\"Ya Allah, berikanlah kami berkat dengan makanan itu dan berilah makanan yang lebih baik darinya\"). Sesiapa yang diberi rezeki minuman susu, hendaklah membaca: (\"Ya Allah, berikanlah kami berkat dengan minuman itu dan berilah tambahan darinya\").",
     "src": "At-Tirmizi 5/506 · Hisnul Muslim 179",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/179.mp3"
     ]
@@ -512,7 +179,6 @@
     "en": "(All praise is for Allah who fed me this and provided it for me without any might nor power from myself.)",
     "ms": "Segala puji bagi Allah yang memberiku makanan ini dan mengurniakannya untukku tanpa daya dan upaya daripadaku.",
     "src": "At-Tirmizi, Abu Dawud, Ibn Majah · Hisnul Muslim 180",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/180.mp3"
     ]
@@ -524,7 +190,6 @@
     "en": "(Allah be praised with an abundant beautiful blessed praise, a never-ending praise, a praise which we will never bid farewell to and an indispensable praise, He is our Lord.)(There are other views as regards to the understanding of this supplication, from them: Allah be praised with an abundant beautiful blessed praise. He is The One Who is sufficient, feeds and is not fed. The One Who is longed for, along with that which is with Him and The One Who is needed, He is our Lord.)",
     "ms": "Sebanyak-banyak pujian bagi Allah, pujian yang elok lagi berkat padanya, tiada yang lebih baik darinya, tiada tempat berserah yang paling baik dan tiada yang lebih kaya daripadaNya iaitu Tuhan kami.",
     "src": "Al-Bukhari 6/214, At-Tirmizi 5/507 · Hisnul Muslim 181",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/181.mp3"
     ]
@@ -536,7 +201,6 @@
     "en": "(O Allah, bless for them, that which You have provided them, forgive them and have mercy upon them.)",
     "ms": "Ya Allah, berkatilah mereka pada rezeki yang telah Engkau berikan kepada mereka, ampunilah mereka, dan rahmatilah mereka.",
     "src": "Muslim 3/1615 · Hisnul Muslim 182",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/182.mp3"
     ]
@@ -548,7 +212,6 @@
     "en": "(The thirst has gone and the veins are quenched, and reward is confirmed, if Allah wills.)",
     "ms": "Telah hilanglah dahaga, telah basah urat saraf dan telah tetaplah ganjaran Insya'Allah (sekiranya dikehendaki Allah).",
     "src": "Abu Dawud 2/306 · Hisnul Muslim 176",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/176.mp3"
     ]
@@ -567,7 +230,6 @@
     "en": "(In the name of Allah and all praise is for Allah.  How perfect He is, the One Who has placed this (transport) at our service and we ourselves would not have been capable of that, and to our Lord is our final destiny.  All praise is for Allah, All praise is for Allah, All praise is for Allah,  Allah is the greatest, Allah is the greatest, Allah is the greatest. How perfect You are, O Allah, verily I have wronged my soul, so forgive me, for surely none can forgive sins except You.)",
     "ms": "Dengan Nama Allah. Segala Puji Bagi Allah. Maha Suci Tuhan yang telah memudahkan kenderaan ini untuk kami, sedang kami sebelum ini tidak terdaya menguasaiya. Sesungguhnya kepada Tuhan kamilah kami akan kembali. Segala puji bagi Allah, Segala puji bagi Allah, Segala puji bagi Allah. Allah Maha Besar, Allah Maha Besar, Allah Maha Besar. Maha Suci Engkau, aku telah menzalimi diriku. Ampunilah daku. Sesungguhnya hanya Engkaulah Pengampun dosa-dosa",
     "src": "Abu Dawud 3/34, At-Tirmizi 5/501 · Hisnul Muslim 206",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/206.mp3"
     ]
@@ -579,7 +241,6 @@
     "en": "(Allah is the greatest, Allah is the greatest, Allah is the greatest, How perfect He is, The One Who has placed this (transport) at our service, and we ourselves would not have been capable of that, and to our Lord is our final destiny.  O Allah, we ask You for birr and taqwa in this journey of ours, and we ask You for deeds which please You.  O Allah, facilitate our journey and let us cover it’s distance quickly.  O Allah, You are The Companion on the journey and The Successor over the family, O Allah, I take refuge with You from the difficulties of travel, from having a change of hearts and being in a bad predicament, and I take refuge in You from an ill fated outcome with wealth and family.)(birr and taqwa: two comprehensive terms which individually, refer to all good actions and obedience i.e. performing the commanded actions and avoiding the prohibited actions.  When combined together, birr refers to doing those actions which have been commanded and taqwa refers to avoiding those actions which have been prohibited.)(A successor: one who succeeds another due to the latter’s absence or death.  This is the correct meaning of the word khaleefah; thus, it is incorrect to believe that Adam is the khaleefah (vicegerent, as is commonly translated) of Allah on earth because Allah is never absent, and will never die.  This supplication proves the correct understanding of this term and shows that Allah succeeds us and guards whom we leave behind when we die or are absent.)(upon returning the same supplication is recited with the following addition: (We return, repent, worship and praise our Lord.))",
     "ms": "Allah Maha Besar, Allah Maha Besar, Allah Maha Besar. Maha Suci Tuhan yang telah memudahkan kenderaan ini untuk kami, sedang kami sebelum ini tidak terdaya menguasainya. Sesungguhnya kepada Tuhan kamilah kami akan kembali. Ya Allah, kami memohon kepadaMu dalam perjalanan kami kebaikan dan ketaqwaan dan amalan yang Engkau redhai, Ya Allah, ringankanlah perjalanan kami dan pendekkanlah jaraknya. Ya Allah Engkaulah Teman dalam perjalanan dan pengurus bagi ahli keluarga. Ya Allah, aku memohon perlindunganMu dari kesulitan perjalan, pandangan yang menyedihkan, dan kejahatan yang boleh menimpa harta dan ahli keluarga. Setelah kembali bacalah doa di atas dan tambah dengan bacaan ini: \"Kami kembali dengan bertaubat dan menghambakan diri. Kepada Tuhan kami mengucapkan puji-pujian\".",
     "src": "Muslim 2/978 · Hisnul Muslim 207",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/207.mp3"
     ]
@@ -598,7 +259,6 @@
     "en": "(May Allah bless for you (your spouse) and bless you, and may He unite both of you in goodness.)",
     "ms": "Semoga Allah, memberkatimu dan keatasmu dan menghimpunkan kamu berdua dalam kebaikan.",
     "src": "Abu Dawud, Ibn Majah, At-Tirmizi · Hisnul Muslim 190",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/190.mp3"
     ]
@@ -610,7 +270,6 @@
     "en": "(when you marry a woman or buy a maidservant, you should say:(O Allah, I ask You for the goodness within her and the goodness that you have made her inclined towards, and I take refuge with You from the evil within her and the evil that you have made her inclined towards.))(and if you buy a camel, then you should take hold of it’s hump and say likewise.)",
     "ms": "Apabila seorang lelaki berkahwin dengan seorang perempuan atau membeli seorang hamba maka bacalah: \"Ya Allah, aku memohon kepadaMu kebaikannya dan segala yang telah Engkau ciptakan dalam wataknya dan aku berlindung denganMu daripada kejahatannya dan kejahatan yang telah Engkau ciptakan dalam wataknya\". Dan apabila engkau membeli unta (haiwan) hendaklah memegang bonggolnya dan membaca doa seperti di atas.",
     "src": "Abu Dawud 2/248, Ibn Majah 1/617 · Hisnul Muslim 191",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/191.mp3"
     ]
@@ -622,7 +281,6 @@
     "en": "And those who say, \"Our Lord, grant us from among our wives and offspring comfort to our eyes and make us an example for the righteous.\"",
     "ms": "Dan juga mereka (yang diredhai Allah itu ialah orang-orang) yang berdoa dengan berkata: \"Wahai Tuhan kami, berilah kami beroleh dari isteri-isteri dan zuriat keturunan kami: perkara-perkara yang menyukakan hati melihatnya, dan jadikanlah kami imam ikutan bagi orang-orang yang (mahu) bertaqwa.",
     "src": "Al-Furqaan 25:74",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2929.mp3"
     ]
@@ -634,7 +292,6 @@
     "en": "My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication.",
     "ms": "\"Wahai Tuhanku! Jadikanlah daku orang yang mendirikan sembahyang dan demikianlah juga zuriat keturunanku. Wahai Tuhan kami, perkenankanlah doa permohonanku.",
     "src": "Ibrahim 14:40",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1790.mp3"
     ]
@@ -646,7 +303,6 @@
     "en": "At that, Zechariah called upon his Lord, saying, \"My Lord, grant me from Yourself a good offspring. Indeed, You are the Hearer of supplication.\"",
     "ms": "Ketika itu Nabi Zakaria berdoa kepada Tuhannya, katanya:\" Wahai Tuhanku! Kurniakanlah kepadaku dari sisiMu zuriat keturunan yang baik; sesungguhnya Engkau sentiasa Mendengar (menerima) doa permohonan\".",
     "src": "Aal-i-Imraan 3:38",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/331.mp3"
     ]
@@ -658,7 +314,6 @@
     "en": "And lower to them the wing of humility out of mercy and say, \"My Lord, have mercy upon them as they brought me up [when I was] small.\"",
     "ms": "Dan hendaklah engkau merendah diri kepada keduanya kerana belas kasihan dan kasih sayangmu, dan doakanlah (untuk mereka, dengan berkata): \"Wahai Tuhanku! Cucurilah rahmat kepada mereka berdua sebagaimana mereka telah mencurahkan kasih sayangnya memelihara dan mendidikku semasa kecil.\"",
     "src": "Al-Israa 17:24",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2053.mp3"
     ]
@@ -677,7 +332,6 @@
     "en": "(O Allah, I am Your servant, son of Your servant, son of Your maidservant, my forelock is in Your hand (i.e. You have total mastery over), Your command over me is forever executed and Your decree over me is just. I ask You by every name belonging to You which You named Yourself with, or revealed in Your Book, or You taught to any of Your creation, or You have preserved in the knowledge of the unseen with You, that You make the Quran the life of my heart and the light of my breast, and a departure for my sorrow and a release for my anxiety.)",
     "ms": "Ya Allah, sesungguhnya aku adalah hambaMu, anak kepada hambaMu, anak kepada hamba perempuanMu, ubun-ubunku di tanganMu terlaksana ke atasku hukumanMu dan adil kehakimanMu terhadapku aku memohon kepadaMu dengan setiap nama yang Engkau telah namakan dengannya diriMu, atau Engkau turunkan di dalam kitabMu, atau Engkau telah mengajarnya kepada seseorang daripada makhlukMu atau yang tersembunyi pada ilmu ghaib di sisiMu, jadikanlah Al-Quran penenang hatiku, cahaya di dadaku, penghapus kedukaanku dan penghilang kesusahanku.",
     "src": "Ahmad 1/391, and Al-Albani graded it authentic · Hisnul Muslim 120",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/120.mp3"
     ]
@@ -689,7 +343,6 @@
     "en": "(O Allah, I take refuge in You from anxiety and sorrow, weakness and laziness, miserliness and cowardice, the burden of debts and from being over powered by men.)",
     "ms": "Ya Allah, aku berlindung denganMu daripada ditimpa kesusahan dan kedukaan, daripada kelemahan dan kemalasan, daripada kedekut dan perasaaan takut dan daripada desakan berhutang dan paksaan orang.",
     "src": "Al-Bukhari 7/158 · Hisnul Muslim 121",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/121.mp3"
     ]
@@ -701,7 +354,6 @@
     "en": "(None has the right to be worshipped except Allah Forbearing.  None has the right to be worshipped except Allah, Lord of the magnificent throne.  None has the right to be worshipped except Allah, Lord of the heavens, Lord of the Earth and Lord of the noble throne.)",
     "ms": "Tiada Tuhan yang berhak disembah melainkan Allah, Yang Maha Agung lagi Maha Lemah Lembut. Tiada Tuhan yang berhak disembah melainkan Allah, Tuhan Arasy yang agung, tiada Tuhan yang berhak disembah melainkan Allah Tuhan langit dan bumi dan Tuhan Arasy yang mulia.",
     "src": "Al-Bukhari 8/154, Muslim 4/2092 · Hisnul Muslim 122",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/122.mp3"
     ]
@@ -713,7 +365,6 @@
     "en": "(O Allah, it is Your mercy that I hope for, so do not leave me in charge of my affairs even for a blink of an eye and rectify for me all of my affairs.None has the right to be worshipped except You.)",
     "ms": "Ya Allah demi rahmatMu aku memohon maka janganlah Engkau serahkan aku kepada diriku walaupun sekelip mata dan perelokkanlah urusanku keseluruhannya tiada Tuhan yang berhak disembah melainkan Engkau.",
     "src": "Abu Dawud 4/324, Ahmad 5/42 · Hisnul Muslim 123",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/123.mp3"
     ]
@@ -725,7 +376,6 @@
     "en": "(None has the right to be worshipped except You.  How perfect You are, verily I was among the wrong-doers.)",
     "ms": "Tiada Tuhan yang berhak disembah melainkan Engkau Maha Suci Engkau, sesungguhnya aku telah tergolong daripada orang-orang yang zalim.",
     "src": "At-Tirmizi 5/529. Al-Hakim · Hisnul Muslim 124",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/124.mp3"
     ]
@@ -737,7 +387,6 @@
     "en": "(Allah, Allah is my Lord, I do not associate anything with Him.)",
     "ms": "Allah, Allah Tuhanku, tidak akan aku sekutukanNya dengan sesuatu.",
     "src": "Abu Dawud 2/87 · Hisnul Muslim 125",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/125.mp3"
     ]
@@ -749,7 +398,6 @@
     "en": "(Place your hand at the site of the pain and say: (In the name of Allah(three times)) the supplicate seven times: (I take refuge in Allah and within His omnipotence from the evil that I feel and am wary of.))",
     "ms": "Letak tangan di tempat sakit kemudian baca: (“Dengan nama Allah”). (Tiga kali), dan baca: (“Aku berlindung dengan Allah dan kekuasaanNya dari kejahatan yang aku dapati dan aku takuti”). (Tujuh kali)",
     "src": "Muslim 4/1728 · Hisnul Muslim 243",
-    "repeat": 1,
     "audio": [
      "https://www.hisnmuslim.com/audio/ar/243.mp3"
     ]
@@ -768,7 +416,6 @@
     "en": "But among them is he who says, \"Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.\"",
     "ms": "Dan di antara mereka pula ada yang (berdoa dengan) berkata: \"Wahai Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan peliharalah kami dari azab neraka\".",
     "src": "Al-Baqara 2:201",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/208.mp3"
     ]
@@ -780,7 +427,6 @@
     "en": "[Who say], \"Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.",
     "ms": "(Mereka berdoa dengan berkata): \"Wahai Tuhan kami! Janganlah Engkau memesongkan hati kami sesudah Engkau beri petunjuk kepada kami, dan kurniakanlah kepada kami limpah rahmat dari sisiMu; sesungguhnya Engkau jualah Tuhan Yang melimpah-limpah pemberianNya.",
     "src": "Aal-i-Imraan 3:8",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/301.mp3"
     ]
@@ -792,7 +438,6 @@
     "en": "They said, \"Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.\"",
     "ms": "Mereka berdua merayu: \"Wahai Tuhan kami, kami telah menganiaya diri kami sendiri, dan kalau Engkau tidak mengampunkan kami dan memberi rahmat kepada kami, nescaya menjadilah kami dari orang-orang yang rugi\".",
     "src": "Al-A'raaf 7:23",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/977.mp3"
     ]
@@ -804,7 +449,6 @@
     "en": "[Moses] said, \"My Lord, expand for me my breast [with assurance] And ease for me my task And untie the knot from my tongue That they may understand my speech.",
     "ms": "Nabi Musa berdoa dengan berkata: \"Wahai Tuhanku, lapangkanlah bagiku, dadaku; \"Dan mudahkanlah bagiku, tugasku; \"Dan lepaskanlah simpulan dari lidahku, \"Supaya mereka faham perkataanku;",
     "src": "Taa-Haa 20:25-28",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2373.mp3",
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2374.mp3",
@@ -819,7 +463,6 @@
     "en": "So he watered [their flocks] for them; then he went back to the shade and said, \"My Lord, indeed I am, for whatever good You would send down to me, in need.\"",
     "ms": "Maka Musa pun memberi minum kepada binatang-binatang ternak mereka, kemudian ia pergi ke tempat teduh lalu berdoa dengan berkata: \"Wahai Tuhanku, sesungguhnya aku sangat berhajat kepada sebarang rezeki pemberian yang Engkau berikan\".",
     "src": "Al-Qasas 28:24",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/3276.mp3"
     ]
@@ -831,7 +474,6 @@
     "en": "Our Lord, forgive me and my parents and the believers the Day the account is established.\"",
     "ms": "\"Wahai Tuhan kami! Berilah ampun bagiku dan bagi kedua ibu bapaku serta bagi orang-orang yang beriman, pada masa berlakunya hitungan amal dan pembalasan\"",
     "src": "Ibrahim 14:41",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1791.mp3"
     ]
@@ -843,7 +485,6 @@
     "en": "And [there is a share for] those who came after them, saying, \"Our Lord, forgive us and our brothers who preceded us in faith and put not in our hearts [any] resentment toward those who have believed. Our Lord, indeed You are Kind and Merciful.\"",
     "ms": "Dan orang-orang (Islam) yang datang kemudian daripada mereka (berdoa dengan) berkata: \"Wahai Tuhan Kami! Ampunkanlah dosa kami dan dosa saudara-saudara kami yang mendahului kami dalam iman, dan janganlah Engkau jadikan dalam hati perasaan hasad dengki dan dendam terhadap orang-orang yang beriman. Wahai Tuhan kami! Sesungguhnya Engkau Amat Melimpah Belas kasihan dan RahmatMu\".",
     "src": "Al-Hashr 59:10",
-    "repeat": 1,
     "audio": [
      "https://cdn.islamic.network/quran/audio/128/ar.alafasy/5136.mp3"
     ]

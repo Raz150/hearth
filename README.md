@@ -72,7 +72,7 @@ An error like `schema "public" already exists` during restore is harmless.
 
 ## Doa library
 
-The doa on the Doa tab live in `lib/doa.json`, built by `node scripts/doa.mjs` (edit `GROUPS` in it to add or drop doa, re-run, commit the JSON). Arabic, Rumi, English and audio come from the Hisnul Muslim API; Bahasa Melayu and the hadith source come from JPN Johor's Hisnul Muslim page. The script refuses to build if the two sources' Arabic don't match, so a Malay text can't end up under the wrong doa. Quran doa come from alquran.cloud.
+The Doa tab is for learning authentic doa by heart, together: each doa has a three-step practice (listen & repeat, first-letter fade, from memory), and each of us marks it learning or memorised (`doa_progress`, visible to both). No counted zikir. The doa live in `lib/doa.json`, built by `node scripts/doa.mjs` (edit `GROUPS` in it to add or drop doa, re-run, commit the JSON). Arabic, Rumi, English and audio come from the Hisnul Muslim API; Bahasa Melayu and the hadith source come from JPN Johor's Hisnul Muslim page. The script refuses to build if the two sources' Arabic don't match, so a Malay text can't end up under the wrong doa. Quran doa come from alquran.cloud.
 
 ## Testing RLS locally (optional, needs Docker)
 

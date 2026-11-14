@@ -16,7 +16,7 @@ export function UndoToast() {
   }, [undo, dismissUndo]);
 
   return (
-    <div aria-live="polite" className="pointer-events-none fixed inset-x-[18px] bottom-[calc(env(safe-area-inset-bottom)+100px)] z-30 mx-auto max-w-md">
+    <div aria-live="polite" className="pointer-events-none fixed inset-x-[18px] bottom-[calc(env(safe-area-inset-bottom)+100px)] z-[60] mx-auto max-w-md">
       <AnimatePresence>
         {undo && (
           <motion.div
