@@ -389,7 +389,8 @@ export default function CalendarPage({ searchParams }: { searchParams: Promise<{
         </div>
         <div className="grid grid-cols-7 gap-0.5">
           {monthWeeks(`${month}-01`).flat().map((d) => {
-            const shift = s.shifts.find((x) => x.day === d);
+            // One pill per cell: the selected person's shift wins, so painting over a day the other already has still shows.
+            const shift = s.shifts.find((x) => x.day === d && x.member === who) ?? s.shifts.find((x) => x.day === d);
             const due = s.todos.filter((t) => t.due === d && !t.doneBy).length;
             const plans = s.plans.filter((p) => yearsOn(p, d) !== null);
             const picked = !painting && d === day;
