@@ -7,7 +7,8 @@ import { ChevronLeft, Settings2 } from "lucide-react";
 import { iconButtonClass } from "@/components/kit/button";
 import { cx } from "@/components/kit/shared";
 
-const TITLES: Record<string, string> = { "/": "Today", "/calendar": "Calendar", "/todo": "To-do", "/chores": "Chores", "/doa": "Doa", "/settings": "Settings" };
+// Same words as each page's big title, so the bar reads as that title shrinking.
+const TITLES: Record<string, string> = { "/": "Our home", "/calendar": "Calendar", "/todo": "To-do", "/shopping": "Shopping", "/chores": "Chores", "/habits": "Habits", "/doa": "Doa", "/settings": "Settings" };
 
 /** Clear over the page's big title, then solid with a small title once that title scrolls away. Settings gear on every screen but Settings. */
 export function TopBar() {

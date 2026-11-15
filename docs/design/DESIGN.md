@@ -67,7 +67,7 @@ Pressed state: the shadow disappears and the element moves 3px right and down.
 - **Stat tile**: 88 tall, category fill, hard shadow, icon at the top and number + label at the bottom.
 - **Note window**: 34 title bar filled `--money` with "From W" and one real button (send a heart back). Body `--surface-note`, note text in `--font-note`, then "Sent 7:12, seen 7:20" and a Reply pill. Hero shadow.
 - **Week strip**: 7 columns. Today is a 62-tall pill filled `--text` with `--bg`-coloured text. Event dots are 5px.
-- **Tab bar**: floats 18 from each side and 26 from the bottom (plus the safe area). Height 62, radius 16, hard shadow. The active tab is a chip filled `--hero` with icon + label; the others are 44 × 44 icon buttons with `aria-label`s.
+- **Tab bar**: floats 18 from each side and 26 from the bottom (plus the safe area). Height 62, radius 16, hard shadow. Every tab is a 44 × 44 icon button with an `aria-label` (one tab per feature; seven 44s fit on a 375pt iPhone only without labels). The active tab sits on a chip filled `--hero`; the page title says where you are. Home is the exception: a 56 round button in the middle, raised 16 out of the bar, with a 5 ring in `--bg` so it looks set into a notch. Filled `--primary-bg` normally, `--hero` when active.
 - **Dialog**: retro window with a title bar filled `--danger`, a real close button, and hero shadow. Buttons are "No" and "Yes, delete".
 - **Toast**: height 52, with a done-circle, the message and "Undo".
 

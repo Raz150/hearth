@@ -26,37 +26,54 @@ export function TopBar({ title, back, action }: { title: string; back?: string; 
   );
 }
 
-export type Tab = { href: string; label: string; icon: ReactNode };
+/** `raised`: the 56 round button that sits in the middle and stands up out of the bar (Home). */
+export type Tab = { href: string; label: string; icon: ReactNode; raised?: boolean };
 
 const isActive = (path: string, href: string) => (href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`));
 
-/** Floating tab bar. The active tab is a peach chip with its label; the chip slides between tabs. */
+/** Floating tab bar of 44pt icon buttons. The active one sits on a peach chip that slides between tabs; the page title says where you are. */
 export function TabBar({ tabs, floating = true }: { tabs: readonly Tab[]; floating?: boolean }) {
   const path = usePathname();
   return (
     <nav
       aria-label="Main"
       className={cx(
-        "flex h-[62px] items-center justify-between rounded-nav border-2 border-edge-card bg-surface-sunken px-2 text-fg shadow-hard",
+        // px-1.5: six 44s + the 56 raised button fit inside a 375pt iPhone's bar.
+        "flex h-[62px] items-center justify-between rounded-nav border-2 border-edge-card bg-surface-sunken px-1.5 text-fg shadow-hard",
         floating && "fixed inset-x-[18px] bottom-[calc(26px+env(safe-area-inset-bottom))] z-30 mx-auto max-w-md",
       )}
     >
       {tabs.map((t) => {
         const on = isActive(path, t.href);
+        if (t.raised)
+          // A solid round button half out of the bar. The 5px ring in the page colour reads as a notch cut into the bar around it.
+          // Ink normally (the strongest thing on the bar), peach when you're on it, like the other tabs' "you are here" chip.
+          return (
+            <Link
+              key={t.href}
+              href={t.href}
+              aria-current={on ? "page" : undefined}
+              aria-label={t.label}
+              className={cx(
+                "relative -top-4 flex size-14 shrink-0 items-center justify-center rounded-full border-2 border-edge-on-fill shadow-[0_0_0_5px_var(--bg)] transition-transform active:scale-95 [&_svg]:size-6",
+                on ? "bg-hero text-on-fill" : "bg-primary text-primary-fg",
+              )}
+            >
+              <span aria-hidden>{t.icon}</span>
+            </Link>
+          );
         return (
           <Link
             key={t.href}
             href={t.href}
             aria-current={on ? "page" : undefined}
-            aria-label={on ? undefined : t.label}
-            // With seven tabs on a 375pt iPhone the icon tabs give up some width (~35 wide, still 44 tall); the chip never shrinks.
-            className={cx("relative flex h-11 items-center justify-center [&_svg]:size-5", on ? "shrink-0 gap-2 px-3.5 text-on-fill" : "w-11 [&_svg]:size-[22px]")}
+            aria-label={t.label}
+            className={cx("relative flex size-11 shrink-0 items-center justify-center [&_svg]:size-[22px]", on && "text-on-fill")}
           >
             {on && <motion.span layoutId="tab-chip" aria-hidden className="absolute inset-0 rounded-control border-2 border-edge-on-fill bg-hero" transition={{ type: "spring", stiffness: 500, damping: 38 }} />}
             <span aria-hidden className="relative">
               {t.icon}
             </span>
-            {on && <span className="relative font-display text-[15px] font-bold">{t.label}</span>}
           </Link>
         );
       })}

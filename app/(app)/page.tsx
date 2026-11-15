@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BriefcaseBusiness, CalendarDays, Flag, ListChecks, Moon, Plane, Sparkles, Star } from "lucide-react";
+import { BriefcaseBusiness, CalendarDays, Flag, Moon, Plane, ShoppingCart, Sparkles, Star } from "lucide-react";
 import { StatTile, cardClass } from "@/components/kit/card";
 import { ListCard, ListRow, Timeline } from "@/components/kit/list";
 import { WeekStrip, type DayMarks } from "@/components/kit/nav";
@@ -25,6 +25,7 @@ export default function Today() {
   const todosLeft = todos.filter((t) => !t.doneBy).length;
   const choresDone = chores.filter((c) => c.lastOn === today).length;
   const left = todosLeft + chores.length - choresDone;
+  const toBuy = s.shopping.filter((x) => x.onList && !x.gotBy).length;
   // My active habits. Not counted in "things for today": a weekly target has spare days, so a habit is never "due".
   const habits = s.habits.filter((h) => !h.graduatedOn && isFor(h, s.me));
   const log = s.log.filter((l) => klToday(new Date(l.at)) === today);
@@ -46,13 +47,12 @@ export default function Today() {
   const shiftsOn = (d: string) => s.shifts.filter((x) => x.day === d || (x.day === addDays(d, -1) && x.ends < x.starts));
 
   const marks: Record<string, DayMarks> = {};
+  // Shifts are routine, so they stay in the agenda below; the strip only flags what's out of the ordinary.
   for (const d of days) {
-    const shifts = s.shifts.filter((x) => x.day === d);
     const [t, c, p] = [todosOn(d).length, choresOn(d).length, plansOn(d)];
     marks[d] = {
-      shifts: shifts.map((x) => shiftFill(x.member)),
       dots: [t && "shopping", c && "chores", p.length && "plans"].filter(Boolean) as Tone[],
-      label: [...shifts.map((x) => `${s.member(x.member)?.name} ${x.label} shift`), t && `${t} to do`, c && `${c} ${c === 1 ? "chore" : "chores"}`, ...p.map((x) => x.title)].filter(Boolean).join(", "),
+      label: [t && `${t} to do`, c && `${c} ${c === 1 ? "chore" : "chores"}`, ...p.map((x) => x.title)].filter(Boolean).join(", "),
     };
   }
 
@@ -157,7 +157,8 @@ export default function Today() {
       <StickyNote />
 
       <div className="grid grid-cols-2 gap-3">
-        <StatTile tone="shopping" icon={<ListChecks strokeWidth={2} />} value={todosLeft} label="to do" href="/todo" />
+        {/* To-dos already have their card below; shopping has no other place on this screen. */}
+        <StatTile tone="shopping" icon={<ShoppingCart strokeWidth={2} />} value={toBuy} label="to buy" href="/shopping" />
         <StatTile tone="chores" icon={<Sparkles strokeWidth={2} />} value={`${choresDone}/${chores.length}`} label="chores" href="/chores" />
       </div>
 
@@ -178,7 +179,7 @@ export default function Today() {
         title={picked === today ? "Calendar" : `${formatDay(picked, { weekday: "short", day: "numeric", month: "short" })}, ${relativeDue(picked, today).replace("days late", "days ago")}`}
         aside={
           picked !== today && (
-            <button type="button" onClick={backToToday} className="ml-auto flex h-11 items-center px-2 text-[13px] font-bold text-muted">
+            <button type="button" onClick={backToToday} className="ml-auto flex h-11 items-center px-2 text-sm font-bold text-muted">
               Today
             </button>
           )
@@ -235,8 +236,8 @@ export default function Today() {
       </ListCard>
 
       {habits.length > 0 && (
-        <ListCard level="info" title="Habits" tint="habits" more={{ href: "/habits", label: "See all" }}>
-          {habits.map((h) => {
+        <ListCard level="info" title="Habits" tint="habits" more={{ href: "/habits", label: habits.length > 2 ? `See all ${habits.length}` : "See all" }}>
+          {habits.slice(0, 2).map((h) => {
             const done = h.checks.some((c) => c.by === s.me && c.day === today);
             return <ListRow key={h.id} title={sentence(h.action)} meta={`After I ${h.cue}`} checkLabel={`Done today: ${h.action}`} checked={done} onChange={() => s.toggleHabit(h.id, today)} />;
           })}
