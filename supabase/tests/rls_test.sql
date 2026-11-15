@@ -74,12 +74,28 @@ insert into public.shopping_items (name, qty, aisle) values ('Susu', '2', 'dairy
 select pg_temp.expect_fail($$insert into public.shopping_items (name) values (' susu ')$$, 'same item twice rejected');
 select pg_temp.expect_fail($$insert into public.shopping_items (name, aisle) values ('x', 'garage')$$, 'unknown aisle rejected');
 select pg_temp.expect_fail($$insert into public.shopping_items (name, on_list, got_by) values ('x', false, auth.uid())$$, 'in trolley but off the list rejected');
+insert into public.habits (id, cue, action, per_week) values ('00000000-0000-0000-0000-0000000000f1', 'pray Subuh', 'read one page', 5); -- together
+insert into public.habits (id, owner, cue, action) values ('00000000-0000-0000-0000-0000000000f2', '00000000-0000-0000-0000-0000000000a1', 'brush teeth', 'floss one tooth');
+insert into public.habit_checks (habit_id) values ('00000000-0000-0000-0000-0000000000f1');
+insert into public.habit_checks (habit_id, day) values ('00000000-0000-0000-0000-0000000000f2', (now() at time zone 'Asia/Kuala_Lumpur')::date - 6);
+insert into public.habit_ratings (habit_id, score) values ('00000000-0000-0000-0000-0000000000f1', 3);
+insert into public.habit_ratings (habit_id, score) values ('00000000-0000-0000-0000-0000000000f1', 4) on conflict (habit_id, member, day) do update set score = excluded.score;
+select pg_temp.expect((select score from public.habit_ratings) = 4, 'a1 can re-rate today');
+insert into public.activity (kind, body) values ('habit', 'hit their goal this week: read one page');
+select pg_temp.expect_fail($$insert into public.habits (owner, cue, action) values ('00000000-0000-0000-0000-0000000000a2', 'x', 'y')$$, 'cannot add a habit for spouse');
+select pg_temp.expect_fail($$insert into public.habits (cue, action, per_week) values ('x', 'y', 8)$$, 'per_week 8 rejected');
+select pg_temp.expect_fail($$insert into public.habits (cue, action) values (' ', 'y')$$, 'blank cue rejected');
+select pg_temp.expect_fail($$insert into public.habit_checks (habit_id, day) values ('00000000-0000-0000-0000-0000000000f1', (now() at time zone 'Asia/Kuala_Lumpur')::date - 7)$$, 'tick a week back rejected');
+select pg_temp.expect_fail($$insert into public.habit_checks (habit_id, day) values ('00000000-0000-0000-0000-0000000000f1', (now() at time zone 'Asia/Kuala_Lumpur')::date + 1)$$, 'tick tomorrow rejected');
+select pg_temp.expect_fail($$insert into public.habit_checks (habit_id, member, day) values ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000a2', (now() at time zone 'Asia/Kuala_Lumpur')::date - 1)$$, 'cannot tick as spouse');
+select pg_temp.expect_fail($$insert into public.habit_ratings (habit_id, score, day) values ('00000000-0000-0000-0000-0000000000f2', 3, (now() at time zone 'Asia/Kuala_Lumpur')::date - 1)$$, 'rating another day rejected');
+select pg_temp.expect_fail($$insert into public.habit_ratings (habit_id, score) values ('00000000-0000-0000-0000-0000000000f2', 6)$$, 'rating 6 rejected');
 reset role;
 
 -- ── as a2 (spouse): sees everything a1 made ──
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000a2';
-select pg_temp.expect((select count(*) from public.todos) = 2 and (select count(*) from public.todo_steps) = 1 and (select count(*) from public.activity) = 3, 'a2 sees shared rows');
+select pg_temp.expect((select count(*) from public.todos) = 2 and (select count(*) from public.todo_steps) = 1 and (select count(*) from public.activity) = 4, 'a2 sees shared rows');
 update public.chores set last_by = auth.uid(), last_on = '2026-11-14', next_due = '2026-11-17', prev_next_due = next_due;
 select pg_temp.expect((select last_by from public.chores) = '00000000-0000-0000-0000-0000000000a2', 'a2 can tick a1''s chore');
 update public.todos set done_by = auth.uid(), done_at = now() where title = 'Buy eggs';
@@ -87,7 +103,7 @@ select pg_temp.expect((select done_by from public.todos where title = 'Buy eggs'
 update public.todo_steps set done = true;
 select pg_temp.expect((select done from public.todo_steps), 'a2 can tick a1''s step');
 delete from public.activity;
-select pg_temp.expect((select count(*) from public.activity) = 3, 'a2 cannot delete a1''s log line');
+select pg_temp.expect((select count(*) from public.activity) = 4, 'a2 cannot delete a1''s log line');
 select pg_temp.expect((select count(*) from public.doa_progress) = 1, 'a2 sees a1''s doa progress');
 select pg_temp.expect((select count(*) from public.shifts) = 1 and (select count(*) from public.events) = 1, 'a2 sees shifts and plans');
 update public.shopping_items set got_by = auth.uid(), got_at = now();
@@ -98,6 +114,16 @@ delete from public.doa_progress;
 select pg_temp.expect((select status from public.doa_progress where user_id = '00000000-0000-0000-0000-0000000000a1') = 'learning', 'a2 cannot change or clear a1''s doa progress');
 insert into public.doa_progress (doa_id, status) values ('hm101', 'memorised');
 select pg_temp.expect((select count(*) from public.doa_progress) = 2, 'a2 can mark own doa progress');
+select pg_temp.expect((select count(*) from public.habits) = 2 and (select count(*) from public.habit_checks) = 2 and (select count(*) from public.habit_ratings) = 1, 'a2 sees habits, ticks and ratings');
+insert into public.habit_checks (habit_id) values ('00000000-0000-0000-0000-0000000000f1');
+select pg_temp.expect_fail($$insert into public.habit_checks (habit_id) values ('00000000-0000-0000-0000-0000000000f2')$$, 'a2 cannot tick a1''s own habit');
+select pg_temp.expect_fail($$insert into public.habit_ratings (habit_id, score) values ('00000000-0000-0000-0000-0000000000f2', 5)$$, 'a2 cannot rate a1''s own habit');
+select pg_temp.expect_fail($$update public.habits set owner = '00000000-0000-0000-0000-0000000000a2'$$, 'owner cannot change');
+update public.habits set per_week = 4 where id = '00000000-0000-0000-0000-0000000000f1';
+delete from public.habit_checks;
+update public.habit_ratings set score = 1;
+select pg_temp.expect((select count(*) from public.habit_checks) = 2 and (select bool_and(member = '00000000-0000-0000-0000-0000000000a1') from public.habit_checks), 'a2 untick removes only own ticks');
+select pg_temp.expect((select score from public.habit_ratings) = 4 and (select per_week from public.habits where id = '00000000-0000-0000-0000-0000000000f1') = 4, 'a2 cannot change a1''s rating, can edit a habit');
 reset role;
 
 -- ── as b1 (outsider) ──
@@ -119,9 +145,12 @@ select pg_temp.expect((select count(*) from public.shopping_items) = 0, 'b1 sees
 update public.shopping_items set on_list = true, got_by = auth.uid();
 select pg_temp.expect(public.finish_shopping() = 0, 'b1 cannot finish A''s shopping');
 update public.chores set title = 'pwned';
+select pg_temp.expect((select count(*) from public.habits) + (select count(*) from public.habit_checks) + (select count(*) from public.habit_ratings) = 0, 'b1 sees none of A''s habits');
+select pg_temp.expect_fail($$insert into public.habit_checks (habit_id) values ('00000000-0000-0000-0000-0000000000f1')$$, 'b1 cannot tick A''s habit');
+update public.habits set cue = 'pwned';
 select pg_temp.expect_fail($$insert into public.todos (household_id, title) values ('00000000-0000-0000-0000-00000000000a', 'spam')$$, 'b1 cannot insert into A');
 reset role;
-select pg_temp.expect((select count(*) from public.todos where title = 'pwned') + (select count(*) from public.todo_steps where title = 'pwned') + (select count(*) from public.chores where title = 'pwned') + (select count(*) from public.events where title = 'pwned') = 0, 'b1 updates had no effect');
+select pg_temp.expect((select count(*) from public.todos where title = 'pwned') + (select count(*) from public.todo_steps where title = 'pwned') + (select count(*) from public.chores where title = 'pwned') + (select count(*) from public.events where title = 'pwned') + (select count(*) from public.habits where cue = 'pwned') = 0, 'b1 updates had no effect');
 
 -- ── a1 removes own log line (undo), memorises and clears own doa ──
 set role authenticated;
@@ -142,10 +171,13 @@ select pg_temp.expect_fail($$select * from public.todos$$, 'anon cannot read tod
 select pg_temp.expect_fail($$select * from public.members$$, 'anon cannot read members');
 select pg_temp.expect_fail($$select private.my_household_id()$$, 'anon cannot call helper');
 select pg_temp.expect_fail($$select public.finish_shopping()$$, 'anon cannot finish shopping');
+select pg_temp.expect_fail($$select * from public.habits$$, 'anon cannot read habits');
 reset role;
 
-select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 10, 'realtime publishes 10 tables');
+select pg_temp.expect((select count(*) from pg_publication_tables where pubname = 'supabase_realtime') = 13, 'realtime publishes 13 tables');
 select pg_temp.expect((select bool_and(rowsecurity) from pg_tables where schemaname = 'public'), 'RLS on every public table');
 delete from public.todos where title = 'Groceries';
 select pg_temp.expect((select count(*) from public.todo_steps) = 0, 'deleting a todo deletes its steps');
+delete from public.habits where id = '00000000-0000-0000-0000-0000000000f1';
+select pg_temp.expect((select count(*) from public.habit_checks where habit_id = '00000000-0000-0000-0000-0000000000f1') + (select count(*) from public.habit_ratings) = 0, 'deleting a habit deletes its ticks and ratings');
 \echo ALL RLS TESTS PASSED

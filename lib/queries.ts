@@ -1,5 +1,6 @@
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { addDays, klToday, weekStart } from "./date";
+import type { Habit } from "./habits";
 import type { Aisle } from "./shopping";
 
 export type Member = { id: string; name: string; ink: string };
@@ -14,7 +15,7 @@ export type Plan = { id: string; title: string; start: string; end: string; at?:
 export type Note = { text: string; by: string; at: string };
 /** One of us is learning, or has memorised, one doa (id from lib/doa.json). No row = not started. */
 export type DoaProgress = { by: string; doa: string; status: "learning" | "memorised"; at: string };
-export type LogEntry = { id: string; kind: "todo" | "chore" | "note" | "thanks" | "doa" | "shop"; text: string; by: string; at: string };
+export type LogEntry = { id: string; kind: "todo" | "chore" | "note" | "thanks" | "doa" | "shop" | "habit"; text: string; by: string; at: string };
 /** onList false = history, kept for "buy again". gotBy = in the trolley. times = how often bought; gotAt = last ticked. */
 export type Item = { id: string; name: string; qty?: string; aisle: Aisle; onList: boolean; addedBy?: string; gotBy?: string; gotAt?: string; times: number };
 type ChoreState = { nextDue: string; lastBy?: string; lastOn?: string };
@@ -140,5 +141,27 @@ export async function loadShopping(sb: SupabaseClient): Promise<Item[]> {
     gotBy: r.got_by ?? undefined,
     gotAt: r.got_at ?? undefined,
     times: r.times,
+  }));
+}
+
+/** Every habit, with ticks from the last 8 full weeks (enough for "good weeks") and all automaticity answers. */
+export async function loadHabits(sb: SupabaseClient): Promise<Habit[]> {
+  const since = addDays(weekStart(klToday()), -56);
+  const { data, error } = await sb
+    .from("habits")
+    .select("id, owner, cue, action, per_week, graduated_on, created_at, habit_checks(member, day), habit_ratings(member, day, score)")
+    .gte("habit_checks.day", since)
+    .order("created_at");
+  if (error) fail("habits", error);
+  return data.map((r) => ({
+    id: r.id,
+    owner: r.owner ?? undefined,
+    cue: r.cue,
+    action: r.action,
+    perWeek: r.per_week,
+    graduatedOn: r.graduated_on ?? undefined,
+    since: klToday(new Date(r.created_at)),
+    checks: r.habit_checks.map((c: { member: string; day: string }) => ({ by: c.member, day: c.day })),
+    ratings: r.habit_ratings.map((x: { member: string; day: string; score: number }) => ({ by: x.member, day: x.day, score: x.score })),
   }));
 }

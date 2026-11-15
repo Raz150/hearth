@@ -9,11 +9,12 @@ import { FILL, type Tone } from "@/components/kit/shared";
 import { StickyNote } from "@/components/note";
 import { Typewriter } from "@/components/typewriter";
 import { Confetti, Faces, Page, PageHeader, Quiet, Section } from "@/components/ui";
+import { isFor, sentence } from "@/lib/habits";
 import { addDays, formatDay, formatTime, klToday, nextStart, relativeDue, timeSpan, yearsOn, yearsSince } from "@/lib/date";
 import { klTime, useStore, type LogEntry } from "@/lib/store";
 
 /** Colour = meaning: each kind of log line wears its category. */
-const KIND_TONE: Record<LogEntry["kind"], Tone> = { todo: "shopping", chore: "chores", note: "hero", thanks: "hero", doa: "done", shop: "shopping" };
+const KIND_TONE: Record<LogEntry["kind"], Tone> = { todo: "shopping", chore: "chores", note: "hero", thanks: "hero", doa: "done", shop: "shopping", habit: "habits" };
 
 export default function Today() {
   const s = useStore();
@@ -24,6 +25,8 @@ export default function Today() {
   const todosLeft = todos.filter((t) => !t.doneBy).length;
   const choresDone = chores.filter((c) => c.lastOn === today).length;
   const left = todosLeft + chores.length - choresDone;
+  // My active habits. Not counted in "things for today": a weekly target has spare days, so a habit is never "due".
+  const habits = s.habits.filter((h) => !h.graduatedOn && isFor(h, s.me));
   const log = s.log.filter((l) => klToday(new Date(l.at)) === today);
   const didToday = log.length > 0;
   // The week strip picks which day the Calendar card shows; swiping pages a week and keeps the weekday.
@@ -230,6 +233,15 @@ export default function Today() {
           })
         )}
       </ListCard>
+
+      {habits.length > 0 && (
+        <ListCard level="info" title="Habits" tint="habits" more={{ href: "/habits", label: "See all" }}>
+          {habits.map((h) => {
+            const done = h.checks.some((c) => c.by === s.me && c.day === today);
+            return <ListRow key={h.id} title={sentence(h.action)} meta={`After I ${h.cue}`} checkLabel={`Done today: ${h.action}`} checked={done} onChange={() => s.toggleHabit(h.id, today)} />;
+          })}
+        </ListCard>
+      )}
 
       <Section title="What we did today">
         {log.length === 0 ? (

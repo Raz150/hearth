@@ -2,12 +2,14 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { saveMe } from "@/app/(app)/settings/actions";
-import { addDays, klToday } from "./date";
-import { loadChores, loadDoa, loadLog, loadMembers, loadNote, loadPlans, loadShifts, loadShopping, loadTodos, type Chore, type DoaProgress, type Item, type LogEntry, type Member, type Note, type Plan, type Shift, type Step, type Todo } from "./queries";
+import { addDays, klToday, weekStart } from "./date";
+import { doneIn, isFor, type Habit, type HabitRating } from "./habits";
+import { loadChores, loadDoa, loadHabits, loadLog, loadMembers, loadNote, loadPlans, loadShifts, loadShopping, loadTodos, type Chore, type DoaProgress, type Item, type LogEntry, type Member, type Note, type Plan, type Shift, type Step, type Todo } from "./queries";
 import { guessAisle, parseItem } from "./shopping";
 import { createClient } from "./supabase/client";
 
 export { INKS, inkText } from "./inks";
+export type { Habit } from "./habits";
 export type { Chore, DoaProgress, Item, LogEntry, Member, Note, Plan, Shift, Step, Todo } from "./queries";
 /** The editable parts of a shopping item. */
 export type ItemMeta = Pick<Item, "name" | "qty" | "aisle">;
@@ -15,8 +17,10 @@ export type ItemMeta = Pick<Item, "name" | "qty" | "aisle">;
 export type TodoMeta = Pick<Todo, "assignee" | "due" | "dueTime" | "priority" | "tags">;
 /** The editable parts of a chore. */
 export type ChoreMeta = Pick<Chore, "title" | "everyDays" | "owner" | "nextDue">;
+/** The editable parts of a habit ("After I <cue>, I will <action>", <perWeek> days a week). */
+export type HabitMeta = Pick<Habit, "cue" | "action" | "perWeek">;
 
-export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaProgress[]; shifts: Shift[]; plans: Plan[]; shopping: Item[] };
+export type Shared = { members: Member[]; todos: Todo[]; chores: Chore[]; note: Note | null; log: LogEntry[]; doa: DoaProgress[]; shifts: Shift[]; plans: Plan[]; shopping: Item[]; habits: Habit[] };
 
 /** The toast: an undoable action, or an error (no undo). */
 type Flash = { id: number; label: string; undo?: () => void; error?: boolean };
@@ -66,14 +70,28 @@ type Store = Shared & {
     removeItem: (id: string) => void;
     /** Everything in the trolley goes back to history. */
     finishShopping: () => void;
+    /** together: a habit for both of us; otherwise it's mine. */
+    addHabit: (meta: HabitMeta, together: boolean) => void;
+    editHabit: (id: string, meta: HabitMeta) => void;
+    /** Gone with its history (no undo: the other's ticks can't be put back as me). */
+    removeHabit: (id: string) => void;
+    /** Tick or untick my day. Hitting this week's target adds a line to the shared log. */
+    toggleHabit: (id: string, day: string) => void;
+    /** My answer (1-5) to "how automatic does this feel?", for today. */
+    rateHabit: (id: string, score: number) => void;
+    /** Graduate (it runs on its own now) or bring it back. */
+    graduateHabit: (id: string, graduated: boolean) => void;
+    /** Cheer `who` on for this habit (a line in the shared log, once a day). */
+    cheer: (id: string, who: string) => void;
+    cheered: (id: string, who: string) => boolean;
     /** Saves my own name/ink. Returns an error message or null. */
     updateMe: (patch: Partial<Omit<Member, "id">>) => Promise<string | null>;
   };
 
 const Ctx = createContext<Store | null>(null);
-const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, doa: loadDoa, shifts: loadShifts, plans: loadPlans, shopping: loadShopping } as const;
+const LOADERS = { members: loadMembers, todos: loadTodos, chores: loadChores, note: loadNote, log: loadLog, doa: loadDoa, shifts: loadShifts, plans: loadPlans, shopping: loadShopping, habits: loadHabits } as const;
 const TABLES: Record<string, keyof typeof LOADERS> = {
-  members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", doa_progress: "doa", shifts: "shifts", events: "plans", shopping_items: "shopping",
+  members: "members", todos: "todos", todo_steps: "todos", chores: "chores", notes: "note", activity: "log", doa_progress: "doa", shifts: "shifts", events: "plans", shopping_items: "shopping", habits: "habits", habit_checks: "habits", habit_ratings: "habits",
 };
 
 export function HouseholdProvider({ children, initial, me, household }: { children: ReactNode; initial: Shared; me: string; household: string }) {
@@ -145,6 +163,15 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
   const setDoa = (fn: (d: DoaProgress[]) => DoaProgress[]) => setData((p) => ({ ...p, doa: fn(p.doa) }));
   const choreLine = (c: Chore) => `did ${c.title}`;
   const thanksText = (c: Chore) => `thanked ${data.members.find((m) => m.id === c.lastBy)?.name ?? "you"} for ${c.title}`;
+  const setHabits = (fn: (h: Habit[]) => Habit[]) => setData((p) => ({ ...p, habits: fn(p.habits) }));
+  const putHabit = (id: string, fn: (h: Habit) => Habit) => setHabits((p) => p.map((h) => (h.id === id ? fn(h) : h)));
+  const habitRow = (m: HabitMeta) => ({ cue: m.cue.trim().slice(0, 80), action: m.action.trim().slice(0, 80), per_week: Math.min(7, Math.max(1, Math.round(m.perWeek) || 7)) });
+  const goalText = (h: Habit) => `hit their goal this week: ${h.action}`;
+  const cheerText = (h: Habit, who: string) => `cheered ${data.members.find((m) => m.id === who)?.name ?? "you"} on: ${h.action}`;
+  const cheered = (id: string, who: string) => {
+    const h = data.habits.find((x) => x.id === id);
+    return !!h && data.log.some((l) => l.kind === "habit" && l.by === me && l.text === cheerText(h, who) && klToday(new Date(l.at)) === klToday());
+  };
   const flashError = () => setUndo({ id: Date.now(), label: "Couldn't save. Check your connection.", error: true });
 
   /** Run DB writes; if any fails, put the screen back and say so. */
@@ -552,6 +579,94 @@ export function HouseholdProvider({ children, initial, me, household }: { childr
           write(() => putItems(done), sb.from("shopping_items").upsert(got.map(itemRow)), unlog(log.entry.id));
         },
       });
+    },
+
+    addHabit: (meta, together) => {
+      const row = habitRow(meta);
+      if (!row.cue || !row.action) return;
+      const h: Habit = { id: crypto.randomUUID(), owner: together ? undefined : me, cue: row.cue, action: row.action, perWeek: row.per_week, since: klToday(), checks: [], ratings: [] };
+      setHabits((p) => [...p, h]);
+      write(() => setHabits((p) => p.filter((x) => x.id !== h.id)), sb.from("habits").insert({ id: h.id, owner: h.owner ?? null, ...row }));
+    },
+
+    editHabit: (id, meta) => {
+      const old = data.habits.find((h) => h.id === id);
+      const row = habitRow(meta);
+      if (!old || !row.cue || !row.action) return;
+      putHabit(id, (h) => ({ ...h, cue: row.cue, action: row.action, perWeek: row.per_week }));
+      write(() => putHabit(id, () => old), sb.from("habits").update(row).eq("id", id));
+    },
+
+    removeHabit: (id) => {
+      const h = data.habits.find((x) => x.id === id);
+      if (!h) return;
+      const i = data.habits.indexOf(h);
+      setHabits((p) => p.filter((x) => x.id !== id));
+      write(() => setHabits((p) => [...p.slice(0, i), h, ...p.slice(i)]), sb.from("habits").delete().eq("id", id));
+    },
+
+    toggleHabit: (id, day) => {
+      const h = data.habits.find((x) => x.id === id);
+      const today = klToday();
+      if (!h || !isFor(h, me) || day > today || day < addDays(today, -6)) return;
+      const had = h.checks.some((c) => c.by === me && c.day === day);
+      const set = (on: boolean) =>
+        putHabit(id, (x) => ({ ...x, checks: [...x.checks.filter((c) => !(c.by === me && c.day === day)), ...(on ? [{ by: me, day }] : [])] }));
+      const save = (on: boolean) => (on ? sb.from("habit_checks").insert({ habit_id: id, member: me, day }) : sb.from("habit_checks").delete().match({ habit_id: id, member: me, day }));
+      const monday = weekStart(today);
+      const week = [0, 1, 2, 3, 4, 5, 6].map((n) => addDays(monday, n));
+      const count = week.includes(day) ? doneIn(h, me, week) : -1;
+      set(!had);
+
+      if (!had && count + 1 === h.perWeek) {
+        const log = logLine("habit", goalText(h));
+        write(
+          () => {
+            set(false);
+            setLog((l) => l.filter((x) => x.id !== log.entry.id));
+          },
+          save(true),
+          log.query,
+        );
+        return;
+      }
+      // Dropping back under the target takes this week's "hit their goal" line with it.
+      const line = had && count === h.perWeek ? data.log.find((l) => l.kind === "habit" && l.by === me && l.text === goalText(h)) : undefined;
+      write(() => set(had), save(!had), ...(line ? [unlog(line.id)] : []));
+    },
+
+    rateHabit: (id, score) => {
+      const h = data.habits.find((x) => x.id === id);
+      if (!h || !isFor(h, me) || !(score >= 1 && score <= 5)) return;
+      const today = klToday();
+      const old = h.ratings.find((r) => r.by === me && r.day === today);
+      const show = (r?: HabitRating) => putHabit(id, (x) => ({ ...x, ratings: [...x.ratings.filter((y) => !(y.by === me && y.day === today)), ...(r ? [r] : [])] }));
+      show({ by: me, day: today, score: Math.round(score) });
+      write(() => show(old), sb.from("habit_ratings").upsert({ habit_id: id, member: me, day: today, score: Math.round(score) }, { onConflict: "habit_id,member,day" }));
+    },
+
+    graduateHabit: (id, graduated) => {
+      const h = data.habits.find((x) => x.id === id);
+      if (!h || !!h.graduatedOn === graduated) return;
+      const on = graduated ? klToday() : undefined;
+      putHabit(id, (x) => ({ ...x, graduatedOn: on }));
+      const log = graduated ? logLine("habit", `graduated a habit: ${h.action} 🎓`) : undefined;
+      write(
+        () => {
+          putHabit(id, (x) => ({ ...x, graduatedOn: h.graduatedOn }));
+          if (log) setLog((l) => l.filter((x) => x.id !== log.entry.id));
+        },
+        sb.from("habits").update({ graduated_on: on ?? null }).eq("id", id),
+        ...(log ? [log.query] : []),
+      );
+    },
+
+    cheered,
+    cheer: (id, who) => {
+      const h = data.habits.find((x) => x.id === id);
+      if (!h || who === me || cheered(id, who)) return;
+      const log = logLine("habit", cheerText(h, who));
+      write(() => setLog((l) => l.filter((x) => x.id !== log.entry.id)), log.query);
     },
 
     updateMe: async (patch) => {

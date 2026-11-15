@@ -74,6 +74,10 @@ An error like `schema "public" already exists` during restore is harmless.
 
 The Doa tab is for learning authentic doa by heart, together: each doa has a three-step practice (listen & repeat, first-letter fade, from memory), and each of us marks it learning or memorised (`doa_progress`, visible to both). No counted zikir. The doa live in `lib/doa.json`, built by `node scripts/doa.mjs` (edit `GROUPS` in it to add or drop doa, re-run, commit the JSON). Arabic, Rumi, English and audio come from the Hisnul Muslim API; Bahasa Melayu and the hadith source come from JPN Johor's Hisnul Muslim page. The script refuses to build if the two sources' Arabic don't match, so a Malay text can't end up under the wrong doa. Quran doa come from alquran.cloud.
 
+## Habits
+
+Each habit is written as "After I <cue>, I'll <action>" with a days-a-week target (no daily streaks, so a missed day is never a failure). Each of us ticks only our own days (`habit_checks`, up to 6 days back); the other can see them and cheer. From two weeks in, a habit asks every two weeks "how automatic does this feel?" (1–5, `habit_ratings`); after eight weeks with two answers of 4 or more, it offers to graduate it to "Habits we've built". The rules live in `lib/habits.ts`.
+
 ## Testing RLS locally (optional, needs Docker)
 
 `supabase/tests/` has a stand-in for Supabase's `auth` schema plus a script that checks every policy (spouse can see, outsider and logged-out can't). Never run it against the real project.

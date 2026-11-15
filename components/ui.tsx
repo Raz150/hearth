@@ -78,7 +78,7 @@ export function Who({ member }: { member?: Member }) {
   return member ? <span className="font-semibold text-fg">{member.name}</span> : null;
 }
 
-const CONFETTI = ["bg-shopping", "bg-chores", "bg-money", "bg-hero", "bg-done", "bg-person-w"];
+const CONFETTI = ["bg-shopping", "bg-chores", "bg-money", "bg-hero", "bg-done", "bg-person-w", "bg-habits"];
 const PIECES = Array.from({ length: 24 }, (_, i) => ({
   x: (i * 47) % 100, // spread across the screen without Math.random (keeps render pure)
   delay: (i % 7) * 0.09,

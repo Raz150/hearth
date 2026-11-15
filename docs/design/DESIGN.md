@@ -34,6 +34,7 @@ Use the same colour for the same thing on every screen: tile, list header tint, 
 
 - Shopping → `--shopping` (orange), with header tint `--shopping-tint`
 - Chores → `--chores` (lilac), with tint `--chores-tint`
+- Habits → `--habits` (pink), with tint `--habits-tint`
 - Money → `--money` (yellow)
 - Plans and trips (calendar) → `--plans` (aqua). Work shifts wear the person's colour (`--person-h` / `--person-w`); deadlines are to-dos, so `--shopping`.
 - Note / "you are here" (active tab) → `--hero` (peach)

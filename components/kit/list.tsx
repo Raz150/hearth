@@ -7,6 +7,7 @@ import { cx, FILL, META, type Tone } from "./shared";
 const TINT = {
   shopping: "bg-shopping-tint",
   chores: "bg-chores-tint",
+  habits: "bg-habits-tint",
   none: "bg-surface-sunken",
 } as const;
 
