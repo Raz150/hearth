@@ -101,7 +101,7 @@ function Library({ lang, setLang, onGroup, onOpen }: { lang: Lang; setLang: (l: 
             <div key={m.id} className="flex items-center gap-3">
               <Face member={m} />
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <div className="flex justify-between gap-2 text-[13px] font-bold">
+                <div className="flex justify-between gap-2 text-sm font-bold">
                   <span>{m.id === me ? "You" : m.name}</span>
                   <span className="tabular-nums">
                     {done} of {TOTAL} memorised
@@ -118,7 +118,7 @@ function Library({ lang, setLang, onGroup, onOpen }: { lang: Lang; setLang: (l: 
         <button onClick={() => onOpen(next.d.id)} className={cx(cardClass("interactive"), PRESS, "flex items-center gap-3 p-3.5 text-left")}>
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className={META}>
-              {learning ? "Carry on learning" : "A short one to start with"} · {next.g[lang]}
+              {learning ? "Carry on learning" : "A short one to start with"}, from {next.g[lang]}
             </span>
             <span lang={lang} className="line-clamp-2 text-sm font-bold leading-snug">
               {opening(next.d[lang])}
@@ -134,8 +134,6 @@ function Library({ lang, setLang, onGroup, onOpen }: { lang: Lang; setLang: (l: 
       ) : (
         <p className="px-0.5 text-sm font-semibold text-muted">You&apos;ve memorised every doa here. Alhamdulillah. Keep saying them so they stay.</p>
       )}
-
-      <Shelf lang={lang} setLang={setLang} />
 
       <Section title="Occasions" note={`${TOTAL} doa`}>
         <div className="grid grid-cols-2 gap-3">
@@ -166,6 +164,8 @@ function Library({ lang, setLang, onGroup, onOpen }: { lang: Lang; setLang: (l: 
           })}
         </div>
       </Section>
+
+      <Shelf lang={lang} setLang={setLang} />
     </>
   );
 }
@@ -326,9 +326,7 @@ function Reader({ d, g, lang, setLang, player, onClose }: { d: Doa; g: DoaGroup;
               </button>
             )}
             <p className="min-w-0 flex-1 truncate text-center font-display text-[15px] font-bold">{typeof mode === "number" ? "Practise" : g[lang]}</p>
-            <div className="w-28">
-              <LangSwitch lang={lang} setLang={setLang} />
-            </div>
+            <span aria-hidden className="size-11 shrink-0" /> {/* balances the close button so the title stays centred */}
           </div>
         </header>
 
@@ -341,13 +339,13 @@ function Reader({ d, g, lang, setLang, player, onClose }: { d: Doa; g: DoaGroup;
             transition={{ duration: 0.18 }}
             className="flex flex-1 flex-col gap-[18px] pt-[18px]"
           >
-            {mode === "read" && <ReadView d={d} lang={lang} player={player} people={people} status={status} mine={mine} onPractise={practise} onLearning={() => s.markDoa(d.id, "learning", title)} />}
+            {mode === "read" && <ReadView d={d} lang={lang} setLang={setLang} player={player} people={people} status={status} mine={mine} onPractise={practise} onLearning={() => s.markDoa(d.id, "learning", title)} />}
             {typeof mode === "number" && (
               <>
                 <StepTracker steps={STEPS} done={mode} />
                 {mode === 0 && <ListenRepeat d={d} player={player} onNext={() => go(1)} />}
                 {mode === 1 && <Fade d={d} onBack={() => go(0)} onNext={() => go(2)} />}
-                {mode === 2 && <FromMemory d={d} lang={lang} onAgain={() => go(1)} onGotIt={gotIt} />}
+                {mode === 2 && <FromMemory d={d} lang={lang} setLang={setLang} onAgain={() => go(1)} onGotIt={gotIt} />}
               </>
             )}
             {mode === "done" && <Done spouse={people.find((m) => m.id !== me)} onClose={onClose} onRead={() => go("read")} />}
@@ -362,6 +360,7 @@ function Reader({ d, g, lang, setLang, player, onClose }: { d: Doa; g: DoaGroup;
 function ReadView({
   d,
   lang,
+  setLang,
   player,
   people,
   status,
@@ -371,6 +370,7 @@ function ReadView({
 }: {
   d: Doa;
   lang: Lang;
+  setLang: (l: Lang) => void;
   player: Player;
   people: Member[];
   status: (by: string, id: string) => DoaStatus | undefined;
@@ -418,7 +418,7 @@ function ReadView({
       </div>
 
       <div className="flex flex-col gap-1.5 px-0.5">
-        <h2 className="font-display text-[15px] font-bold">Meaning</h2>
+        <MeaningHead lang={lang} setLang={setLang} />
         <p lang={lang} className="text-sm font-medium leading-relaxed">
           {d[lang]}
         </p>
@@ -496,9 +496,9 @@ function ListenRepeat({ d, player, onNext }: { d: Doa; player: Player; onNext: (
             <button
               onClick={() => setI(k)}
               aria-current={k === i ? "step" : undefined}
-              className={cx("relative w-full rounded-[10px] px-3 transition-[font-size,color] duration-200", ARABIC, k === i ? "py-1.5 text-[1.75rem] leading-[2.1] text-fg" : "py-0.5 text-xl leading-loose text-subtle")}
+              className={cx("relative w-full rounded-control px-3 transition-[font-size,color] duration-200", ARABIC, k === i ? "py-1.5 text-[1.75rem] leading-[2.1] text-fg" : "py-0.5 text-xl leading-loose text-subtle")}
             >
-              {k === i && <motion.span layoutId="phrase" aria-hidden className="absolute inset-0 rounded-[10px] border-2 border-edge-card bg-chores-tint" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
+              {k === i && <motion.span layoutId="phrase" aria-hidden className="absolute inset-0 rounded-control border-2 border-edge-card bg-chores-tint" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
               <span className="relative">{p}</span>
             </button>
           </li>
@@ -549,7 +549,7 @@ function Fade({ d, onBack, onNext }: { d: Doa; onBack: () => void; onNext: () =>
               onClick={() => toggle(k)}
               aria-label={shown ? w.word : `Word ${k + 1}, hidden. Tap to peek`}
               className={cx(
-                "min-h-11 min-w-11 rounded-[8px] border-b-2 px-1.5 transition-colors",
+                "min-h-11 min-w-11 rounded-icon border-b-2 px-1.5 transition-colors",
                 shown ? "border-edge-card bg-chores-tint" : "border-dashed border-divider",
               )}
             >
@@ -575,13 +575,25 @@ function Fade({ d, onBack, onNext }: { d: Doa; onBack: () => void; onNext: () =>
 }
 
 /** Step 3: nothing but the meaning; recite, reveal, be honest. */
-function FromMemory({ d, lang, onAgain, onGotIt }: { d: Doa; lang: Lang; onAgain: () => void; onGotIt: () => void }) {
+/** "Meaning" with the EN/BM switch beside it: the only text the switch changes. */
+function MeaningHead({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <h2 className="font-display text-[15px] font-bold">Meaning</h2>
+      <div className="w-28">
+        <LangSwitch lang={lang} setLang={setLang} />
+      </div>
+    </div>
+  );
+}
+
+function FromMemory({ d, lang, setLang, onAgain, onGotIt }: { d: Doa; lang: Lang; setLang: (l: Lang) => void; onAgain: () => void; onGotIt: () => void }) {
   const [shown, setShown] = useState(false);
   return (
     <>
       <Hint>Say it from memory. The meaning is here to remind you what you&apos;re asking for.</Hint>
       <div className="flex flex-col gap-1.5 px-0.5">
-        <h2 className="font-display text-[15px] font-bold">Meaning</h2>
+        <MeaningHead lang={lang} setLang={setLang} />
         <p lang={lang} className="text-sm font-medium leading-relaxed">
           {d[lang]}
         </p>

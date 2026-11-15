@@ -84,7 +84,8 @@ export function Shelf({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => voi
 
   return (
     <Section title="Bookshelf" note="Read any time">
-      <div className="grid grid-cols-2 gap-3">
+      {/* One row of books standing on a shelf, bleeding to the screen edges; padding leaves room for the shadow and ribbon. */}
+      <div className="-ml-5 -mr-[22px] flex snap-x snap-mandatory scroll-pl-5 gap-3 overflow-x-auto pb-1.5 pl-5 pr-[22px] pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {SHELF.map((b) => (
           <Cover key={b.id} b={b} at={marks[b.id] ?? 0} onOpen={() => setOpen(b)} />
         ))}
@@ -106,7 +107,7 @@ function Cover({ b, at, onOpen }: { b: ShelfBook; at: number; onOpen: () => void
     <button
       onClick={onOpen}
       aria-label={`${b.en}, ${b.by}. ${started ? `Carry on from page ${at + 1} of ${b.pages}` : `${b.pages} pages`}`}
-      className={cx(PRESS, "relative flex min-h-[188px] flex-col gap-2.5 rounded-l-[6px] rounded-r-card border-2 border-edge-card bg-surface-note pb-3 pl-3 pr-[22px] pt-3.5 text-left shadow-hard")}
+      className={cx(PRESS, "relative flex min-h-[188px] w-[136px] shrink-0 snap-start flex-col gap-2.5 rounded-l-[6px] rounded-r-card border-2 border-edge-card bg-surface-note pb-3 pl-3 pr-[22px] pt-3.5 text-left shadow-hard")}
     >
       <span aria-hidden className="absolute inset-y-0 right-0 w-3 rounded-r-[12px] border-l-2 border-edge-card bg-chores" />
       {started && (
@@ -115,7 +116,7 @@ function Cover({ b, at, onOpen }: { b: ShelfBook; at: number; onOpen: () => void
         </svg>
       )}
       <span aria-hidden className="mx-1 mt-2 flex min-h-[70px] items-center justify-center rounded-[4px] border-[1.5px] border-edge-card px-1.5 outline-[1.5px] outline-offset-[3px] outline-edge-card">
-        <span lang="ar" dir="rtl" className={`${amiri.className} text-center text-[1.55rem] font-bold leading-[1.5]`}>
+        <span lang="ar" dir="rtl" className={`${amiri.className} text-center text-[1.35rem] font-bold leading-[1.5]`}>
           {b.ar}
         </span>
       </span>
@@ -337,7 +338,7 @@ function Reader({ shelf, prefs, change, onClose }: { shelf: ShelfBook; prefs: Pr
                         setSheet(null);
                       }}
                       aria-current={here ? "page" : undefined}
-                      className={cx("flex min-h-12 w-full items-center gap-3 rounded-[8px] px-2 py-2 text-left transition-colors active:bg-surface-sunken", here && "bg-chores-tint")}
+                      className={cx("flex min-h-12 w-full items-center gap-3 rounded-icon px-2 py-2 text-left transition-colors active:bg-surface-sunken", here && "bg-chores-tint")}
                     >
                       <span className="w-9 shrink-0 text-xs font-bold tabular-nums text-muted">{t.p + 1}</span>
                       <span className="flex min-w-0 flex-1 flex-col items-end gap-0.5">
@@ -521,7 +522,7 @@ function Paper({ blocks, n, head, view, hidden }: { blocks: Block[]; n: number; 
   );
 }
 
-const PILL = "inline-flex h-6 items-center rounded-full border-[1.5px] border-edge-card bg-surface px-2.5 text-[11px] font-bold";
+const PILL = "inline-flex h-6 items-center rounded-full border-[1.5px] border-edge-card bg-surface px-2.5 text-xs font-bold";
 
 function Passage({ b, view }: { b: Block; view: View }) {
   if ("h" in b)
