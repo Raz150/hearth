@@ -3,27 +3,23 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { Amiri } from "next/font/google";
 import { ArrowRight, Check, ChevronLeft, ChevronRight, Eye, Pause, Play, RotateCcw, Share, Sprout, X } from "lucide-react";
 import { Button, iconButtonClass } from "@/components/kit/button";
 import { cardClass } from "@/components/kit/card";
 import { StepTracker } from "@/components/kit/progress";
-import { Chip, Segmented } from "@/components/kit/selection";
+import { Chip } from "@/components/kit/selection";
 import { META, PRESS, cx } from "@/components/kit/shared";
 import { Confetti, Face, Page, PageHeader, Section } from "@/components/ui";
 import { opening, phrases, words, type Doa, type DoaGroup, type DoaStatus } from "@/lib/doa";
 import doaJson from "@/lib/doa.json";
 import { useStore, type Member } from "@/lib/store";
+import { ARABIC, LangSwitch, Shelf, type Lang } from "./book";
 
-const amiri = Amiri({ subsets: ["arabic"], weight: "400" });
 const GROUPS = doaJson as DoaGroup[];
 const ALL = GROUPS.flatMap((g) => g.items.map((d) => ({ d, g })));
 const TOTAL = ALL.length;
 const STEPS = ["Listen & repeat", "Fade", "From memory"];
-type Lang = "en" | "ms";
 type Player = ReturnType<typeof usePlayer>;
-
-const ARABIC = `${amiri.className} text-right`;
 const short = (t: string) => (t.length > 60 ? `${t.slice(0, 57).trimEnd()}…` : t);
 
 /** A per-phone setting kept in localStorage; read after mount so the server render matches. */
@@ -139,6 +135,8 @@ function Library({ lang, setLang, onGroup, onOpen }: { lang: Lang; setLang: (l: 
         <p className="px-0.5 text-sm font-semibold text-muted">You&apos;ve memorised every doa here. Alhamdulillah. Keep saying them so they stay.</p>
       )}
 
+      <Shelf lang={lang} setLang={setLang} />
+
       <Section title="Occasions" note={`${TOTAL} doa`}>
         <div className="grid grid-cols-2 gap-3">
           {GROUPS.map((g, i) => {
@@ -193,20 +191,6 @@ function Dot({ status }: { status?: DoaStatus }) {
         "size-2.5 rounded-full border-[1.5px]",
         status === "memorised" ? "border-edge-on-fill bg-done" : status === "learning" ? "border-edge-on-fill bg-chores" : "border-edge-card bg-surface",
       )}
-    />
-  );
-}
-
-function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <Segmented
-      label="Translation"
-      value={lang}
-      onChange={setLang}
-      options={[
-        { value: "en", label: "EN" },
-        { value: "ms", label: "BM" },
-      ]}
     />
   );
 }

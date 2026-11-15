@@ -1,4 +1,4 @@
-// Builds lib/doa.json (the Doa tab). Run: node scripts/doa.mjs
+// Builds lib/doa.json (the Doa tab) and the four books in lib/books/ (the Doa tab's bookshelf). Run: node scripts/doa.mjs
 // Edit GROUPS below to change what shows up, then re-run and commit the JSON.
 // Only doa to learn and say at their moments (no counted adhkar/zikir).
 // Hadith doa: Hisnul Muslim API (Arabic, transliteration, English, audio)
@@ -58,6 +58,8 @@ assert.ok(dice(norm("بِسْمِ اللَّهِ"), norm("لا حول ولا ق�
 // --- Hisnul Muslim (all chapters; a couple of files are malformed at the source and are skipped) ---
 const hm = new Map();
 const { English: chapters } = await json("https://www.hisnmuslim.com/api/en/husn_en.json");
+const { العربية: arTitles } = await json("https://www.hisnmuslim.com/api/ar/husn_ar.json");
+const hmChapters = []; // for the Hisnul Muslim book, in the book's order
 for (const c of chapters) {
   let d;
   try {
@@ -66,8 +68,11 @@ for (const c of chapters) {
     console.warn(`skipped chapter ${c.ID} (${c.TITLE}): bad JSON at source`);
     continue;
   }
-  for (const x of Object.values(d)[0]) hm.set(x.ID, x);
+  const items = Object.values(d)[0];
+  for (const x of items) hm.set(x.ID, x);
+  hmChapters.push({ id: c.ID, en: c.TITLE.trim(), ar: arTitles.find((a) => a.ID === c.ID)?.TITLE.trim(), items });
 }
+hmChapters.sort((a, b) => a.id - b.id);
 
 // --- JPN Johor page: under each <h2>, items are an Arabic line, then transliteration, Malay (1+ lines), source ---
 const dec = (s) => s.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&nbsp;/g, " ");
@@ -91,10 +96,8 @@ const fail = (msg) => void failures.push(msg);
 
 const used = new Map();
 
-/** section: the JPN heading to prefer when the same doa appears under several (e.g. Ayat al-Kursi). */
-function hadithDoa(id, section) {
-  const h = hm.get(id);
-  assert.ok(h?.ARABIC_TEXT, `Hisnul Muslim #${id} not found`);
+/** The JPN entry for a Hisnul Muslim item. section: the JPN heading to prefer when the same doa appears under several (e.g. Ayat al-Kursi). */
+function jpnFor(h, section) {
   const a = norm(h.ARABIC_TEXT);
   let best, score = 0;
   for (const j of jpn) {
@@ -104,6 +107,13 @@ function hadithDoa(id, section) {
     if (section?.test(j.head)) s += 0.01;
     if (s > score) [best, score] = [j, s];
   }
+  return { best, score };
+}
+
+function hadithDoa(id, section) {
+  const h = hm.get(id);
+  assert.ok(h?.ARABIC_TEXT, `Hisnul Muslim #${id} not found`);
+  const { best, score } = jpnFor(h, section);
   if (score < 0.75) return fail(`#${id} has no matching Malay entry (best ${score.toFixed(2)}: ${best?.head})`);
   if (used.has(best)) return fail(`#${id} and #${used.get(best)} both matched the same Malay entry (${best.head})`);
   used.set(best, id);
@@ -155,3 +165,160 @@ for (const g of out) for (const d of g.items) {
 }
 await writeFile(new URL("../lib/doa.json", import.meta.url), JSON.stringify(out, null, 1) + "\n");
 console.log(`wrote ${ids.size} doa in ${out.length} groups`);
+
+// ─── The bookshelf: four books, each { toc, pages } (shape: lib/books.ts) ───
+// Pages are cut to fit a phone: a heading starts a new page, then blocks fill it up to `budget` Arabic characters.
+function paginate(blocks, budget) {
+  const pages = [], toc = [];
+  let page = [], used = 0;
+  const flush = () => page.length && (pages.push(page), (page = []), (used = 0));
+  for (const b of blocks) {
+    if (b.h) {
+      if (!(page.length === 1 && page[0].ar?.length < 60)) flush(); // a lone opening line (a basmalah) stays with the chapter after it
+      toc.push({ t: b.h, sub: b.sub, p: pages.length });
+    } else if (used && used + b.ar.length > budget) flush();
+    page.push(b);
+    used += b.ar?.length ?? 0;
+  }
+  flush();
+  return { toc, pages };
+}
+async function writeBook(id, book) {
+  assert.ok(book.pages.length > 10 && book.toc.length > 3, `${id}: only ${book.pages.length} pages / ${book.toc.length} chapters`);
+  for (const p of book.pages) for (const b of p) assert.ok(b.h || b.ar?.trim(), `${id}: empty block`);
+  await writeFile(new URL(`../lib/books/${id}.json`, import.meta.url), JSON.stringify(book) + "\n");
+  pageCounts[id] = book.pages.length;
+  console.log(`wrote ${id}: ${book.pages.length} pages, ${book.toc.length} chapters`);
+}
+/** Page counts, so the shelf can show progress without loading a book. Written once all four are done. */
+const pageCounts = {};
+
+/** The API's transliteration, with its "AA" for ‘ayn fixed (as in hadithDoa). */
+const rumi = (h) => h.LANGUAGE_ARABIC_TRANSLATED_TEXT?.trim().replace(/AA/g, "‘") || undefined;
+
+// Hisnul Muslim: the API's Arabic, transliteration + English; Malay and the hadith reference where JPN Johor has the same doa.
+{
+  const blocks = [];
+  for (const c of hmChapters) {
+    blocks.push({ h: c.ar ?? c.en, sub: c.en });
+    for (const h of c.items.filter((x) => x.ARABIC_TEXT?.trim())) {
+      const { best, score } = jpnFor(h);
+      const ms = score >= 0.75 && best.rest.length >= 3 ? best.rest.slice(1, -1).join(" ") : undefined;
+      const src = score >= 0.75 && SOURCE.test(best.rest.at(-1)) ? best.rest.at(-1).replace(/\.$/, "") : undefined;
+      blocks.push({ n: String(h.ID), ar: h.ARABIC_TEXT.trim(), tr: rumi(h), en: h.TRANSLATED_TEXT?.trim() || undefined, ms, src, x: Number(h.REPEAT) > 1 ? Number(h.REPEAT) : undefined });
+    }
+  }
+  await writeBook("hisn", paginate(blocks, 420));
+}
+
+// OpenITI text files (pinned commits): "# " starts a paragraph, "~~" continues it, "### | " is a heading or a hadith number.
+// Dropped: page/milestone markers, footnote calls "(1)" (the footnotes aren't in the file) and the printed-page refs "[60]".
+async function openiti(url) {
+  const body = (await get(url)).split("#META#Header#End#")[1];
+  const paras = [];
+  for (const line of body.split("\n")) {
+    if (line.startsWith("~~")) paras[paras.length - 1] += ` ${line.slice(2)}`;
+    else if (line.startsWith("### | ")) paras.push(line);
+    else if (line.startsWith("# ")) {
+      // A printed page that ends mid-sentence ("… PageV01P003") carries on in the next "# " line.
+      if (/\S.*PageV\d+P\d+\s*$/.test(paras.at(-1) ?? "") && !paras.at(-1).startsWith("###")) paras[paras.length - 1] += ` ${line.slice(2)}`;
+      else paras.push(line.slice(2));
+    }
+  }
+  return paras
+    .map((p) => p.replace(/PageV\d+P\d+|\bms\d+\b|\s*\(\d+\)|\[\d+\]/g, " ").replace(/\s+/g, " ").trim())
+    .filter((p) => p && p !== "-" && p !== "### |");
+}
+const GRADE = /^\((صحيح|حسن|ضعيف|موضوع|إسناده|صحيح الإسناد|ضعيف الإسناد|حسن صحيح|ضعيف جدا|حسن الإسناد|صحيح لغيره|حسن لغيره|منكر)[^)]{0,20}\)\s*/;
+
+// al-Kalim al-Tayyib with al-Albani's grade on each hadith (Shamela 327). Chapters are paragraphs that start "فصل".
+{
+  const blocks = [];
+  let n;
+  for (const p of await openiti("https://raw.githubusercontent.com/OpenITI/0750AH/3a235a291ba442ce3795048254675dc0a2361f52/data/0728IbnTaymiyya/0728IbnTaymiyya.KalimTayyib/0728IbnTaymiyya.KalimTayyib.Shamela0000327-ara1")) {
+    const num = p.match(/^### \| (\d+) -$/);
+    if (num) n = num[1];
+    else if (/^-? ?فصل/.test(p)) blocks.push({ h: p.replace(/^- /, "") });
+    else if (!p.startsWith("###")) {
+      const g = p.match(GRADE);
+      blocks.push({ n, tag: g?.[0].trim().slice(1, -1), ar: g ? p.slice(g[0].length) : p });
+      n = undefined;
+    }
+  }
+  assert.ok(blocks.filter((b) => b.tag).length > 200, "Kalim: grades not found; has the file's layout changed?");
+  await writeBook("kalim", paginate(blocks, 700));
+}
+
+// al-Adhkar, al-Arna'ut's edition (Shamela 1956). Headings are "### | (باب …)"; "### | 12 -" numbers the next hadith.
+{
+  const blocks = [];
+  let n;
+  for (const p of await openiti("https://raw.githubusercontent.com/OpenITI/0700AH/be0d457b3830bdef87b286d7e619726a36ac5fc9/data/0676Nawawi/0676Nawawi.Adhkar/0676Nawawi.Adhkar.Shamela0001956-ara1")) {
+    const num = p.match(/^### \| (\d+) ?-?$/);
+    if (num) n = num[1];
+    else if (p.startsWith("### | ")) blocks.push({ h: p.slice(6).replace(/^\((.*)\)$/, "$1").replace(/\s*:$/, "") });
+    else {
+      blocks.push({ n, ar: p });
+      n = undefined;
+    }
+  }
+  await writeBook("adhkar", paginate(blocks, 900));
+}
+
+// al-Ma'thurat (Wazifah Sughra): a community text with Malay (adiman-dev/Mathurat, pinned). Each of its pages becomes one page here,
+// pagi and petang wordings side by side. Quran passages are swapped for api.alquran.cloud's; the rest is tagged when Hisnul Muslim has it too.
+{
+  const { DatabaseSync } = await import("node:sqlite");
+  const db = new DatabaseSync(":memory:");
+  const base = "https://raw.githubusercontent.com/adiman-dev/Mathurat/e11cbbc37c9f95fd0615ef01f34d612c1ad9014c/";
+  db.exec(await get(`${base}mathurat_sughra.sql`));
+  db.exec(await get(`${base}translation_ms.sql`));
+  const rows = db.prepare("SELECT m.page, m.repeat_count x, m.recitation_time t, m.name, m.text ar, tr.text ms FROM mathurat_sughra m LEFT JOIN translation tr ON tr.mathurat_sughra_id = m.id ORDER BY m.id").all();
+  assert.ok(rows.length >= 39, `Ma'thurat: only ${rows.length} rows`);
+  const SURAH = { "Al Fatihah": 1, "Al Baqarah": 2, "Al Imran": 3, "Al Ikhlas": 112, "Al Falaq": 113, "An Nas": 114 };
+  const hmAll = [...hm.values()].filter((h) => h.ARABIC_TEXT).map((h) => ({ h, n: norm(h.ARABIC_TEXT) }));
+  /** The Hisnul Muslim item with the same wording: the best match, close in length too, so a shared opening line isn't enough. */
+  const sameAs = (ar) => {
+    const n = norm(ar);
+    let best, score = 0;
+    for (const x of hmAll) {
+      const s = dice(n, x.n);
+      if (s > score && Math.min(n.length, x.n.length) / Math.max(n.length, x.n.length) > 0.7) [best, score] = [x.h, s];
+    }
+    return score >= 0.85 ? { h: best, exact: score >= 0.95 } : undefined;
+  };
+  const blocks = [{ h: "الوظيفة الصغرى", sub: "Pagi & petang" }];
+  let last;
+  for (const r of rows) {
+    const q = r.name.match(/^(.+) \((\d+)(?:-(\d+))?\)$/);
+    const tag = r.t === 1 ? "Pagi" : r.t === 2 ? "Petang" : undefined;
+    let b;
+    if (q) {
+      assert.ok(SURAH[q[1]], `Ma'thurat: unknown surah ${q[1]}`);
+      const d = await quranDoa({ ref: `${SURAH[q[1]]}:${q[2]}${q[3] ? `-${q[3]}` : ""}` });
+      b = { ar: d.ar.replace(/^﻿/, ""), tr: d.tr, ms: d.ms, en: d.en, src: d.src, x: r.x > 1 ? r.x : undefined, name: d.src };
+    } else {
+      const m = sameAs(r.ar);
+      // Hisnul Muslim's transliteration only where the wording is the same (its morning/evening ones are written for the morning).
+      const tr = m?.exact && tag !== "Petang" ? rumi(m.h) : undefined;
+      if (m) console.log(`  Ma'thurat p${r.page} ${tag ?? ""} ≈ Hisnul Muslim ${m.h.ID}${tr ? " (+ rumi)" : ""}`);
+      b = { ar: r.ar.trim(), tr, ms: r.ms?.replace(/^\((Pagi|Petang)\)\s*/, "").replace(/^"|"$/g, "").trim(), src: m ? `Also in Hisnul Muslim ${m.h.ID}` : undefined, tag, x: r.x > 1 ? r.x : undefined };
+    }
+    if (last !== undefined && r.page !== last) blocks.push({ br: true }); // the source's page break
+    blocks.push(b);
+    last = r.page;
+  }
+  // One source page per page: split at the breaks instead of by length. Contents: the passage's name, or its opening words.
+  const pages = [[]];
+  for (const b of blocks) b.br ? pages.push([]) : pages.at(-1).push(b);
+  // Contents: each page's opening words in Arabic, with the surah and ayah underneath for Quran passages.
+  const toc = pages.map((p, i) => {
+    const b = p.find((x) => x.ar);
+    let words = b.ar.split(/\s+/);
+    if (norm(words.slice(0, 4).join(" ")) === norm("بسم الله الرحمن الرحيم")) words = words.slice(4); // every surah opens the same way
+    return { t: `${words.slice(0, 4).join(" ")}${words.length > 4 ? "…" : ""}`, sub: b.name, p: i };
+  });
+  for (const p of pages) for (const b of p) delete b.name;
+  await writeBook("mathurat", { toc, pages });
+}
+await writeFile(new URL("../lib/books/pages.json", import.meta.url), JSON.stringify(pageCounts) + "\n");

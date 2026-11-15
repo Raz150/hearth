@@ -5,16 +5,19 @@
 :root {
   --radio: var(--text); /* checked radio: ink by day */
   --money-tint: color-mix(in srgb, var(--money) 25%, var(--surface)); /* pale yellow icon box (#FFF4D6) */
+  --paper-shine: var(--surface); /* light catching a bent page: white by day */
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --radio: var(--chores); /* lilac at night */
     --money-tint: color-mix(in srgb, var(--money) 10%, var(--surface)); /* #3A3426 */
+    --paper-shine: color-mix(in srgb, var(--text) 30%, transparent); /* a faint cream sheen at night */
   }
 }
 :root[data-theme="dark"] {
   --radio: var(--chores);
   --money-tint: color-mix(in srgb, var(--money) 10%, var(--surface));
+  --paper-shine: color-mix(in srgb, var(--text) 30%, transparent);
 }
 
 @theme inline {
