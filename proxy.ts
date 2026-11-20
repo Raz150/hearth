@@ -31,5 +31,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Skip static files and PWA assets (icon*, apple-icon*, icons/*) so they load without a session.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|offline.html|icon|apple-icon).*)"],
+  // api/push is called by the database and Vercel Cron (no session); it checks its own secret.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|offline.html|icon|apple-icon|api/push).*)"],
 };

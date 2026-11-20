@@ -31,3 +31,22 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+/** Turn notifications on for this phone: store its Web Push subscription (RLS: only as myself). */
+export async function savePush(sub: { endpoint?: unknown; keys?: { p256dh?: unknown; auth?: unknown } }): Promise<string | null> {
+  const endpoint = String(sub?.endpoint ?? "");
+  const p256dh = String(sub?.keys?.p256dh ?? "");
+  const auth = String(sub?.keys?.auth ?? "");
+  if (!/^https:\/\/\S+$/.test(endpoint) || endpoint.length > 1000 || !p256dh || p256dh.length > 200 || !auth || auth.length > 100) return "That phone's subscription looks wrong.";
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  if (!data?.claims) return "Not signed in.";
+  const { error } = await supabase.from("push_subscriptions").upsert({ endpoint, p256dh, auth }, { onConflict: "endpoint" });
+  return error ? "Couldn't turn notifications on. Try again." : null;
+}
+
+/** Turn notifications off for this phone. */
+export async function removePush(endpoint: string): Promise<void> {
+  const supabase = await createClient();
+  await supabase.from("push_subscriptions").delete().eq("endpoint", String(endpoint));
+}

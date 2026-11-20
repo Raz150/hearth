@@ -6,6 +6,7 @@ import { Card } from "@/components/kit/card";
 import { Field } from "@/components/kit/field";
 import { Segmented } from "@/components/kit/selection";
 import { InstallHint } from "@/components/install-hint";
+import { PushSwitch } from "@/components/push-switch";
 import { useTheme, type ThemeChoice } from "@/components/theme";
 import { Face, Page, PageHeader, Section } from "@/components/ui";
 import { useStore } from "@/lib/store";
@@ -66,6 +67,10 @@ export default function SettingsPage() {
             </Card>
           ),
         )}
+      </Section>
+
+      <Section title="Notifications">
+        <PushSwitch />
       </Section>
 
       <Section title="Theme">

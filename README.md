@@ -22,8 +22,8 @@ Our little household journal: to-dos, chores and doa for two. Next.js on Vercel,
 ## Deploy (Vercel)
 
 1. Import the GitHub repo in Vercel (framework: Next.js, no build changes).
-2. Settings → Environment Variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
-3. Every push to `main` deploys. The app needs no secret keys.
+2. Settings → Environment Variables: everything in `.env.example` (see Push notifications below for the push ones).
+3. Every push to `main` deploys. Only the push routes use a secret key, and it stays on the server.
 
 **Install on iPhone:** open the `*.vercel.app` URL in Safari → Share → Add to Home Screen.
 
@@ -69,6 +69,24 @@ mkdir b && tar -xzf b.tar.gz -C b
 3. Either way, re-enable realtime by running every `alter publication supabase_realtime add table ...` statement from the migrations.
 
 An error like `schema "public" already exists` during restore is harmless.
+
+## Push notifications
+
+The other person gets a ping for: a note (always), thanks, shopping added (collapsed into one ping after a 50s pause), "finished shopping", and a to-do assigned to them. Plus a morning summary at about 08:00 KL (Vercel Hobby cron runs once a day, sometime within that hour). Quiet 23:00–07:00 KL except notes; the morning summary mentions what was held back.
+
+How: database triggers (`private.push_ping`, via `pg_net`) POST to `/api/push`, which sends with `web-push` using the Supabase secret key (server only). iPhone only gets pings in the Home Screen app, iOS 16.4+.
+
+Setup (once):
+1. `npx web-push generate-vapid-keys` and two random strings (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`).
+2. Vercel → Environment Variables: `SUPABASE_SECRET_KEY` (Supabase → Project Settings → API Keys → Secret keys), `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_WEBHOOK_SECRET`, `CRON_SECRET`. Redeploy.
+3. Supabase SQL Editor: run `supabase/migrations/20261125000000_push.sql`, then:
+   ```sql
+   select vault.create_secret('https://<app>.vercel.app/api/push', 'push_url');
+   select vault.create_secret('<PUSH_WEBHOOK_SECRET>', 'push_secret');
+   ```
+4. On each iPhone: open Hearth from the Home Screen → Settings → Turn on notifications → Allow.
+
+Debugging: Supabase → `select * from net._http_response order by created desc limit 10;` shows the server's replies (202 = accepted). Vercel → Logs shows send errors.
 
 ## Doa library
 
